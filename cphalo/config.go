@@ -2,7 +2,6 @@ package cphalo
 
 import (
 	"log"
-	"os"
 )
 
 type Config struct {
@@ -10,19 +9,11 @@ type Config struct {
 	ApplicationSecret string
 }
 
-func (c *Config) Client() (*Client, error) {
-
-	if v := os.Getenv("CP_APPLICATION_KEY"); v != "" {
-		c.ApplicationKey = v
-	}
-
-	if v := os.Getenv("CP_APPLICATION_SECRET"); v != "" {
-		c.ApplicationSecret = v
-	}
+func (c *Config) Client() *Client {
 
 	client := newClient(c.ApplicationKey, c.ApplicationSecret)
 
 	log.Printf("[INFO] CP Client configured.")
 
-	return client, nil
+	return client
 }
