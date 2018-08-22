@@ -26,6 +26,7 @@ website/node_modules
 vendor/*
 !vendor/.placeholder
 terraform-provider-*
+*.tf
 
 website/vendor
 
