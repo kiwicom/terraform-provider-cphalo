@@ -20,10 +20,25 @@ type apiKeyJsonResponse struct {
 
 type groupJsonResponse struct {
 	Name string `json:"name"`
+	Id   string `json:"id"`
+}
+
+type listGroupJsonReponse struct {
+	Group groupDetailJsonResponse
+}
+
+type groupDetailJsonResponse struct {
+	Name                    string         `json:"name"`
+	Id                      string         `json:"id"`
+	Url                     string         `json:"url"`
+	Description             string         `json:"description"`
+	LinuxFirewallPolicyId   string         `json:"linux_firewall_policy_id"`
+	WindowsFirewallPolicyId string         `json:"windows_firewall_policy_id"`
+	ServerCounts            map[string]int `json:"server_counts"`
 }
 
 type listGroupsJsonResponse struct {
-	Groups []groupJsonResponse `json:"group"`
+	Groups []groupJsonResponse `json:""`
 }
 
 func (r *CpHaloError) Error() string {

@@ -28,10 +28,6 @@ func Provider() *schema.Provider {
 			"cphalo_group": dataSourceCpHaloGroup(),
 		},
 
-		ResourcesMap: map[string]*schema.Resource{
-			"cphalo_group": resourceCpHaloGroup(),
-		},
-
 		ConfigureFunc: providerConfigure,
 	}
 }
