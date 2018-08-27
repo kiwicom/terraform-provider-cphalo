@@ -24,7 +24,6 @@ func dataSourceCpHaloGroup() *schema.Resource {
 }
 
 func dataSourceCpHaloGroupRead(d *schema.ResourceData, meta interface{}) error {
-	var g_id string
 
 	client := meta.(*Client)
 
@@ -35,18 +34,18 @@ func dataSourceCpHaloGroupRead(d *schema.ResourceData, meta interface{}) error {
 	n := d.Get("name").(string)
 	log.Println(gs)
 
-	g_id = ""
+	gId := ""
 	for i := range gs {
 		if strings.TrimSpace(gs[i].Name) == n {
-			g_id = gs[i].Id
+			gId = gs[i].Id
 		}
 	}
 
-	if g_id == "" {
+	if gId == "" {
 		return fmt.Errorf("Resouce does not exists")
 	}
 
-	g, err := client.Read(g_id)
+	g, err := client.Read(gId)
 	if err != nil {
 		return err
 	}
@@ -76,10 +75,9 @@ func (cs *Client) List() ([]groupJsonResponse, error) {
 	}
 
 	bodyBytes, _ := ioutil.ReadAll(resp.Body)
-	bodyString := string(bodyBytes)
 
 	g := &listGroupsJsonResponse{}
-	err = json.Unmarshal([]byte(bodyString), &g)
+	err = json.Unmarshal(bodyBytes, g)
 
 	return g.Groups, err
 }
@@ -103,34 +101,7 @@ func (cs *Client) Read(id string) (*listGroupJsonReponse, error) {
 	}
 
 	bodyBytes, _ := ioutil.ReadAll(resp.Body)
-	bodyString := string(bodyBytes)
-	err = json.Unmarshal([]byte(bodyString), &out)
+	err = json.Unmarshal(bodyBytes, &out)
 
 	return &out, err
-}
-
-func (c *Client) GetGroup(name string) (*groupJsonResponse, error) {
-	var out groupJsonResponse
-
-	req, err := c.NewRequest("GET", "groups?search[name]="+name, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if err := validateResponse(resp); err != nil {
-		return nil, err
-	}
-
-	bodyBytes, _ := ioutil.ReadAll(resp.Body)
-	bodyString := string(bodyBytes)
-	err = json.Unmarshal([]byte(bodyString), &out)
-
-	return &out, err
-
 }
