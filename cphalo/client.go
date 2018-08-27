@@ -13,7 +13,7 @@ import (
 
 const (
 	DefaultTimeout    = 180 * time.Second
-	DefaultBaseUrl    = "https://api.cloudpassage.com/"
+	DefaultBaseUrl    = "https://api.cloudpassage.com"
 	DefaultApiVersion = "v1"
 )
 
@@ -38,7 +38,7 @@ func (pc *Client) Validate() (bool, error) {
 }
 
 func (pc *Client) AuthRequest(appKey string, appSecret string) (*http.Request, error) {
-	rsc := "oauth/access_token?grant_type=client_credentials"
+	rsc := "/oauth/access_token?grant_type=client_credentials"
 	method := "POST"
 	baseUrl, err := url.Parse(pc.BaseUrl.String() + rsc)
 	log.Println("Going to authenticate and obtain access token.")
@@ -57,7 +57,7 @@ func (pc *Client) AuthRequest(appKey string, appSecret string) (*http.Request, e
 }
 
 func (pc *Client) NewRequest(method string, rsc string, params map[string]string) (*http.Request, error) {
-	baseUrl, err := url.Parse(pc.BaseUrl.String() + DefaultApiVersion + "/" + rsc)
+	baseUrl, err := url.Parse(pc.BaseUrl.String() + "/" + DefaultApiVersion + "/" + rsc)
 	if err != nil {
 		return nil, err
 	}
