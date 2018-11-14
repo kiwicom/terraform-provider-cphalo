@@ -1,8 +1,4 @@
-# Terraform provider
+# Terraform provider for CloudPassage
 
 - Website: https://www.terraform.io
-
-## Requirements
-
-- Terraform 0.10.x
-- Go 1.8 (to build the provider plugin)
+- API: https://library.cloudpassage.com/help/cloudpassage-api-documentation
