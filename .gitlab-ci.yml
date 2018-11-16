@@ -1,0 +1,23 @@
+image: golang:1.11.2
+
+stages:
+  - test
+  - build
+
+before_script:
+  - make .env
+
+tests:
+  stage: test
+  script:
+    - make test
+
+tests_race:
+  stage: test
+  script:
+    - make race
+
+build:
+  stage: build
+  script:
+    - make build-sandbox

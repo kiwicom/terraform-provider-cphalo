@@ -1,4 +1,4 @@
-.PHONY: build-plugin build-sandbox run-plugin run-sandbox test
+.PHONY: build-plugin build-sandbox run-plugin run-sandbox test race
 
 vars:=$(shell cat .env | xargs)
 
@@ -16,6 +16,9 @@ run-sandbox: build-sandbox
 
 test:
 	go test -v ./api
+
+race:
+	go test -v -race ./api
 
 .env:
 	cp .env.example .env
