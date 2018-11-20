@@ -21,3 +21,4 @@ build:
   stage: build
   script:
     - make build-sandbox
+    - make build-plugin
