@@ -1,24 +1,33 @@
-.PHONY: build-plugin build-sandbox run-plugin run-sandbox test race
+.PHONY: build-plugin build-sandbox run-plugin run-sandbox test race tf-init tf-apply tf-plan
 
 vars:=$(shell cat .env | xargs)
 
 build-plugin:
-	go build -o bin/terraform-provider-cloudpassage cmd/tf-plugin/plugin.go
+	go build -o bin/terraform-provider-cphalo cmd/tf-plugin/plugin.go
 
 build-sandbox:
 	go build -o bin/sandbox cmd/sandbox/sandbox.go
 
 run-plugin: build-plugin
-	bin/terraform-provider-cloudpassage
+	bin/terraform-provider-cphalo
 
 run-sandbox: build-sandbox
 	$(vars) bin/sandbox
 
 test:
-	go test -v ./api
+	go test -v ./api ./cphalo
 
 race:
-	go test -v -race ./api
+	go test -v -race ./api ./cphalo
 
 .env:
 	cp .env.example .env
+
+tf-init: build-plugin
+	terraform init -plugin-dir=bin/
+
+tf-apply: tf-init
+	$(vars) terraform apply
+
+tf-plan: tf-init
+	$(vars) terraform plan
