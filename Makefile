@@ -34,3 +34,6 @@ tf-apply: tf-init
 
 tf-plan: tf-init
 	$(vars) terraform plan
+
+tf-destroy:
+	$(vars) terraform destroy
