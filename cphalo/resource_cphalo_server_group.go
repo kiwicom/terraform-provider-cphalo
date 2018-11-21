@@ -17,6 +17,7 @@ func resourceCPHaloServerGroup() *schema.Resource {
 			"parent_id": {
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"tag": {
 				Type:     schema.TypeString,

@@ -1,6 +1,6 @@
 .PHONY: build-plugin build-sandbox run-plugin run-sandbox test race tf-init tf-apply tf-plan
 
-vars:=$(shell cat .env | xargs)
+vars:=$(shell grep -v '^\#' .env | xargs)
 
 build-plugin:
 	go build -o bin/terraform-provider-cphalo cmd/tf-plugin/plugin.go
@@ -19,6 +19,9 @@ test:
 
 race:
 	go test -v -race ./api ./cphalo
+
+testacc: build-plugin
+	$(vars) TF_ACC=1 go test -v -timeout 1m ./cphalo
 
 .env:
 	cp .env.example .env
