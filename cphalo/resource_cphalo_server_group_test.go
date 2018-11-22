@@ -10,21 +10,40 @@ import (
 )
 
 func TestAccServerGroup_basic(t *testing.T) {
+	nChildren := 20
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCPHaloCheckDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCPHaloServerGroupConfig("sg", "some_name", ""),
+				Config: testAccCPHaloServerGroupConfig("sg", "some_name", "", 0),
 				Check: resource.ComposeTestCheckFunc(func(s *terraform.State) error {
 					return testServerGroupAttributes("some_name", "")
 				}),
 			},
 			{
-				Config: testAccCPHaloServerGroupConfig("sg", "changed_name", "added_tag"),
+				Config: testAccCPHaloServerGroupConfig("sg", "changed_name", "added_tag", 0),
 				Check: resource.ComposeTestCheckFunc(func(_ *terraform.State) error {
 					return testServerGroupAttributes("changed_name", "added_tag")
+				}),
+			},
+			{
+				Config: testAccCPHaloServerGroupConfig("sg", "changed_name", "added_tag", nChildren),
+				Check: resource.ComposeTestCheckFunc(func(_ *terraform.State) error {
+					client := testAccProvider.Meta().(*api.Client)
+					resp, err := client.ListServerGroups()
+
+					if err != nil {
+						return fmt.Errorf("cannot fetch server groups: %v", err)
+					}
+
+					expected := nChildren + 2
+					if resp.Count != expected {
+						return fmt.Errorf("expected excatly %d server group, got %d", expected, resp.Count)
+					}
+
+					return nil
 				}),
 			},
 		},
@@ -87,11 +106,22 @@ func testAccCPHaloCheckDestroy(_ *terraform.State) error {
 	return nil
 }
 
-func testAccCPHaloServerGroupConfig(resName, name, tag string) string {
-	return fmt.Sprintf(`
+func testAccCPHaloServerGroupConfig(resName, name, tag string, children int) string {
+	config := fmt.Sprintf(`
 resource "cphalo_server_group" "%s" {
   name = "%s"
   tag = "%s"
 }
-  `, resName, name, tag)
+`, resName, name, tag)
+
+	for i := 0; i < children; i++ {
+		config += fmt.Sprintf(`
+resource "cphalo_server_group" "%s-%d" {
+  name = "%s-child-%.3d"
+  parent_id = "${cphalo_server_group.%s.id}"
+}
+`, resName, i, name, i, resName)
+	}
+
+	return config
 }
