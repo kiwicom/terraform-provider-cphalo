@@ -1,4 +1,4 @@
-.PHONY: build-plugin build-sandbox run-plugin run-sandbox test race tf-init tf-apply tf-plan
+.PHONY: build-plugin build-sandbox run-plugin run-sandbox test race tf-init tf-apply tf-plan tf-destroy clean
 
 vars:=$(shell grep -v '^\#' .env | xargs)
 
@@ -21,7 +21,7 @@ race:
 	go test -v -race ./api ./cphalo
 
 testacc: build-plugin
-	$(vars) TF_ACC=1 go test -v -timeout 1m ./cphalo
+	$(vars) TF_ACC=1 go test -v -timeout 15m ./cphalo
 
 .env:
 	cp .env.example .env
@@ -37,3 +37,6 @@ tf-plan: tf-init
 
 tf-destroy:
 	$(vars) terraform destroy
+
+clean:
+	rm -f terraform.tfstate*

@@ -5,10 +5,8 @@ import (
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
 	"gitlab.skypicker.com/terraform-provider-cphalo/api"
-	"log"
 	"strings"
 	"testing"
-	"time"
 )
 
 func TestAccServerGroup_basic(t *testing.T) {
@@ -70,38 +68,23 @@ func testServerGroupAttributes(nameExpected, tagExpected string) error {
 }
 
 func testAccCPHaloCheckDestroy(_ *terraform.State) error {
-	return retry(10, time.Second, func() error {
-		client := testAccProvider.Meta().(*api.Client)
-		resp, err := client.ListServerGroups()
+	client := testAccProvider.Meta().(*api.Client)
+	resp, err := client.ListServerGroups()
 
-		if err != nil {
-			return fmt.Errorf("cannot fetch server groups on destroy: %v", err)
-		}
-
-		if resp.Count != 1 {
-			var servers []string
-			for _, g := range resp.Groups {
-				servers = append(servers, g.Name)
-			}
-
-			return fmt.Errorf("found %d server groups after destroy: %s", resp.Count, strings.Join(servers, ","))
-		}
-
-		return nil
-	})
-}
-
-func retry(retries int, timeout time.Duration, f func() error) (err error) {
-	for i := 0; i < retries; i++ {
-		err = f()
-		if err == nil {
-			return nil
-		}
-		log.Printf("retrying %d", i+1)
-		time.Sleep(timeout)
+	if err != nil {
+		return fmt.Errorf("cannot fetch server groups on destroy: %v", err)
 	}
 
-	return fmt.Errorf("too many retries (%d): %v", retries, err)
+	if resp.Count != 1 {
+		var servers []string
+		for _, g := range resp.Groups {
+			servers = append(servers, g.Name)
+		}
+
+		return fmt.Errorf("found %d server groups after destroy: %s", resp.Count, strings.Join(servers, ","))
+	}
+
+	return nil
 }
 
 func testAccCPHaloServerGroupConfig(resName, name, tag string) string {

@@ -2,9 +2,11 @@ package cphalo
 
 import (
 	"fmt"
+	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/helper/schema"
 	"gitlab.skypicker.com/terraform-provider-cphalo/api"
 	"log"
+	"time"
 )
 
 func resourceCPHaloServerGroup() *schema.Resource {
@@ -30,6 +32,9 @@ func resourceCPHaloServerGroup() *schema.Resource {
 		Delete: resourceCPHaloServerGroupDelete,
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
+		},
+		Timeouts: &schema.ResourceTimeout{
+			Delete: schema.DefaultTimeout(time.Minute * 5),
 		},
 	}
 }
@@ -106,11 +111,36 @@ func resourceCPHaloServerGroupUpdate(d *schema.ResourceData, i interface{}) erro
 	return resourceCPHaloServerGroupRead(d, i)
 }
 
-func resourceCPHaloServerGroupDelete(d *schema.ResourceData, i interface{}) error {
+func resourceCPHaloServerGroupDelete(d *schema.ResourceData, i interface{}) (err error) {
 	client := i.(*api.Client)
 
 	if err := client.DeleteServerGroup(d.Id()); err != nil {
 		return fmt.Errorf("failed to delete %s: %v", d.Id(), err)
+	}
+
+	stateConf := &resource.StateChangeConf{
+		Pending:    []string{"waiting"},
+		Target:     []string{"deleted"},
+		MinTimeout: time.Second,
+		Timeout:    d.Timeout(schema.TimeoutDelete),
+		Refresh: func() (result interface{}, state string, err error) {
+			resp, err := client.GetServerGroup(d.Id())
+
+			if err == nil {
+				return resp, "waiting", nil
+			}
+
+			if _, ok := err.(*api.ResponseError404); ok {
+				return resp, "deleted", nil
+			}
+
+			return resp, "", err
+		},
+	}
+
+	_, err = stateConf.WaitForState()
+	if err != nil {
+		return fmt.Errorf("error waiting for server group %s to be deleted: %v", d.Id(), err)
 	}
 
 	log.Printf("server %s deleted\n", d.Id())
