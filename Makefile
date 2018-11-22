@@ -15,7 +15,7 @@ run-sandbox: build-sandbox
 	$(vars) bin/sandbox
 
 test:
-	go test -v ./api ./cphalo
+	go test -v -cover ./api ./cphalo
 
 race:
 	go test -v -race ./api ./cphalo
