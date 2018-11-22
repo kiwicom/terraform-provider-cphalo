@@ -5,31 +5,31 @@ import (
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
 	"gitlab.skypicker.com/terraform-provider-cphalo/api"
+	"io/ioutil"
 	"strings"
 	"testing"
 )
 
 func TestAccServerGroup_basic(t *testing.T) {
-	nChildren := 20
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCPHaloCheckDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCPHaloServerGroupConfig("sg", "some_name", "", 0),
+				Config: testAccCPHaloServerGroupConfig(t, 1),
 				Check: resource.ComposeTestCheckFunc(func(s *terraform.State) error {
-					return testServerGroupAttributes("some_name", "")
+					return testServerGroupAttributes("root group", "")
 				}),
 			},
 			{
-				Config: testAccCPHaloServerGroupConfig("sg", "changed_name", "added_tag", 0),
+				Config: testAccCPHaloServerGroupConfig(t, 2),
 				Check: resource.ComposeTestCheckFunc(func(_ *terraform.State) error {
 					return testServerGroupAttributes("changed_name", "added_tag")
 				}),
 			},
 			{
-				Config: testAccCPHaloServerGroupConfig("sg", "changed_name", "added_tag", nChildren),
+				Config: testAccCPHaloServerGroupConfig(t, 3),
 				Check: resource.ComposeTestCheckFunc(func(_ *terraform.State) error {
 					client := testAccProvider.Meta().(*api.Client)
 					resp, err := client.ListServerGroups()
@@ -38,7 +38,7 @@ func TestAccServerGroup_basic(t *testing.T) {
 						return fmt.Errorf("cannot fetch server groups: %v", err)
 					}
 
-					expected := nChildren + 2
+					expected := 7
 					if resp.Count != expected {
 						return fmt.Errorf("expected excatly %d server group, got %d", expected, resp.Count)
 					}
@@ -106,22 +106,13 @@ func testAccCPHaloCheckDestroy(_ *terraform.State) error {
 	return nil
 }
 
-func testAccCPHaloServerGroupConfig(resName, name, tag string, children int) string {
-	config := fmt.Sprintf(`
-resource "cphalo_server_group" "%s" {
-  name = "%s"
-  tag = "%s"
-}
-`, resName, name, tag)
+func testAccCPHaloServerGroupConfig(t *testing.T, step int) string {
+	path := fmt.Sprintf("testdata/server_groups/basic_%.2d.tf", step)
+	b, err := ioutil.ReadFile(path)
 
-	for i := 0; i < children; i++ {
-		config += fmt.Sprintf(`
-resource "cphalo_server_group" "%s-%d" {
-  name = "%s-child-%.3d"
-  parent_id = "${cphalo_server_group.%s.id}"
-}
-`, resName, i, name, i, resName)
+	if err != nil {
+		t.Fatalf("cannot read file %s: %v", path, err)
 	}
 
-	return config
+	return string(b)
 }
