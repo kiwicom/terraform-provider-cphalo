@@ -21,7 +21,7 @@ race:
 	go test -v -race ./api ./cphalo
 
 testacc: build-plugin
-	$(vars) TF_ACC=1 go test -v -timeout 15m ./cphalo
+	$(vars) TF_ACC=1 go test -cover -v -timeout 15m ./cphalo
 
 .env:
 	cp .env.example .env
