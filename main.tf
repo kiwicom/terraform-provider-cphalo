@@ -10,6 +10,7 @@ output "server_group_root_id" {
 
 resource "cphalo_server_group" "main" {
   name = "tf-main"
+  linux_firewall_policy_id = "be28b106ee5b11e8b7f1017da54e9117"
 }
 
 output "server_group_main_id" {

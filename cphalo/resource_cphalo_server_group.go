@@ -25,6 +25,10 @@ func resourceCPHaloServerGroup() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"linux_firewall_policy_id": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 		},
 		Create: resourceCPHaloServerGroupCreate,
 		Read:   resourceCPHaloServerGroupRead,
@@ -40,10 +44,13 @@ func resourceCPHaloServerGroup() *schema.Resource {
 }
 
 func resourceCPHaloServerGroupCreate(d *schema.ResourceData, i interface{}) error {
+	policyID := d.Get("linux_firewall_policy_id").(string)
+
 	group := api.ServerGroup{
-		Name:     d.Get("name").(string),
-		ParentID: d.Get("parent_id").(string),
-		Tag:      d.Get("tag").(string),
+		Name:                  d.Get("name").(string),
+		ParentID:              d.Get("parent_id").(string),
+		Tag:                   d.Get("tag").(string),
+		LinuxFirewallPolicyID: api.NullableString(policyID),
 	}
 
 	client := i.(*api.Client)
@@ -73,6 +80,7 @@ func resourceCPHaloServerGroupRead(d *schema.ResourceData, i interface{}) error 
 	d.Set("name", group.Name)
 	d.Set("parent_id", group.ParentID)
 	d.Set("tag", group.Tag)
+	d.Set("linux_firewall_policy_id", group.LinuxFirewallPolicyID)
 
 	return nil
 }
@@ -105,6 +113,16 @@ func resourceCPHaloServerGroupUpdate(d *schema.ResourceData, i interface{}) erro
 			return fmt.Errorf("updating parent_id of %s failed: %v", d.Id(), err)
 		}
 		log.Println("updated parent_id")
+	}
+
+	if d.HasChange("linux_firewall_policy_id") {
+		policyID := d.Get("linux_firewall_policy_id").(string)
+
+		log.Println("POLCIDY ID: ", policyID)
+		if err := client.UpdateServerGroup(api.ServerGroup{ID: d.Id(), LinuxFirewallPolicyID: api.NullableString(policyID)}); err != nil {
+			return fmt.Errorf("updating linux_firewall_policy_id of %s failed: %v", d.Id(), err)
+		}
+		log.Println("updated linux_firewall_policy_id")
 	}
 	d.Partial(false)
 

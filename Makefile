@@ -1,6 +1,8 @@
-.PHONY: build-plugin build-sandbox run-plugin run-sandbox test race tf-init tf-apply tf-plan tf-destroy clean
+.PHONY: build build-plugin build-sandbox run-plugin run-sandbox test race testacc tf-init tf-apply tf-plan tf-destroy clean
 
 vars:=$(shell grep -v '^\#' .env | xargs)
+
+build: build-plugin build-sandbox
 
 build-plugin:
 	go build -o bin/terraform-provider-cphalo cmd/tf-plugin/plugin.go
