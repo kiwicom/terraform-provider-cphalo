@@ -34,10 +34,12 @@ func Provider() terraform.ResourceProvider {
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
-			"cphalo_server_group": dataSourceCPHaloServerGroup(),
+			"cphalo_server_group":    dataSourceCPHaloServerGroup(),
+			"cphalo_firewall_policy": dataSourceFirewallPolicy(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"cphalo_server_group": resourceCPHaloServerGroup(),
+			"cphalo_server_group":    resourceCPHaloServerGroup(),
+			"cphalo_firewall_policy": resourceFirewallPolicy(),
 		},
 
 		ConfigureFunc: ConfigureProvider,
@@ -49,7 +51,7 @@ func ConfigureProvider(d *schema.ResourceData) (interface{}, error) {
 		ApplicationKey:    d.Get("application_key").(string),
 		ApplicationSecret: d.Get("application_secret").(string),
 	}
-	log.Println("[INFO] Initializing cphalo client")
+	log.Println("[INFO] Initializing CPHalo client")
 
 	client := config.Client()
 
