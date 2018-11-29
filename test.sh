@@ -15,11 +15,29 @@ echo "Response: ${response}"
 accessToken=$(echo ${response} | jq -r '.access_token')
 echo "Access token: ${accessToken}"
 
-echo "All the groups:"
+#echo "All the groups:"
+#curl -X GET \
+#     -H 'Content-type: application/json' \
+#     -H "Authorization: Bearer ${accessToken}" \
+#     "https://api.cloudpassage.com/v1/groups" | jq .
+
+echo "All the CSP Accounts:"
 curl -X GET \
      -H 'Content-type: application/json' \
      -H "Authorization: Bearer ${accessToken}" \
-     "https://api.cloudpassage.com/v1/groups" | jq .
+     "https://api.cloudpassage.com/v1/csp_accounts" | jq .
+
+#curl -X POST -v \
+#     --data '{"csp_account_type":"AWS","external_id":"this-is-external-id-1","role_arn":"arn:aws:iam::782106534067:role/CloudPassage-Service-Role","group_id":"fff04606e97b11e896d9252f8ed31fc8"}' \
+#     -H 'Content-type: application/json' \
+#     -H "Authorization: Bearer ${accessToken}" \
+#     "https://api.cloudpassage.com/v1/csp_accounts"
+
+#echo "Delete the CSP Accounts:"
+#curl -X DELETE \
+#     -H 'Content-type: application/json' \
+#     -H "Authorization: Bearer ${accessToken}" \
+#     "https://api.cloudpassage.com/v1/csp_accounts/5a762659-653c-4ec3-be4c-08dcd0b152ba" | jq .
 
 #echo "All firewall policies:"
 #curl -X GET \
