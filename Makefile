@@ -1,6 +1,6 @@
 .PHONY: build build-plugin build-sandbox build-client run-plugin run-sandbox run-client test race testacc tf-init tf-apply tf-plan tf-destroy clean
 
-vars:=$(shell grep -v '^\#' .env | xargs)
+vars:=$(shell test -f .env && grep -v '^\#' .env | xargs)
 
 build: build-plugin build-sandbox build-client
 
