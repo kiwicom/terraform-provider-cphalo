@@ -62,6 +62,14 @@ func resourceCPHaloCSPAccountCreate(d *schema.ResourceData, i interface{}) error
 
 	d.SetId(string(resp))
 
+	err = createStateChangeDefault(d, func() (interface{}, error) {
+		return client.GetCSPAccount(d.Id())
+	})
+
+	if err != nil {
+		return fmt.Errorf("error waiting for CSP account %s to be created: %v", d.Id(), err)
+	}
+
 	return resourceCPHaloCSPAccountRead(d, i)
 }
 
@@ -97,9 +105,34 @@ func resourceCPHaloCSPAccountUpdate(d *schema.ResourceData, i interface{}) error
 		if err := client.UpdateCSPAccount(api.CSPAccount{ID: d.Id(), AccountDisplayName: d.Get("account_display_name").(string)}); err != nil {
 			return fmt.Errorf("updating account_display_name of %s failed: %v", d.Id(), err)
 		}
+		d.SetPartial("account_display_name")
 		log.Println("updated account_display_name")
 	}
 	d.Partial(false)
+
+	err = updateStateChange(d, func() (result interface{}, state string, err error) {
+		resp, err := client.GetCSPAccount(d.Id())
+
+		if err != nil {
+			return resp, "", err
+		}
+
+		matches := []bool{
+			resp.CSPAccount.AccountDisplayName == d.Get("account_display_name").(string),
+		}
+
+		for _, match := range matches {
+			if !match {
+				return resp, StateChangeWaiting, err
+			}
+		}
+
+		return resp, StateChangeChanged, nil
+	})
+
+	if err != nil {
+		return fmt.Errorf("error waiting for CSP account %s to be updated: %v", d.Id(), err)
+	}
 
 	return resourceCPHaloCSPAccountRead(d, i)
 }
@@ -109,6 +142,14 @@ func resourceCPHaloCSPAccountDelete(d *schema.ResourceData, i interface{}) (err 
 
 	if err := client.DeleteCSPAccount(d.Id()); err != nil {
 		return fmt.Errorf("failed to delete %s: %v", d.Id(), err)
+	}
+
+	err = deleteStateChangeDefault(d, func() (interface{}, error) {
+		return client.GetCSPAccount(d.Id())
+	})
+
+	if err != nil {
+		return fmt.Errorf("error waiting for CSP account %s to be deleted: %v", d.Id(), err)
 	}
 
 	log.Printf("server %s deleted\n", d.Id())

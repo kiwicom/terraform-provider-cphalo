@@ -2,7 +2,6 @@ package cphalo
 
 import (
 	"fmt"
-	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/helper/validation"
 	"gitlab.skypicker.com/terraform-provider-cphalo/api"
@@ -111,27 +110,10 @@ func resourceFirewallRuleCreate(d *schema.ResourceData, i interface{}) error {
 
 	d.SetId(resp.Rule.ID)
 
-	stateConf := &resource.StateChangeConf{
-		Pending:    []string{"waiting"},
-		Target:     []string{"created"},
-		MinTimeout: time.Second,
-		Timeout:    d.Timeout(schema.TimeoutCreate),
-		Refresh: func() (result interface{}, state string, err error) {
-			resp, err := client.GetFirewallRule(parentID, d.Id())
+	err = createStateChangeDefault(d, func() (interface{}, error) {
+		return client.GetFirewallRule(parentID, d.Id())
+	})
 
-			if err == nil {
-				return resp, "created", nil
-			}
-
-			if _, ok := err.(*api.ResponseError404); ok {
-				return resp, "waiting", nil
-			}
-
-			return resp, "", err
-		},
-	}
-
-	_, err = stateConf.WaitForState()
 	if err != nil {
 		return fmt.Errorf("error waiting for firewall rule %s to be created: %v", d.Id(), err)
 	}
@@ -247,33 +229,30 @@ func resourceFirewallRuleUpdate(d *schema.ResourceData, i interface{}) error {
 
 	d.Partial(false)
 
-	stateConf := &resource.StateChangeConf{
-		Pending:    []string{"waiting"},
-		Target:     []string{"updated"},
-		MinTimeout: time.Second,
-		Timeout:    d.Timeout(schema.TimeoutUpdate),
-		Refresh: func() (result interface{}, state string, err error) {
-			resp, err := client.GetFirewallRule(parentID, d.Id())
+	err = updateStateChange(d, func() (result interface{}, state string, err error) {
+		resp, err := client.GetFirewallRule(parentID, d.Id())
 
-			if err != nil {
-				return resp, "", err
+		if err != nil {
+			return resp, "", err
+		}
+
+		matches := []bool{
+			resp.Rule.Chain == d.Get("chain").(string),
+			resp.Rule.Action == d.Get("action").(string),
+			resp.Rule.Active == d.Get("active").(bool),
+			resp.Rule.ConnectionStates == d.Get("connection_states").(string),
+			resp.Rule.Position == d.Get("position").(int),
+		}
+
+		for _, match := range matches {
+			if !match {
+				return resp, StateChangeWaiting, err
 			}
+		}
 
-			chainMatches := resp.Rule.Chain == d.Get("chain").(string)
-			actionMatches := resp.Rule.Action == d.Get("action").(string)
-			activeMatches := resp.Rule.Active == d.Get("active").(bool)
-			connStatesMatches := resp.Rule.ConnectionStates == d.Get("connection_states").(string)
-			positionMatches := resp.Rule.Position == d.Get("position").(int)
+		return resp, StateChangeChanged, nil
+	})
 
-			if chainMatches && actionMatches && activeMatches && connStatesMatches && positionMatches {
-				return resp, "updated", nil
-			}
-
-			return resp, "waiting", err
-		},
-	}
-
-	_, err = stateConf.WaitForState()
 	if err != nil {
 		return fmt.Errorf("error waiting for firewall rule %s to be updated: %v", d.Id(), err)
 	}
@@ -291,27 +270,10 @@ func resourceFirewallRuleDelete(d *schema.ResourceData, i interface{}) (err erro
 		return fmt.Errorf("failed to delete %s: %v", d.Id(), err)
 	}
 
-	stateConf := &resource.StateChangeConf{
-		Pending:    []string{"waiting"},
-		Target:     []string{"deleted"},
-		MinTimeout: time.Second,
-		Timeout:    d.Timeout(schema.TimeoutDelete),
-		Refresh: func() (result interface{}, state string, err error) {
-			resp, err := client.GetFirewallRule(parentID, d.Id())
+	err = deleteStateChangeDefault(d, func() (interface{}, error) {
+		return client.GetFirewallRule(parentID, d.Id())
+	})
 
-			if err == nil {
-				return resp, "waiting", nil
-			}
-
-			if _, ok := err.(*api.ResponseError404); ok {
-				return resp, "deleted", nil
-			}
-
-			return resp, "", err
-		},
-	}
-
-	_, err = stateConf.WaitForState()
 	if err != nil {
 		return fmt.Errorf("error waiting for firewall rule %s to be deleted: %v", d.Id(), err)
 	}

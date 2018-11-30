@@ -2,7 +2,6 @@ package cphalo
 
 import (
 	"fmt"
-	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/helper/schema"
 	"gitlab.skypicker.com/terraform-provider-cphalo/api"
 	"log"
@@ -67,6 +66,14 @@ func resourceFirewallPolicyCreate(d *schema.ResourceData, i interface{}) error {
 	}
 
 	d.SetId(resp.Policy.ID)
+
+	err = createStateChangeDefault(d, func() (interface{}, error) {
+		return client.GetFirewallPolicy(d.Id())
+	})
+
+	if err != nil {
+		return fmt.Errorf("error waiting for firewall policy %s to be created: %v", d.Id(), err)
+	}
 
 	return resourceFirewallPolicyRead(d, i)
 }
@@ -142,23 +149,33 @@ func resourceFirewallPolicyUpdate(d *schema.ResourceData, i interface{}) error {
 		log.Println("updated description")
 	}
 
-	//if d.HasChange("shared") {
-	//	if err := client.UpdateFirewallPolicy(api.FirewallPolicy{ID: d.Id(), Shared: d.Get("shared").(bool)}); err != nil {
-	//		return fmt.Errorf("updating shared of %s failed: %v", d.Id(), err)
-	//	}
-	//	d.SetPartial("shared")
-	//	log.Println("updated shared")
-	//}
-
-	//if d.HasChange("ignore_forwarding_rules") {
-	//	if err := client.UpdateFirewallPolicy(api.FirewallPolicy{ID: d.Id(), IgnoreForwardingRules: d.Get("ignore_forwarding_rules").(bool)}); err != nil {
-	//		return fmt.Errorf("updating ignore_forwarding_rules of %s failed: %v", d.Id(), err)
-	//	}
-	//	d.SetPartial("ignore_forwarding_rules")
-	//	log.Println("updated ignore_forwarding_rules")
-	//}
-
 	d.Partial(false)
+
+	err = updateStateChange(d, func() (result interface{}, state string, err error) {
+		resp, err := client.GetFirewallPolicy(d.Id())
+
+		if err != nil {
+			return resp, "", err
+		}
+
+		matches := []bool{
+			resp.Policy.Name == d.Get("name").(string),
+			resp.Policy.Description == d.Get("description").(string),
+			resp.Policy.Platform == d.Get("platform").(string),
+		}
+
+		for _, match := range matches {
+			if !match {
+				return resp, StateChangeWaiting, err
+			}
+		}
+
+		return resp, StateChangeChanged, nil
+	})
+
+	if err != nil {
+		return fmt.Errorf("error waiting for firewall rule %s to be updated: %v", d.Id(), err)
+	}
 
 	return resourceFirewallPolicyRead(d, i)
 }
@@ -170,27 +187,10 @@ func resourceFirewallPolicyDelete(d *schema.ResourceData, i interface{}) (err er
 		return fmt.Errorf("failed to delete %s: %v", d.Id(), err)
 	}
 
-	stateConf := &resource.StateChangeConf{
-		Pending:    []string{"waiting"},
-		Target:     []string{"deleted"},
-		MinTimeout: time.Second,
-		Timeout:    d.Timeout(schema.TimeoutDelete),
-		Refresh: func() (result interface{}, state string, err error) {
-			resp, err := client.GetFirewallPolicy(d.Id())
+	err = deleteStateChangeDefault(d, func() (interface{}, error) {
+		return client.GetFirewallPolicy(d.Id())
+	})
 
-			if err == nil {
-				return resp, "waiting", nil
-			}
-
-			if _, ok := err.(*api.ResponseError404); ok {
-				return resp, "deleted", nil
-			}
-
-			return resp, "", err
-		},
-	}
-
-	_, err = stateConf.WaitForState()
 	if err != nil {
 		return fmt.Errorf("error waiting for firewall policy %s to be deleted: %v", d.Id(), err)
 	}
