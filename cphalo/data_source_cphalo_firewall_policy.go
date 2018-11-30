@@ -8,7 +8,7 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
-func dataSourceFirewallPolicy() *schema.Resource {
+func dataSourceCPHaloFirewallPolicy() *schema.Resource {
 	return &schema.Resource{
 		Read: dataSourceFirewallPolicyRead,
 

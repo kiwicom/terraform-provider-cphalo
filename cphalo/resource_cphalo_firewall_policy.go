@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func resourceFirewallPolicy() *schema.Resource {
+func resourceCPHaloFirewallPolicy() *schema.Resource {
 	return &schema.Resource{
 		Schema: map[string]*schema.Schema{
 			"name": {
