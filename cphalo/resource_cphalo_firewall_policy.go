@@ -230,6 +230,8 @@ func resourceFirewallPolicyUpdate(d *schema.ResourceData, i interface{}) error {
 		return fmt.Errorf("update failed: %v", err)
 	}
 
+	d.Partial(true)
+
 	if d.HasChange("rule") {
 		inputRules, outputRules, err := parseFirewallPolicyRuleSet(d.Get("rule"))
 		if err != nil {
@@ -245,7 +247,6 @@ func resourceFirewallPolicyUpdate(d *schema.ResourceData, i interface{}) error {
 		log.Println("updated rule")
 	}
 
-	d.Partial(true)
 	if d.HasChange("name") {
 		err := client.UpdateFirewallPolicy(api.FirewallPolicy{
 			ID:   d.Id(),
