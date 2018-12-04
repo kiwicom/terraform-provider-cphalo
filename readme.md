@@ -140,8 +140,7 @@ make test
 
 - [x] **Firewall Interfaces**
 
-- [ ] **Firewall Services**
-    - [ ] Not started yet.
+- [x] **Firewall Services**
 
 - [ ] **Firewall Zones**
     - [ ] Not started yet.
