@@ -15,6 +15,10 @@ func resourceCPHaloServerGroup() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
+			"description": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"parent_id": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -47,6 +51,7 @@ func resourceCPHaloServerGroupCreate(d *schema.ResourceData, i interface{}) erro
 
 	group := api.ServerGroup{
 		Name:                  d.Get("name").(string),
+		Description:           d.Get("description").(string),
 		ParentID:              d.Get("parent_id").(string),
 		Tag:                   d.Get("tag").(string),
 		LinuxFirewallPolicyID: api.NullableString(policyID),
@@ -85,6 +90,7 @@ func resourceCPHaloServerGroupRead(d *schema.ResourceData, i interface{}) error 
 	group := resp.Group
 
 	d.Set("name", group.Name)
+	d.Set("description", group.Description)
 	d.Set("parent_id", group.ParentID)
 	d.Set("tag", group.Tag)
 	d.Set("linux_firewall_policy_id", group.LinuxFirewallPolicyID)
@@ -107,6 +113,14 @@ func resourceCPHaloServerGroupUpdate(d *schema.ResourceData, i interface{}) erro
 		}
 		d.SetPartial("name")
 		log.Println("updated name")
+	}
+
+	if d.HasChange("description") {
+		if err := client.UpdateServerGroup(api.ServerGroup{ID: d.Id(), Description: d.Get("description").(string)}); err != nil {
+			return fmt.Errorf("updating description of %s failed: %v", d.Id(), err)
+		}
+		d.SetPartial("description")
+		log.Println("updated description")
 	}
 
 	if d.HasChange("tag") {

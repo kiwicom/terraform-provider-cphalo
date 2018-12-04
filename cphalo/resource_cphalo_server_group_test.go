@@ -19,13 +19,13 @@ func TestAccServerGroup_basic(t *testing.T) {
 			{
 				Config: testAccCPHaloServerGroupConfig(t, 1),
 				Check: resource.ComposeTestCheckFunc(func(s *terraform.State) error {
-					return testServerGroupAttributes("root group", "")
+					return testServerGroupAttributes("root group", "", "")
 				}),
 			},
 			{
 				Config: testAccCPHaloServerGroupConfig(t, 2),
 				Check: resource.ComposeTestCheckFunc(func(_ *terraform.State) error {
-					return testServerGroupAttributes("changed_name", "added_tag")
+					return testServerGroupAttributes("changed_name", "added_tag", "and added some interesting description")
 				}),
 			},
 			{
@@ -50,7 +50,7 @@ func TestAccServerGroup_basic(t *testing.T) {
 	})
 }
 
-func testServerGroupAttributes(nameExpected, tagExpected string) error {
+func testServerGroupAttributes(nameExpected, tagExpected, descriptionExpected string) error {
 	client := testAccProvider.Meta().(*api.Client)
 	resp, err := client.ListServerGroups()
 
@@ -80,7 +80,11 @@ func testServerGroupAttributes(nameExpected, tagExpected string) error {
 	}
 
 	if found.Tag != tagExpected {
-		return fmt.Errorf("expected server group %s to have tag %s; got: %s", nameExpected, tagExpected, found.Tag)
+		return fmt.Errorf("expected server group %s to have tag '%s'; got: '%s'", nameExpected, tagExpected, found.Tag)
+	}
+
+	if found.Description != descriptionExpected {
+		return fmt.Errorf("expected server group %s to have description '%s'; got: '%s'", nameExpected, descriptionExpected, found.Description)
 	}
 
 	return nil
