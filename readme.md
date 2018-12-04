@@ -138,8 +138,7 @@ make test
     - [x] basic implementation
     - [ ] implement all properties / methods
 
-- [ ] **Firewall Interfaces**
-    - [ ] Not started yet.
+- [x] **Firewall Interfaces**
 
 - [ ] **Firewall Services**
     - [ ] Not started yet.
