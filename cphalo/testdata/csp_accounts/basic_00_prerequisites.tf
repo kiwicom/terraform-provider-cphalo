@@ -16,19 +16,12 @@ provider "aws" {
   secret_key = "${var.aws_secret_key}"
 }
 
-variable "cphalo_service_id" {
-  type = "string"
-  default = "856192027328"
-}
+variable "cphalo_service_id" {}
+variable "cphalo_root_group" {}
 
 variable "cphalo_external_id" {
   type = "string"
   default = "this-is-some-id-for-tf-cphalo-testacc"
-}
-
-variable "cphalo_root_group" {
-  type = "string"
-  default = "fff04606e97b11e896d9252f8ed31fc8"
 }
 
 resource "aws_iam_role" "tf_testacc_cloudpassage_role" {
