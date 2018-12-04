@@ -153,8 +153,9 @@ make test
 - [ ] **Events**
     - *read-only*
 
-- [ ] **Alert Proflies**
+- [x] **Alert Proflies**
     - *read-only*
+    - [x] as data source
 
 - [ ] **Saved Searches**
 
