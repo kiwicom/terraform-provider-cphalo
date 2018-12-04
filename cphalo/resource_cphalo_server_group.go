@@ -148,7 +148,7 @@ func resourceCPHaloServerGroupUpdate(d *schema.ResourceData, i interface{}) erro
 			resp.Group.Name == d.Get("name").(string),
 			resp.Group.Tag == d.Get("tag").(string),
 			resp.Group.ParentID == d.Get("parent_id").(string),
-			resp.Group.LinuxFirewallPolicyID == d.Get("linux_firewall_policy_id").(api.NullableString),
+			resp.Group.LinuxFirewallPolicyID == api.NullableString(d.Get("linux_firewall_policy_id").(string)),
 		}
 
 		for _, match := range matches {
