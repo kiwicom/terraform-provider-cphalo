@@ -36,12 +36,10 @@ func Provider() terraform.ResourceProvider {
 		DataSourcesMap: map[string]*schema.Resource{
 			"cphalo_server_group":    dataSourceCPHaloServerGroup(),
 			"cphalo_firewall_policy": dataSourceCPHaloFirewallPolicy(),
-			"cphalo_firewall_rule":   dataSourceCPHaloFirewallRule(),
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"cphalo_server_group":    resourceCPHaloServerGroup(),
 			"cphalo_firewall_policy": resourceCPHaloFirewallPolicy(),
-			"cphalo_firewall_rule":   resourceCPHaloFirewallRule(),
 			"cphalo_csp_account":     resourceCPHaloCSPAccount(),
 		},
 
