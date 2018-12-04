@@ -6,15 +6,21 @@ import (
 	"testing"
 
 	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/terraform-providers/terraform-provider-aws/aws"
 )
 
 var testAccProviders map[string]terraform.ResourceProvider
+var testAccProvidersWithAWS map[string]terraform.ResourceProvider
 var testAccProvider *schema.Provider
 
 func init() {
 	testAccProvider = Provider().(*schema.Provider)
 	testAccProviders = map[string]terraform.ResourceProvider{
 		"cphalo": testAccProvider,
+	}
+	testAccProvidersWithAWS = map[string]terraform.ResourceProvider{
+		"cphalo": testAccProvider,
+		"aws":    aws.Provider(),
 	}
 }
 

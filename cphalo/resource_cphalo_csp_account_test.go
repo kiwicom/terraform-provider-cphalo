@@ -13,9 +13,12 @@ import (
 func TestAccCSPAccount_basic(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
+		Providers:    testAccProvidersWithAWS,
 		CheckDestroy: testAccCSPAccountCheckDestroy,
 		Steps: []resource.TestStep{
+			{
+				Config: testAccCPHaloCSPAccountConfig(t, 0),
+			},
 			{
 				Config: testAccCPHaloCSPAccountConfig(t, 1),
 				Check: resource.ComposeTestCheckFunc(func(s *terraform.State) error {
@@ -33,6 +36,18 @@ func TestAccCSPAccount_basic(t *testing.T) {
 }
 
 func testAccCPHaloCSPAccountConfig(t *testing.T, step int) string {
+	prerequisitesPath := "testdata/csp_accounts/basic_00_prerequisites.tf"
+
+	bPre, err := ioutil.ReadFile(prerequisitesPath)
+
+	if err != nil {
+		t.Fatalf("cannot read file %s: %v", prerequisitesPath, err)
+	}
+
+	if step == 0 {
+		return string(bPre)
+	}
+
 	path := fmt.Sprintf("testdata/csp_accounts/basic_%.2d.tf", step)
 	b, err := ioutil.ReadFile(path)
 
@@ -40,7 +55,7 @@ func testAccCPHaloCSPAccountConfig(t *testing.T, step int) string {
 		t.Fatalf("cannot read file %s: %v", path, err)
 	}
 
-	return string(b)
+	return string(bPre) + string(b)
 }
 
 func testCSPAccountAttributes(name string) error {
