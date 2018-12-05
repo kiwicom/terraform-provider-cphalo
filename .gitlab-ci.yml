@@ -21,4 +21,6 @@ build:
   stage: build
   script:
     - make build-sandbox
-    - make build-plugin
+    - make build-client
+    - make release
+    - cp bin/release/*.zip /tmp # TODO: copy this to S3 or something
