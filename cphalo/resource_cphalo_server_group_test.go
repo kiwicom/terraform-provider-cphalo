@@ -46,6 +46,37 @@ func TestAccServerGroup_basic(t *testing.T) {
 					return nil
 				}),
 			},
+			{
+				Config: testAccCPHaloServerGroupConfig(t, 4),
+				Check: resource.ComposeTestCheckFunc(func(_ *terraform.State) error {
+					client := testAccProvider.Meta().(*api.Client)
+					resp, err := client.ListServerGroups()
+					nameExpected := "changed_name"
+
+					if err != nil {
+						return fmt.Errorf("cannot fetch server groups: %v", err)
+					}
+
+					var found api.ServerGroup
+					var servers []string
+					for _, g := range resp.Groups {
+						servers = append(servers, g.Name)
+						if g.Name == nameExpected {
+							found = g
+						}
+					}
+
+					if len(found.ID) == 0 {
+						return fmt.Errorf("could not found server group %s", nameExpected)
+					}
+
+					if len(found.AlertProfileIDs) != 1 {
+						return fmt.Errorf("expected 1 alert profile; got %d", len(found.AlertProfileIDs))
+					}
+
+					return nil
+				}),
+			},
 		},
 	})
 }
@@ -85,6 +116,10 @@ func testServerGroupAttributes(nameExpected, tagExpected, descriptionExpected st
 
 	if found.Description != descriptionExpected {
 		return fmt.Errorf("expected server group %s to have description '%s'; got: '%s'", nameExpected, descriptionExpected, found.Description)
+	}
+
+	if len(found.AlertProfileIDs) != 0 {
+		return fmt.Errorf("expected 0 alert profiles; found %d", len(found.AlertProfileIDs))
 	}
 
 	return nil
