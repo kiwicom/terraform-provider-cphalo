@@ -20,6 +20,7 @@ tests_race:
 build:
   stage: build
   script:
+    - apt-get update && apt-get install -y zip
     - make build-sandbox
     - make build-client
     - make release
