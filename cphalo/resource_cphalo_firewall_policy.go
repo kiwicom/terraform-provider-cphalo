@@ -76,7 +76,7 @@ func resourceCPHaloFirewallPolicy() *schema.Resource {
 						"position": {
 							Type:         schema.TypeInt,
 							Required:     true,
-							ValidateFunc: validation.IntBetween(1, math.MaxInt64), // too much?
+							ValidateFunc: validation.IntBetween(1, math.MaxInt32),
 						},
 					},
 				},
