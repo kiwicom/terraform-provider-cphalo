@@ -20,13 +20,13 @@ func TestAccFirewallService_basic(t *testing.T) {
 				Config: testAccFirewallServiceConfig(t, 1),
 				Check: resource.ComposeTestCheckFunc(func(s *terraform.State) error {
 					// FIXME: refactor test to accept multiple service checks
-					return testFirewallServiceAttributes("custom ssh", "TCP", "2222")
+					return testFirewallServiceAttributes("tf_acc_custom_ssh", "TCP", "2222")
 				}),
 			},
 			{
 				Config: testAccFirewallServiceConfig(t, 2),
 				Check: resource.ComposeTestCheckFunc(func(_ *terraform.State) error {
-					return testFirewallServiceAttributes("custom ssh", "TCP", "2223")
+					return testFirewallServiceAttributes("tf_acc_custom_ssh", "TCP", "2223")
 				}),
 			},
 		},
