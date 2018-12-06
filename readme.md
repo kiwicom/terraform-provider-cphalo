@@ -1,5 +1,8 @@
 # Terraform provider for CloudPassage
 
+[![coverage report](https://gitlab.skypicker.com/devops/terraform-provider-cphalo/badges/master/coverage.svg)](https://gitlab.skypicker.com/devops/terraform-provider-cphalo/commits/master)
+[![pipeline status](https://gitlab.skypicker.com/devops/terraform-provider-cphalo/badges/master/pipeline.svg)](https://gitlab.skypicker.com/devops/terraform-provider-cphalo/commits/master)
+
 - Website: https://www.terraform.io
 - API: https://library.cloudpassage.com/help/cloudpassage-api-documentation
 
