@@ -3,18 +3,18 @@ image: golang:1.11.2
 stages:
   - test
   - build
-
-before_script:
-  - make .env
+#  - deploy
 
 tests:
   stage: test
   script:
+    - make .env
     - make test
 
 tests_race:
   stage: test
   script:
+    - make .env
     - make race
 
 build:
@@ -23,5 +23,22 @@ build:
     - apt-get update && apt-get install -y zip
     - make build-sandbox
     - make build-client
-    - make release
-    - cp bin/release/*.zip /tmp # TODO: copy this to S3 or something
+    - make release VERSION=alpha
+  artifacts:
+    paths:
+      - bin/release
+    expire_in: 1 hour
+
+#copy_to_s3:
+#  stage: deploy
+#  image: kiwicom/s3cmd
+##  only:
+##    - master
+#  script:
+#    - >
+#      s3cmd sync \
+#      --no-preserve \
+#      --no-mime-magic \
+#      --guess-mime-type \
+#      --default-mime-type="application/zip" \
+#      bin/release/*.zip s3://skypicker-static/cphalo_tf_provider/
