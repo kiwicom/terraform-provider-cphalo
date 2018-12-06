@@ -21,7 +21,7 @@ stages:
 tests_acc:
   stage: accTest
   script:
-    - make testacc
+    - TF_ACC=1 go test -cover -v -timeout 15m ./cphalo -run TestAccServerGroup_basic
 
 #build:
 #  stage: build

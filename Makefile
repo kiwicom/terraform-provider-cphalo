@@ -30,7 +30,7 @@ race:
 	go test -v -race ./api ./cphalo
 
 testacc:
-	$(vars) TF_ACC=1 go test -cover -v -timeout 15m ./cphalo -run TestAccServerGroup_basic
+	$(vars) TF_ACC=1 go test -cover -v -timeout 15m ./cphalo
 
 .env:
 	cp .env.example .env
