@@ -4,7 +4,7 @@ stages:
   - test
   - acceptanceTest
   - build
-#  - deploy
+  - deploy
 
 tests:
   stage: test
@@ -35,16 +35,16 @@ build:
       - bin/release
     expire_in: 1 hour
 
-#copy_to_s3:
-#  stage: deploy
-#  image: kiwicom/s3cmd
-##  only:
-##    - master
-#  script:
-#    - >
-#      s3cmd sync \
-#      --no-preserve \
-#      --no-mime-magic \
-#      --guess-mime-type \
-#      --default-mime-type="application/zip" \
-#      bin/release/*.zip s3://skypicker-static/cphalo_tf_provider/
+copy_to_s3:
+  stage: deploy
+  image: kiwicom/s3cmd
+#  only:
+#    - master
+  script:
+    - >
+      s3cmd sync \
+      --no-preserve \
+      --no-mime-magic \
+      --guess-mime-type \
+      --default-mime-type="application/zip" \
+      bin/release/*.zip s3://kw-terraform-providers/
