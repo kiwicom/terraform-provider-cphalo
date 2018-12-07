@@ -1,39 +1,39 @@
 image: golang:1.11.2
 
 stages:
-#  - test
+  - test
   - accTest
-#  - build
+  - build
 #  - deploy
 
-#tests:
-#  stage: test
-#  script:
-#    - make .env
-#    - make test
-#
-#tests_race:
-#  stage: test
-#  script:
-#    - make .env
-#    - make race
+tests:
+  stage: test
+  script:
+    - make .env
+    - make test
+
+tests_race:
+  stage: test
+  script:
+    - make .env
+    - make race
 
 tests_acc:
   stage: accTest
   script:
-    - TF_ACC=1 go test -cover -v -timeout 15m ./cphalo -run TestAccServerGroup_basic
+    - make testacc
 
-#build:
-#  stage: build
-#  script:
-#    - apt-get update && apt-get install -y zip
-#    - make build-sandbox
-#    - make build-client
-#    - make release VERSION=alpha
-#  artifacts:
-#    paths:
-#      - bin/release
-#    expire_in: 1 hour
+build:
+  stage: build
+  script:
+    - apt-get update && apt-get install -y zip
+    - make build-sandbox
+    - make build-client
+    - make release VERSION=alpha
+  artifacts:
+    paths:
+      - bin/release
+    expire_in: 1 hour
 
 #copy_to_s3:
 #  stage: deploy
