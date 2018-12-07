@@ -74,4 +74,4 @@ bin/release/terraform-provider-cphalo_%.zip: DEST=bin/release/$(VERSION)/$(NAME)
 bin/release/terraform-provider-cphalo_%.zip: bin/plugin/%/terraform-provider-cphalo
 	mkdir -p $(DEST)
 	cp bin/plugin/$*/terraform-provider-cphalo readme.md $(DEST)
-	cd $(DEST) && zip -r ../$(NAME).zip . && cd .. && rm -rf $(NAME)
+	cd $(DEST) && zip -r ../$(NAME).zip . && cd .. && shasum -a 256 $(NAME).zip > $(NAME).sha256 && rm -rf $(NAME)
