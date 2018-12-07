@@ -47,4 +47,4 @@ copy_to_s3:
       --guess-mime-type
       --recursive
       --default-mime-type="application/zip"
-      bin/release/* s3://kw-terraform-providers/cphalo
+      bin/release/* s3://kw-terraform-providers/cphalo/
