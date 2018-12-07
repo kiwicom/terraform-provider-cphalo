@@ -19,10 +19,29 @@ type expectedFirewallPolicy struct {
 }
 
 type expectedFirewallRule struct {
-	chain    string
-	action   string
-	states   string
-	position int
+	chain       string
+	action      string
+	states      string
+	position    int
+	fwInterface expectedFirewallInterface
+	fwService   expectedFirewallService
+	fwSource    expectedFirewallZone
+	fwTarget    expectedFirewallZone
+}
+
+type expectedFirewallZone struct {
+	name      string
+	ipAddress string
+}
+
+type expectedFirewallService struct {
+	name     string
+	protocol string
+	port     string
+}
+
+type expectedFirewallInterface struct {
+	name string
 }
 
 func TestAccFirewallPolicy_basic(t *testing.T) {
@@ -32,7 +51,7 @@ func TestAccFirewallPolicy_basic(t *testing.T) {
 		CheckDestroy: testAccFirewallPolicyCheckDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccFirewallPolicyConfig(t, 1),
+				Config: testAccFirewallPolicyConfig(t, "basic", 1),
 				Check: resource.ComposeTestCheckFunc(func(s *terraform.State) error {
 					return testFirewallPolicyAttributes(
 						expectedFirewallPolicy{
@@ -41,17 +60,17 @@ func TestAccFirewallPolicy_basic(t *testing.T) {
 							shared:         true,
 							ignoreFwdRules: false,
 							rules: []expectedFirewallRule{
-								{"INPUT", "DROP", "NEW", 1},
-								{"INPUT", "DROP", "ESTABLISHED", 2},
-								{"INPUT", "DROP", "NEW, ESTABLISHED", 3},
-								{"OUTPUT", "DROP", "NEW", 1},
+								{chain: "INPUT", action: "DROP", states: "NEW", position: 1},
+								{chain: "INPUT", action: "DROP", states: "ESTABLISHED", position: 2},
+								{chain: "INPUT", action: "DROP", states: "NEW, ESTABLISHED", position: 3},
+								{chain: "OUTPUT", action: "DROP", states: "NEW", position: 1},
 							},
 						},
 					)
 				}),
 			},
 			{
-				Config: testAccFirewallPolicyConfig(t, 2),
+				Config: testAccFirewallPolicyConfig(t, "basic", 2),
 				Check: resource.ComposeTestCheckFunc(func(_ *terraform.State) error {
 					return testFirewallPolicyAttributes(
 						expectedFirewallPolicy{
@@ -60,17 +79,17 @@ func TestAccFirewallPolicy_basic(t *testing.T) {
 							shared:         true,
 							ignoreFwdRules: false,
 							rules: []expectedFirewallRule{
-								{"INPUT", "DROP", "NEW", 1},
-								{"INPUT", "DROP", "ESTABLISHED", 2},
-								{"INPUT", "DROP", "NEW, ESTABLISHED", 3},
-								{"OUTPUT", "DROP", "NEW", 1},
+								{chain: "INPUT", action: "DROP", states: "NEW", position: 1},
+								{chain: "INPUT", action: "DROP", states: "ESTABLISHED", position: 2},
+								{chain: "INPUT", action: "DROP", states: "NEW, ESTABLISHED", position: 3},
+								{chain: "OUTPUT", action: "DROP", states: "NEW", position: 1},
 							},
 						},
 					)
 				}),
 			},
 			{
-				Config: testAccFirewallPolicyConfig(t, 3),
+				Config: testAccFirewallPolicyConfig(t, "basic", 3),
 				Check: resource.ComposeTestCheckFunc(func(_ *terraform.State) error {
 					return testFirewallPolicyAttributes(
 						expectedFirewallPolicy{
@@ -79,8 +98,59 @@ func TestAccFirewallPolicy_basic(t *testing.T) {
 							shared:         true,
 							ignoreFwdRules: true,
 							rules: []expectedFirewallRule{
-								{"INPUT", "DROP", "NEW", 1},
-								{"OUTPUT", "DROP", "NEW", 1},
+								{chain: "INPUT", action: "DROP", states: "NEW", position: 1},
+								{chain: "OUTPUT", action: "DROP", states: "NEW", position: 1},
+							},
+						},
+					)
+				}),
+			},
+			{
+				Config: testAccFirewallPolicyConfig(t, "integration", 1),
+				Check: resource.ComposeTestCheckFunc(func(_ *terraform.State) error {
+					return testFirewallPolicyAttributes(
+						expectedFirewallPolicy{
+							name:           "tf_acc_fw_policy",
+							description:    "awesome",
+							shared:         true,
+							ignoreFwdRules: true,
+							rules: []expectedFirewallRule{
+								{
+									chain:    "INPUT",
+									action:   "ACCEPT",
+									states:   "NEW, ESTABLISHED",
+									position: 1,
+									fwInterface: expectedFirewallInterface{
+										name: "eth42",
+									},
+									fwService: expectedFirewallService{
+										name:     "tf_acc_fw_svc",
+										protocol: "TCP",
+										port:     "2222",
+									},
+									fwSource: expectedFirewallZone{
+										name:      "tf_acc_fw_in_zone",
+										ipAddress: "1.1.1.1",
+									},
+								},
+								{
+									chain:    "OUTPUT",
+									action:   "ACCEPT",
+									states:   "NEW, ESTABLISHED",
+									position: 1,
+									fwInterface: expectedFirewallInterface{
+										name: "eth42",
+									},
+									fwService: expectedFirewallService{
+										name:     "tf_acc_fw_svc",
+										protocol: "TCP",
+										port:     "2222",
+									},
+									fwTarget: expectedFirewallZone{
+										name:      "tf_acc_fw_out_zone",
+										ipAddress: "10.10.10.10",
+									},
+								},
 							},
 						},
 					)
@@ -174,12 +244,57 @@ func testHelperCompareFirewallPolicyRuleAttributes(client *api.Client, rules []a
 				rule = ruleResp.Rule
 			}
 
-			sameChain := rule.Chain == expectedRule.chain
-			sameAction := rule.Action == expectedRule.action
-			sameStates := rule.ConnectionStates == expectedRule.states
-			samePosition := rule.Position == expectedRule.position
+			matches := []bool{
+				rule.Chain == expectedRule.chain,
+				rule.Action == expectedRule.action,
+				rule.ConnectionStates == expectedRule.states,
+				rule.Position == expectedRule.position,
+			}
 
-			if sameChain && sameAction && sameStates && samePosition {
+			if expectedRule.fwInterface.name != "" {
+				if rule.FirewallInterface == nil {
+					matches = append(matches, false)
+				} else {
+					matches = append(matches, rule.FirewallInterface.Name == expectedRule.fwInterface.name)
+				}
+			}
+
+			if expectedRule.fwService.name != "" {
+				if rule.FirewallService == nil {
+					matches = append(matches, false)
+				} else {
+					matches = append(matches, rule.FirewallService.Name == expectedRule.fwService.name)
+					matches = append(matches, rule.FirewallService.Protocol == expectedRule.fwService.protocol)
+					matches = append(matches, rule.FirewallService.Port == expectedRule.fwService.port)
+				}
+			}
+
+			if expectedRule.fwSource.name != "" {
+				if rule.FirewallSource == nil {
+					matches = append(matches, false)
+				} else {
+					matches = append(matches, rule.FirewallSource.Name == expectedRule.fwSource.name)
+					matches = append(matches, rule.FirewallSource.IpAddress == expectedRule.fwSource.ipAddress)
+				}
+			}
+
+			if expectedRule.fwTarget.name != "" {
+				if rule.FirewallTarget == nil {
+					matches = append(matches, false)
+				} else {
+					matches = append(matches, rule.FirewallTarget.Name == expectedRule.fwTarget.name)
+					matches = append(matches, rule.FirewallTarget.IpAddress == expectedRule.fwTarget.ipAddress)
+				}
+			}
+
+			allMatch := true
+			for _, match := range matches {
+				if !match {
+					allMatch = false
+				}
+			}
+
+			if allMatch {
 				found = r
 			}
 		}
@@ -212,8 +327,8 @@ func testAccFirewallPolicyCheckDestroy(_ *terraform.State) error {
 	return nil
 }
 
-func testAccFirewallPolicyConfig(t *testing.T, step int) string {
-	path := fmt.Sprintf("testdata/firewall_policies/basic_%.2d.tf", step)
+func testAccFirewallPolicyConfig(t *testing.T, prefix string, step int) string {
+	path := fmt.Sprintf("testdata/firewall_policies/%s_%.2d.tf", prefix, step)
 	b, err := ioutil.ReadFile(path)
 
 	if err != nil {

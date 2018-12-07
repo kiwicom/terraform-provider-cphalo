@@ -78,6 +78,26 @@ func resourceCPHaloFirewallPolicy() *schema.Resource {
 							Required:     true,
 							ValidateFunc: validation.IntBetween(1, math.MaxInt32),
 						},
+						"firewall_interface": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"firewall_service": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"firewall_source": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
+						"firewall_target": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
 					},
 				},
 				Set: resourceCPHaloFirewallPolicyRuleHash,
@@ -104,6 +124,10 @@ func resourceCPHaloFirewallPolicyRuleHash(v interface{}) int {
 		"chain",
 		"action",
 		"connection_states",
+		"firewall_interface",
+		"firewall_service",
+		"firewall_source",
+		"firewall_target",
 	}
 
 	boolElements := []string{
@@ -352,11 +376,11 @@ func applyFirewallPolicyRules(d *schema.ResourceData, client *api.Client, policy
 		},
 	}
 
-	log.Printf("existing rules for policy %s have been deleted\n", d.Id())
-
 	if _, err = stateConf.WaitForState(); err != nil {
 		return fmt.Errorf("error waiting for firewall rules for policy %s to be deleted: %v", d.Id(), err)
 	}
+
+	log.Printf("existing rules for policy %s have been deleted\n", d.Id())
 
 	createRule := func(rule api.FirewallRule) error {
 		_, err := client.CreateFirewallRule(policyID, rule)
@@ -411,7 +435,12 @@ func parseFirewallPolicyRuleSet(rules interface{}) (map[int]api.FirewallRule, ma
 	for _, rawData := range rules.(*schema.Set).List() {
 		data := rawData.(map[string]interface{})
 
-		rule := api.FirewallRule{}
+		rule := api.FirewallRule{
+			FirewallInterface: nil,
+			FirewallService:   nil,
+			FirewallSource:    nil,
+			FirewallTarget:    nil,
+		}
 
 		if v, ok := data["chain"]; ok {
 			rule.Chain = v.(string)
@@ -431,6 +460,38 @@ func parseFirewallPolicyRuleSet(rules interface{}) (map[int]api.FirewallRule, ma
 
 		if v, ok := data["active"]; ok {
 			rule.Active = v.(bool)
+		}
+
+		if v, ok := data["firewall_interface"]; ok {
+			if id := v.(string); id != "" {
+				rule.FirewallInterface = &api.FirewallInterface{
+					ID: id,
+				}
+			}
+		}
+
+		if v, ok := data["firewall_service"]; ok {
+			if id := v.(string); id != "" {
+				rule.FirewallService = &api.FirewallService{
+					ID: id,
+				}
+			}
+		}
+
+		if v, ok := data["firewall_source"]; ok {
+			if id := v.(string); id != "" {
+				rule.FirewallSource = &api.FirewallRuleInlineSourceTarget{
+					ID: id,
+				}
+			}
+		}
+
+		if v, ok := data["firewall_target"]; ok {
+			if id := v.(string); id != "" {
+				rule.FirewallTarget = &api.FirewallRuleInlineSourceTarget{
+					ID: v.(string),
+				}
+			}
 		}
 
 		if rule.Chain == "OUTPUT" {
