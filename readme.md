@@ -12,9 +12,13 @@ Currently only linux is being supported. Windows support is waiting for your kin
 
 ### Download example
 
-Download zipped binary from http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/terraform-provider-cphalo_alpha_darwin_amd64.zip.
+Download zipped binary from http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/terraform-provider-cphalo_alpha_darwin_amd64.zip.  
 Download checksum file from http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/terraform-provider-cphalo_alpha_darwin_amd64.sha256.
-To ensure data integrity, run `shasum -c terraform-provider-cphalo_alpha_darwin_amd64.sha256`.
+
+To ensure data integrity, run:
+```bash
+shasum -c terraform-provider-cphalo_alpha_darwin_amd64.sha256
+```
 
 ### Supported platforms
 
