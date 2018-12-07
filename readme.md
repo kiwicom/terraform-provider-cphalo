@@ -145,8 +145,7 @@ make test
 
 - [x] **Firewall Services**
 
-- [ ] **Firewall Zones**
-    - [ ] Not started yet.
+- [x] **Firewall Zones**
 
 - [ ] **Log-Based Intrusion Detection Policies**
 

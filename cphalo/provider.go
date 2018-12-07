@@ -43,6 +43,7 @@ func Provider() terraform.ResourceProvider {
 			"cphalo_firewall_policy":    resourceCPHaloFirewallPolicy(),
 			"cphalo_firewall_interface": resourceCPHaloFirewallInterface(),
 			"cphalo_firewall_service":   resourceCPHaloFirewallService(),
+			"cphalo_firewall_zone":      resourceCPHaloFirewallZone(),
 			"cphalo_csp_account":        resourceCPHaloCSPAccount(),
 		},
 
