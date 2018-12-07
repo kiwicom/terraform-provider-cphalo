@@ -2,7 +2,7 @@ image: golang:1.11.2
 
 stages:
   - test
-  - accTest
+  - acceptanceTest
   - build
 #  - deploy
 
@@ -18,8 +18,8 @@ tests_race:
     - make .env
     - make race
 
-tests_acc:
-  stage: accTest
+tests_acceptance:
+  stage: acceptanceTest
   script:
     - make testacc
 
