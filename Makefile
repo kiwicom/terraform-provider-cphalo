@@ -24,10 +24,10 @@ run-client: build-client
 	@$(vars) bin/client $(endpoint)
 
 test:
-	go test -v -cover ./api ./cphalo
+	go test -v -cover -timeout 1m ./api ./cphalo
 
 race:
-	go test -v -race ./api ./cphalo
+	go test -v -race -timeout 2m ./api ./cphalo
 
 testacc:
 	$(vars) TF_ACC=1 go test -cover -v -timeout 15m -failfast ./cphalo
