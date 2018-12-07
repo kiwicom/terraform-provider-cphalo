@@ -41,10 +41,9 @@ copy_to_s3:
 #  only:
 #    - master
   script:
-    - >
-      s3cmd sync \
-      --no-preserve \
-      --no-mime-magic \
-      --guess-mime-type \
-      --default-mime-type="application/zip" \
-      bin/release/*.zip s3://kw-terraform-providers/
+    - s3cmd sync
+      --no-preserve
+      --no-mime-magic
+      --guess-mime-type
+      --default-mime-type="application/zip"
+      bin/release/*.zip s3://kw-terraform-providers
