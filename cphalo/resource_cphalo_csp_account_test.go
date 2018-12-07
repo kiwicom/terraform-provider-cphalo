@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestAccCSPAccount_basic(t *testing.T) {
@@ -18,11 +19,26 @@ func TestAccCSPAccount_basic(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCPHaloCSPAccountConfig(t, 0),
+				Check: resource.ComposeTestCheckFunc(func(_ *terraform.State) error {
+					if isCI() {
+						time.Sleep(time.Second * 5)
+					}
+					return nil
+				}),
 			},
 			{
 				Config: testAccCPHaloCSPAccountConfig(t, 1),
 				Check: resource.ComposeTestCheckFunc(func(s *terraform.State) error {
-					return testCSPAccountAttributes("tf_aws_testacc_basic_01")
+					err := testCSPAccountAttributes("tf_aws_testacc_basic_01")
+					if err != nil {
+						return err
+					}
+
+					if isCI() {
+						time.Sleep(time.Second * 5)
+					}
+
+					return err
 				}),
 			},
 			{

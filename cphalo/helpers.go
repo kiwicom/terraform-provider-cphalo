@@ -1,5 +1,7 @@
 package cphalo
 
+import "os"
+
 func assertStringSlice(s1, s2 []string) bool {
 	if len(s1) != len(s2) {
 		return false
@@ -26,4 +28,8 @@ func expandStringList(input interface{}) []string {
 	}
 
 	return vs
+}
+
+func isCI() bool {
+	return len(os.Getenv("CI")) > 0
 }
