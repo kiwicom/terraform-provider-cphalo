@@ -40,6 +40,8 @@ func resourceCPHaloCSPAccount() *schema.Resource {
 			State: schema.ImportStatePassthrough,
 		},
 		Timeouts: &schema.ResourceTimeout{
+			Create: schema.DefaultTimeout(time.Minute * 2),
+			Update: schema.DefaultTimeout(time.Minute * 2),
 			Delete: schema.DefaultTimeout(time.Minute * 5),
 		},
 	}
