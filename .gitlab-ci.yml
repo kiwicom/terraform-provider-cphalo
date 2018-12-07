@@ -45,5 +45,6 @@ copy_to_s3:
       --no-preserve
       --no-mime-magic
       --guess-mime-type
+      --recursive
       --default-mime-type="application/zip"
-      bin/release/*.zip s3://kw-terraform-providers
+      bin/release s3://kw-terraform-providers

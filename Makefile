@@ -70,7 +70,7 @@ release: \
 	bin/release/terraform-provider-cphalo_windows_386.zip
 
 bin/release/terraform-provider-cphalo_%.zip: NAME=terraform-provider-cphalo_$(VERSION)_$*
-bin/release/terraform-provider-cphalo_%.zip: DEST=bin/release/$(NAME)
+bin/release/terraform-provider-cphalo_%.zip: DEST=bin/release/$(VERSION)/$(NAME)
 bin/release/terraform-provider-cphalo_%.zip: bin/plugin/%/terraform-provider-cphalo
 	mkdir -p $(DEST)
 	cp bin/plugin/$*/terraform-provider-cphalo readme.md $(DEST)
