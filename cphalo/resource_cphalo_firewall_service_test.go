@@ -10,6 +10,10 @@ import (
 	"testing"
 )
 
+const (
+	cpHaloExistingFirewallServiceCount = 27
+)
+
 func TestAccFirewallService_basic(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -79,8 +83,7 @@ func testAccFirewallServiceCheckDestroy(_ *terraform.State) error {
 		return fmt.Errorf("cannot fetch firewall services on destroy: %v", err)
 	}
 
-	// FIXME: magic number...
-	if resp.Count != 27 {
+	if resp.Count != cpHaloExistingFirewallServiceCount {
 		var services []string
 		for _, i := range resp.Services {
 			services = append(services, i.Name)
