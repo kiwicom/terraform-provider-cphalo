@@ -68,14 +68,10 @@ release: \
 	bin/release/terraform-provider-cphalo_linux_arm.zip \
 	bin/release/terraform-provider-cphalo_windows_amd64.zip \
 	bin/release/terraform-provider-cphalo_windows_386.zip
-	$(MAKE) checksum
 
 bin/release/terraform-provider-cphalo_%.zip: NAME=terraform-provider-cphalo_$(VERSION)_$*
 bin/release/terraform-provider-cphalo_%.zip: DEST=bin/release/$(VERSION)/$(NAME)
 bin/release/terraform-provider-cphalo_%.zip: bin/plugin/%/terraform-provider-cphalo
 	mkdir -p $(DEST)
 	cp bin/plugin/$*/terraform-provider-cphalo readme.md $(DEST)
-	cd $(DEST) && zip -r ../$(NAME).zip . && cd .. && rm -rf $(NAME)
-
-checksum:
-	cd bin/release/$(VERSION) && shasum -a 256 * > checksum.sha256
+	cd $(DEST) && zip -r ../$(NAME).zip . && cd .. && shasum -a 256 $(NAME).zip > $(NAME).sha256 && rm -rf $(NAME)
