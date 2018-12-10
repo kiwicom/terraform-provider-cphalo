@@ -1,11 +1,11 @@
 .PHONY: build build-plugin build-sandbox build-client run-plugin run-sandbox run-client test race testacc tf-init tf-apply tf-plan tf-destroy clean release
 
 vars:=$(shell test -f .env && grep -v '^\#' .env | xargs)
-VERSION:=alpha
+VERSION:=v0.0.0-local
 
 build: build-plugin build-sandbox build-client
 
-build-plugin: bin/plugin/current_system/terraform-provider-cphalo
+build-plugin: bin/plugin/current_system/terraform-provider-cphalo_$(VERSION)
 
 build-sandbox:
 	@go build -o bin/sandbox cmd/sandbox/sandbox.go
@@ -50,15 +50,15 @@ tf-destroy:
 clean:
 	rm -fr terraform.tfstate* crash.log bin/*
 
-bin/plugin/current_system/terraform-provider-cphalo:  GOARGS =
-bin/plugin/darwin_amd64/terraform-provider-cphalo:  GOARGS = GOOS=darwin GOARCH=amd64
-bin/plugin/linux_amd64/terraform-provider-cphalo:  GOARGS = GOOS=linux GOARCH=amd64
-bin/plugin/linux_386/terraform-provider-cphalo:  GOARGS = GOOS=linux GOARCH=386
-bin/plugin/linux_arm/terraform-provider-cphalo:  GOARGS = GOOS=linux GOARCH=arm
-bin/plugin/windows_amd64/terraform-provider-cphalo:  GOARGS = GOOS=windows GOARCH=amd64
-bin/plugin/windows_386/terraform-provider-cphalo:  GOARGS = GOOS=windows GOARCH=386
+bin/plugin/current_system/terraform-provider-cphalo_%:  GOARGS =
+bin/plugin/darwin_amd64/terraform-provider-cphalo_%:  GOARGS = GOOS=darwin GOARCH=amd64
+bin/plugin/linux_amd64/terraform-provider-cphalo_%:  GOARGS = GOOS=linux GOARCH=amd64
+bin/plugin/linux_386/terraform-provider-cphalo_%:  GOARGS = GOOS=linux GOARCH=386
+bin/plugin/linux_arm/terraform-provider-cphalo_%:  GOARGS = GOOS=linux GOARCH=arm
+bin/plugin/windows_amd64/terraform-provider-cphalo_%:  GOARGS = GOOS=windows GOARCH=amd64
+bin/plugin/windows_386/terraform-provider-cphalo_%:  GOARGS = GOOS=windows GOARCH=386
 
-bin/plugin/%/terraform-provider-cphalo: clean
+bin/plugin/%/terraform-provider-cphalo_$(VERSION): clean
 	$(GOARGS) go build -o $@ -a cmd/tf-plugin/plugin.go
 
 release: \
@@ -71,7 +71,7 @@ release: \
 
 bin/release/terraform-provider-cphalo_%.zip: NAME=terraform-provider-cphalo_$(VERSION)_$*
 bin/release/terraform-provider-cphalo_%.zip: DEST=bin/release/$(VERSION)/$(NAME)
-bin/release/terraform-provider-cphalo_%.zip: bin/plugin/%/terraform-provider-cphalo
+bin/release/terraform-provider-cphalo_%.zip: bin/plugin/%/terraform-provider-cphalo_$(VERSION)
 	mkdir -p $(DEST)
-	cp bin/plugin/$*/terraform-provider-cphalo readme.md $(DEST)
+	cp bin/plugin/$*/terraform-provider-cphalo_$(VERSION) readme.md $(DEST)
 	cd $(DEST) && zip -r ../$(NAME).zip . && cd .. && shasum -a 256 $(NAME).zip > $(NAME).sha256 && rm -rf $(NAME)
