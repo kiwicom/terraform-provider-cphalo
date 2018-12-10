@@ -19,6 +19,10 @@ func resourceCPHaloFirewallZone() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
+			"description": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 		},
 		Create: resourceFirewallZoneCreate,
 		Read:   resourceFirewallZoneRead,
@@ -35,8 +39,9 @@ func resourceCPHaloFirewallZone() *schema.Resource {
 
 func resourceFirewallZoneCreate(d *schema.ResourceData, i interface{}) error {
 	policy := api.FirewallZone{
-		Name:      d.Get("name").(string),
-		IpAddress: d.Get("ip_address").(string),
+		Name:        d.Get("name").(string),
+		IpAddress:   d.Get("ip_address").(string),
+		Description: d.Get("description").(string),
 	}
 
 	client := i.(*api.Client)
@@ -72,6 +77,7 @@ func resourceFirewallZoneRead(d *schema.ResourceData, i interface{}) error {
 
 	d.Set("name", zone.Name)
 	d.Set("ip_address", zone.IpAddress)
+	d.Set("description", zone.Description)
 
 	return nil
 }
@@ -112,6 +118,20 @@ func resourceFirewallZoneUpdate(d *schema.ResourceData, i interface{}) error {
 
 		d.SetPartial("ip_address")
 		log.Println("updated ip_address")
+	}
+
+	if d.HasChange("description") {
+		err := client.UpdateFirewallZone(api.FirewallZone{
+			ID:          d.Id(),
+			Description: d.Get("description").(string),
+		})
+
+		if err != nil {
+			return fmt.Errorf("updating description of %s failed: %v", d.Id(), err)
+		}
+
+		d.SetPartial("description")
+		log.Println("updated description")
 	}
 
 	d.Partial(false)

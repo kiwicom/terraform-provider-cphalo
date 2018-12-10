@@ -23,20 +23,20 @@ func TestAccFirewallZone_basic(t *testing.T) {
 			{
 				Config: testAccFirewallZoneConfig(t, 1),
 				Check: resource.ComposeTestCheckFunc(func(s *terraform.State) error {
-					return testFirewallZoneAttributes("tf_acc_fw_zone", "1.1.1.1")
+					return testFirewallZoneAttributes("tf_acc_fw_zone", "1.1.1.1", "")
 				}),
 			},
 			{
 				Config: testAccFirewallZoneConfig(t, 2),
 				Check: resource.ComposeTestCheckFunc(func(_ *terraform.State) error {
-					return testFirewallZoneAttributes("tf_acc_fw_zone", "2.2.2.2")
+					return testFirewallZoneAttributes("tf_acc_fw_zone", "2.2.2.2", "fw zone")
 				}),
 			},
 		},
 	})
 }
 
-func testFirewallZoneAttributes(name, ipAddress string) (err error) {
+func testFirewallZoneAttributes(name, ipAddress, description string) (err error) {
 	var (
 		client = testAccProvider.Meta().(*api.Client)
 		resp   api.ListFirewallZonesResponse
@@ -65,6 +65,10 @@ func testFirewallZoneAttributes(name, ipAddress string) (err error) {
 
 	if found.IpAddress != ipAddress {
 		return fmt.Errorf("expected firewall zone %s to have ip_address %s; got: %s", name, ipAddress, found.IpAddress)
+	}
+
+	if found.Description != description {
+		return fmt.Errorf("expected firewall zone %s to have description %s; got: %s", name, description, found.Description)
 	}
 
 	return nil
