@@ -23,53 +23,91 @@ func TestAccFirewallService_basic(t *testing.T) {
 			{
 				Config: testAccFirewallServiceConfig(t, 1),
 				Check: resource.ComposeTestCheckFunc(func(s *terraform.State) error {
-					// FIXME: refactor test to accept multiple service checks
-					return testFirewallServiceAttributes("tf_acc_custom_ssh", "TCP", "2222")
+					return testFirewallServiceAttributes(
+						[]expectedFirewallService{
+							{
+								name:     "tf_acc_custom_ssh",
+								protocol: "TCP",
+								port:     "2222",
+							},
+							{
+								name:     "tf_acc_ping",
+								protocol: "ICMP",
+							},
+						},
+					)
 				}),
 			},
 			{
 				Config: testAccFirewallServiceConfig(t, 2),
 				Check: resource.ComposeTestCheckFunc(func(_ *terraform.State) error {
-					return testFirewallServiceAttributes("tf_acc_custom_ssh", "TCP", "2223")
+					return testFirewallServiceAttributes(
+						[]expectedFirewallService{
+							{
+								name:     "tf_acc_custom_ssh",
+								protocol: "TCP",
+								port:     "2223",
+							},
+						},
+					)
 				}),
 			},
 		},
 	})
 }
 
-func testFirewallServiceAttributes(name, protocol, port string) (err error) {
+func testFirewallServiceAttributes(expectedServices []expectedFirewallService) (err error) {
 	var (
-		client = testAccProvider.Meta().(*api.Client)
-		resp   api.ListFirewallServicesResponse
+		svc             api.FirewallService
+		svcResp         api.GetFirewallServiceResponse
+		client          = testAccProvider.Meta().(*api.Client)
+		resp            api.ListFirewallServicesResponse
+		fetchedServices = make(map[string]api.FirewallService)
 	)
 
 	if resp, err = client.ListFirewallServices(); err != nil {
 		return fmt.Errorf("cannot fetch firewall services: %v", err)
 	}
 
-	var found api.FirewallService
-	var services []string
-	for _, i := range resp.Services {
-		services = append(services, i.Name)
-		if i.Name == name {
-			found = i
+	for _, expectedService := range expectedServices {
+		var found api.FirewallService
+
+		for _, s := range resp.Services {
+			if s.System {
+				continue
+			}
+
+			var ok bool
+			if svc, ok = fetchedServices[s.ID]; !ok {
+				if svcResp, err = client.GetFirewallService(s.ID); err != nil {
+					return fmt.Errorf("cannot fetch details for firewall service (%s): %v", s.ID, err)
+				}
+
+				fetchedServices[s.ID] = svcResp.Service
+				svc = svcResp.Service
+			}
+
+			matches := []bool{
+				svc.Name == expectedService.name,
+				svc.Protocol == expectedService.protocol,
+				svc.Port == expectedService.port,
+			}
+
+			allMatch := true
+			for _, match := range matches {
+				if !match {
+					allMatch = false
+				}
+			}
+
+			if allMatch {
+				found = s
+			}
 		}
-	}
 
-	if found.Name == "" {
-		return fmt.Errorf("could not find firewall service %s; found only: %s", name, strings.Join(services, ","))
-	}
-
-	if found.Name != name {
-		return fmt.Errorf("expected firewall service %s; found only: %s", name, strings.Join(services, ","))
-	}
-
-	if found.Protocol != protocol {
-		return fmt.Errorf("expected firewall service %s to have protocol %s; got: %s", name, protocol, found.Protocol)
-	}
-
-	if found.Port != port {
-		return fmt.Errorf("expected firewall service %s to have port %s; got: %s", name, port, found.Port)
+		if found.Name == "" {
+			return fmt.Errorf("could not find correct firewall service on position %s", expectedService.name)
+		}
 	}
 
 	return nil
