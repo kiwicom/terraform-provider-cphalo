@@ -12,22 +12,27 @@ Currently only linux is being supported. Windows support is waiting for your kin
 
 ### Download example
 
-Download zipped binary from http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/terraform-provider-cphalo_alpha_darwin_amd64.zip.  
-Download checksum file from http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/terraform-provider-cphalo_alpha_darwin_amd64.sha256.
+Download zipped binary from http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/terraform-provider-cphalo_alpha_darwin_amd64.zip.
+
+Download checksum file from http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/checksum.sha256.
 
 To ensure data integrity, run:
 ```bash
-shasum -c terraform-provider-cphalo_alpha_darwin_amd64.sha256
+shasum -c checksum.sha256
 ```
 
 ### Supported platforms
 
-- [macos 64-bit](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/terraform-provider-cphalo_alpha_darwin_amd64.zip) ([checksum](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/terraform-provider-cphalo_alpha_darwin_amd64.sha256))
-- [linux 32-bit](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/terraform-provider-cphalo_alpha_linux_386.zip) ([checksum](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/terraform-provider-cphalo_alpha_linux_386.sha256))
-- [linux 64-bit](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/terraform-provider-cphalo_alpha_linux_amd64.zip) ([checksum](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/terraform-provider-cphalo_alpha_linux_amd64.sha256))
-- [linux arm](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/terraform-provider-cphalo_alpha_linux_arm.zip) ([checksum](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/terraform-provider-cphalo_alpha_linux_arm.sha256))
-- [windows 32-bit](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/terraform-provider-cphalo_alpha_windows_386.zip) ([checksum](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/terraform-provider-cphalo_alpha_windows_386.sha256))
-- [windows 64-bit](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/terraform-provider-cphalo_alpha_windows_amd64.zip) ([checksum](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/terraform-provider-cphalo_alpha_windows_amd64.sha256))
+- [macos 64-bit](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/terraform-provider-cphalo_alpha_darwin_amd64.zip)
+- [linux 32-bit](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/terraform-provider-cphalo_alpha_linux_386.zip)
+- [linux 64-bit](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/terraform-provider-cphalo_alpha_linux_amd64.zip)
+- [linux arm](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/terraform-provider-cphalo_alpha_linux_arm.zip)
+- [windows 32-bit](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/terraform-provider-cphalo_alpha_windows_386.zip)
+- [windows 64-bit](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/terraform-provider-cphalo_alpha_windows_amd64.zip)
+
+### Sha256 checksum
+
+- [checksum file](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/checksum.sha256)
 
 ## Development
 
