@@ -6,13 +6,13 @@ stages:
   - build
   - deploy
 
-tests:
+tests/unit:
   stage: test
   script:
     - make .env
     - make test
 
-tests_race:
+tests/race:
   stage: test
   script:
     - make .env
