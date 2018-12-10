@@ -25,11 +25,12 @@ tests_acceptance:
 
 build:
   stage: build
-  script:
+  before_script:
     - apt-get update && apt-get install -y zip
+  script:
     - make build-sandbox
     - make build-client
-    - make release VERSION=alpha
+    - make release VERSION=${CI_COMMIT_TAG:-${CI_COMMIT_REF_SLUG}}
   artifacts:
     paths:
       - bin/release
@@ -38,8 +39,6 @@ build:
 copy_to_s3:
   stage: deploy
   image: kiwicom/s3cmd
-#  only:
-#    - master
   script:
     - s3cmd sync
       --no-preserve
