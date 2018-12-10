@@ -8,13 +8,14 @@ stages:
 
 cache:
   paths:
-    - /go/pkg/mod/
+    - /go/pkg/mod
 
 tests/unit:
   stage: test
   script:
     - make .env
     - make test
+    - ls -lah /go/pkg/mod
 
 tests/race:
   stage: test
