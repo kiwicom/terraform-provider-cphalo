@@ -9,15 +9,14 @@ stages:
 
 cache:
   paths:
-    - /go/pkg/mod
-    - /root/.cache/go-build
+    - ../../../go/pkg/mod
+    - ../../../root/.cache/go-build
 
 tests/unit:
   stage: test
   script:
     - make .env
     - make test
-    - ls -lah /go/pkg/mod
 
 tests/race:
   stage: test
