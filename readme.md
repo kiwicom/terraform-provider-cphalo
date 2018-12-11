@@ -11,59 +11,34 @@ Currently only linux is being supported. Windows support is waiting for your kin
 ## Installation
 
 ```bash
-wget http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/v0.0.0-dev/terraform-provider-cphalo_v0.0.0-dev_darwin_amd64.zip
-wget http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/v0.0.0-dev/terraform-provider-cphalo_v0.0.0-dev_darwin_amd64.sha256
-shasum -c terraform-provider-cphalo_v0.0.0-dev_darwin_amd64.sha256
+# download binary and checksum file
+wget http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_darwin_amd64.zip
+wget http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_darwin_amd64.sha256
+
+# verify integrity
+shasum -c terraform-provider-cphalo_v0.0.0-master_darwin_amd64.sha256
+
+# install plugin
 mkdir -p ~/.terraform.d/plugins
-unzip terraform-provider-cphalo_v0.0.0-dev_darwin_amd64.zip
-mv terraform-provider-cphalo_v0.0.0-dev ~/.terraform.d/plugins
-rm terraform-provider-cphalo_v0.0.0-dev_darwin_amd64.zip readme.md terraform-provider-cphalo_v0.0.0-dev_darwin_amd64.sha256
-```
+unzip terraform-provider-cphalo_v0.0.0-master_darwin_amd64.zip
+mv terraform-provider-cphalo_v0.0.0-master ~/.terraform.d/plugins
 
-### Download example
-
-Download zipped binary from http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/terraform-provider-cphalo_alpha_darwin_amd64.zip.  
-Download checksum file from http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/terraform-provider-cphalo_alpha_darwin_amd64.sha256.
-
-To ensure data integrity, run:
-```bash
-shasum -c terraform-provider-cphalo_alpha_darwin_amd64.sha256
+# cleanup
+rm terraform-provider-cphalo_v0.0.0-master_darwin_amd64.zip readme.md terraform-provider-cphalo_v0.0.0-master_darwin_amd64.sha256
 ```
 
 ### Supported platforms
 
-- [macos 64-bit](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/terraform-provider-cphalo_alpha_darwin_amd64.zip) ([checksum](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/terraform-provider-cphalo_alpha_darwin_amd64.sha256))
-- [linux 32-bit](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/terraform-provider-cphalo_alpha_linux_386.zip) ([checksum](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/terraform-provider-cphalo_alpha_linux_386.sha256))
-- [linux 64-bit](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/terraform-provider-cphalo_alpha_linux_amd64.zip) ([checksum](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/terraform-provider-cphalo_alpha_linux_amd64.sha256))
-- [linux arm](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/terraform-provider-cphalo_alpha_linux_arm.zip) ([checksum](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/terraform-provider-cphalo_alpha_linux_arm.sha256))
-- [windows 32-bit](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/terraform-provider-cphalo_alpha_windows_386.zip) ([checksum](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/terraform-provider-cphalo_alpha_windows_386.sha256))
-- [windows 64-bit](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/terraform-provider-cphalo_alpha_windows_amd64.zip) ([checksum](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/terraform-provider-cphalo_alpha_windows_amd64.sha256))
+- [macos 64-bit](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_darwin_amd64.zip) ([checksum](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_darwin_amd64.sha256))
+- [linux 32-bit](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_linux_386.zip) ([checksum](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_linux_386.sha256))
+- [linux 64-bit](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_linux_amd64.zip) ([checksum](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_linux_amd64.sha256))
+- [linux arm](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_linux_arm.zip) ([checksum](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_linux_arm.sha256))
+- [windows 32-bit](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_windows_386.zip) ([checksum](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_windows_386.sha256))
+- [windows 64-bit](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_windows_amd64.zip) ([checksum](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_windows_amd64.sha256))
 
-## Development
+## Example code
 
-### Client
-
-#### Configuration
-
-Create `.env` file:
-
-```bash
-make .env
-```
-
-Edit credentials in `.env` file.
-
-#### Run sandbox
-
-```bash
-make run-sandbox
-```
-
-#### Tests
-
-```bash
-make test
-```
+Examples can be found in [examples](examples/basic) directory.
 
 ## Endpoint implementation status:
 
@@ -100,9 +75,7 @@ make test
 - [ ] **Container Software Package**
     - *read-only*
 
-- [ ] **CSP Accounts**
-    - [x] basic implementation
-    - [ ] implement all properties / methods
+- [x] **CSP Accounts**
 
 - [ ] **CSP Resources**
     - *read-only*
@@ -112,14 +85,11 @@ make test
 
 - [ ] **CSP Scanner Settings**
 
-- [ ] **Server Groups**
-    - [x] basic implementation
-    - [ ] implement all properties / methods
+- [x] **Server Groups**
 
 - [ ] **Servers**
     - *read-only*
-    - [x] basic implementation as data resource
-    - [ ] implement all properties / methods
+    - [ ] as data resource
 
 - [ ] **Server Accounts**
 
@@ -164,13 +134,9 @@ make test
 
 - [ ] **CVE Exceptions**
 
-- [ ] **Firewall Policies**
-    - [x] basic implementation
-    - [ ] implement all properties / methods
+- [x] **Firewall Policies**
 
-- [ ] **Firewall Rules**
-    - [x] basic implementation
-    - [ ] implement all properties / methods
+- [x] **Firewall Rules**
 
 - [x] **Firewall Interfaces**
 
@@ -188,7 +154,6 @@ make test
 
 - [x] **Alert Proflies**
     - *read-only*
-    - [x] as data source
 
 - [ ] **Saved Searches**
 
