@@ -10,6 +10,9 @@ Currently only linux is being supported. Windows support is waiting for your kin
 
 ## Installation
 
+**For MacOS (`darwin`)**.
+For other platforms, replace `darwin_amd64` in the file names with appropriate platform. *Check links below*.
+
 ```bash
 # download binary and checksum file
 wget http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_darwin_amd64.zip
