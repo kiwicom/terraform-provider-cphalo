@@ -10,6 +10,7 @@ stages:
 cache:
   paths:
     - /go/pkg/mod
+    - /root/.cache/go-build
 
 tests/unit:
   stage: test
