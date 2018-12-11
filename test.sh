@@ -21,11 +21,11 @@ echo "Access token: ${accessToken}"
 #     -H "Authorization: Bearer ${accessToken}" \
 #     "https://api.cloudpassage.com/v1/groups" | jq .
 
-echo "All the CSP Accounts:"
-curl -X GET \
-     -H 'Content-type: application/json' \
-     -H "Authorization: Bearer ${accessToken}" \
-     "https://api.cloudpassage.com/v1/csp_accounts" | jq .
+#echo "All the CSP Accounts:"
+#curl -X GET \
+#     -H 'Content-type: application/json' \
+#     -H "Authorization: Bearer ${accessToken}" \
+#     "https://api.cloudpassage.com/v1/csp_accounts" | jq .
 
 #echo "One CSP Accounts:"
 #curl -X GET \
@@ -39,11 +39,11 @@ curl -X GET \
 #     -H "Authorization: Bearer ${accessToken}" \
 #     "https://api.cloudpassage.com/v1/csp_accounts"
 #
-#echo "Delete the CSP Accounts:"
-#curl -X DELETE \
-#     -H 'Content-type: application/json' \
-#     -H "Authorization: Bearer ${accessToken}" \
-#     "https://api.cloudpassage.com/v1/csp_accounts/716d070a-c23d-489c-bf15-663a11669b56" | jq .
+echo "Delete the CSP Accounts:"
+curl -X DELETE \
+     -H 'Content-type: application/json' \
+     -H "Authorization: Bearer ${accessToken}" \
+     "https://api.cloudpassage.com/v1/csp_accounts/d5241a5b-be19-40b8-a8d1-6e79252a6b90" | jq .
 
 #echo "All firewall policies:"
 #curl -X GET \

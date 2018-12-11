@@ -1,6 +1,6 @@
 bin/
 .env*
 !.env.example
-.terraform
+.terraform*
 terraform.tfstate*
 crash.log

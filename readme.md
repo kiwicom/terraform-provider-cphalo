@@ -10,6 +10,16 @@ Currently only linux is being supported. Windows support is waiting for your kin
 
 ## Installation
 
+```bash
+wget http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/v0.0.0-dev/terraform-provider-cphalo_v0.0.0-dev_darwin_amd64.zip
+wget http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/v0.0.0-dev/terraform-provider-cphalo_v0.0.0-dev_darwin_amd64.sha256
+shasum -c terraform-provider-cphalo_v0.0.0-dev_darwin_amd64.sha256
+mkdir -p ~/.terraform.d/plugins
+unzip terraform-provider-cphalo_v0.0.0-dev_darwin_amd64.zip
+mv terraform-provider-cphalo_v0.0.0-dev ~/.terraform.d/plugins
+rm terraform-provider-cphalo_v0.0.0-dev_darwin_amd64.zip readme.md terraform-provider-cphalo_v0.0.0-dev_darwin_amd64.sha256
+```
+
 ### Download example
 
 Download zipped binary from http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/alpha/terraform-provider-cphalo_alpha_darwin_amd64.zip.  
