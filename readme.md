@@ -43,6 +43,24 @@ rm terraform-provider-cphalo_v0.0.0-master_darwin_amd64.zip readme.md terraform-
 
 Examples can be found in [examples](examples/basic) directory.
 
+### Authorization
+
+#### Via Terraform files
+
+```hcl-terraform
+provider "cphalo" {
+  application_key = "your-application-key"
+  application_secret = "your-application-secret"
+}
+```
+
+#### Via env
+
+```bash
+export CP_APPLICATION_KEY="your-application-key"
+export CP_APPLICATION_SECRET="your-application-secret"
+```
+
 ## Endpoint implementation status:
 
 - [ ] **Agent Upgrades**
