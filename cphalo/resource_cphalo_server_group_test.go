@@ -40,7 +40,7 @@ func TestAccServerGroup_basic(t *testing.T) {
 
 					expected := 7
 					if resp.Count != expected {
-						return fmt.Errorf("expected excatly %d server group, got %d", expected, resp.Count)
+						return fmt.Errorf("expected exactly %d server group, got %d", expected, resp.Count)
 					}
 
 					return nil
