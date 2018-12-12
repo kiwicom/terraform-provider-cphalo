@@ -31,7 +31,7 @@ func resourceCPHaloFirewallPolicy() *schema.Resource {
 			"platform": {
 				Type:         schema.TypeString,
 				Optional:     true,
-				Default:      "linux", // FIXME: acc create test breaks if this is not set
+				Default:      "linux",
 				ValidateFunc: validation.StringInSlice(allowedFirewallPolicyPlatforms, false),
 			},
 			"description": {
@@ -41,7 +41,7 @@ func resourceCPHaloFirewallPolicy() *schema.Resource {
 			"shared": {
 				Type:     schema.TypeBool,
 				Optional: true,
-				Default:  true, // FIXME: is this ok?
+				Default:  true, // TODO: this value must be sent as string and is returned as boolean
 				ForceNew: true,
 			},
 			"ignore_forwarding_rules": {
