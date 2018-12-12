@@ -90,7 +90,7 @@ func testServerGroupAttributes(nameExpected, tagExpected, descriptionExpected st
 	}
 
 	if resp.Count != 2 {
-		return fmt.Errorf("expected excatly 2 server group, got %d", resp.Count)
+		return fmt.Errorf("expected exactly 2 server group, got %d", resp.Count)
 	}
 
 	var found api.ServerGroup
