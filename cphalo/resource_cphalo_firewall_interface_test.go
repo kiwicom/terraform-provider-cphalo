@@ -10,10 +10,6 @@ import (
 	"testing"
 )
 
-const (
-	cpHaloExistingFirewallInterfaceCount = 7
-)
-
 func TestAccFirewallInterface_basic(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -74,13 +70,17 @@ func testAccFirewallInterfaceCheckDestroy(_ *terraform.State) error {
 		return fmt.Errorf("cannot fetch firewall interfaces on destroy: %v", err)
 	}
 
-	if resp.Count != cpHaloExistingFirewallInterfaceCount {
-		var interfaces []string
-		for _, i := range resp.Interfaces {
-			interfaces = append(interfaces, i.Name)
-		}
+	var userCreatedInterfaces []string
 
-		return fmt.Errorf("found %d firewall interfaces after destroy: %s", resp.Count, strings.Join(interfaces, ","))
+	for _, ifc := range resp.Interfaces {
+		if !ifc.System {
+			userCreatedInterfaces = append(userCreatedInterfaces, ifc.Name)
+		}
+	}
+
+	if len(userCreatedInterfaces) > 0 {
+		interfaces := strings.Join(userCreatedInterfaces, ",")
+		return fmt.Errorf("found %d user-created firewall interfaces after destroy: %s", resp.Count, interfaces)
 	}
 
 	return nil

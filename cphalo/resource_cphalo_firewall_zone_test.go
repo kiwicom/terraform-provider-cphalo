@@ -10,10 +10,6 @@ import (
 	"testing"
 )
 
-const (
-	cpHaloExistingFirewallZoneCount = 1
-)
-
 func TestAccFirewallZone_basic(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -82,13 +78,17 @@ func testAccFirewallZoneCheckDestroy(_ *terraform.State) error {
 		return fmt.Errorf("cannot fetch firewall services on destroy: %v", err)
 	}
 
-	if resp.Count != cpHaloExistingFirewallZoneCount {
-		var zones []string
-		for _, i := range resp.Zones {
-			zones = append(zones, i.Name)
-		}
+	var userCreatedZones []string
 
-		return fmt.Errorf("found %d firewall zones after destroy: %s", resp.Count, strings.Join(zones, ","))
+	for _, zone := range resp.Zones {
+		if !zone.System {
+			userCreatedZones = append(userCreatedZones, zone.Name)
+		}
+	}
+
+	if len(userCreatedZones) > 0 {
+		zones := strings.Join(userCreatedZones, ",")
+		return fmt.Errorf("found %d user-created firewall zones after destroy: %s", resp.Count, zones)
 	}
 
 	return nil
