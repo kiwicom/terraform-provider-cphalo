@@ -7,10 +7,14 @@ stages:
   - preReleaseTest
   - release
 
+variables:
+  GOPATH: $CI_PROJECT_DIR/go
+
 cache:
+  key: $CI_PROJECT_PATH_SLUG-build
   paths:
-    - ../../../go/pkg/mod
-    - ../../../root/.cache/go-build
+    - $GOPATH/pkg/mod
+#    - /root/.cache/go-build
 
 tests/unit:
   stage: test
