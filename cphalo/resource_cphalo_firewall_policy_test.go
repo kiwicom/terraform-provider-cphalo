@@ -156,6 +156,39 @@ func TestAccFirewallPolicy_basic(t *testing.T) {
 					)
 				}),
 			},
+			{
+				Config: testAccFirewallPolicyConfig(t, "data_source", 1),
+				Check: resource.ComposeTestCheckFunc(func(_ *terraform.State) error {
+					return testFirewallPolicyAttributes(
+						expectedFirewallPolicy{
+							name:           "tf_acc_data_source_policy",
+							description:    "",
+							shared:         true,
+							ignoreFwdRules: false,
+							rules: []expectedFirewallRule{
+								{
+									chain:    "INPUT",
+									action:   "ACCEPT",
+									states:   "NEW, ESTABLISHED",
+									position: 1,
+									fwInterface: expectedFirewallInterface{
+										name: "eth0",
+									},
+									fwService: expectedFirewallService{
+										name:     "http",
+										protocol: "TCP",
+										port:     "80",
+									},
+									fwSource: expectedFirewallZone{
+										name:      "any",
+										ipAddress: "0.0.0.0/0",
+									},
+								},
+							},
+						},
+					)
+				}),
+			},
 		},
 	})
 }
