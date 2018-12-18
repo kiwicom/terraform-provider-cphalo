@@ -83,6 +83,8 @@ examples_test:
 copy_to_s3:
   stage: release
   image: kiwicom/s3cmd
+  except:
+    - schedules
   script:
     - s3cmd sync
       --no-preserve
