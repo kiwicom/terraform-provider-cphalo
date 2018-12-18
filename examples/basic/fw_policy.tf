@@ -14,7 +14,7 @@ resource "cphalo_firewall_policy" "tf_examples_basic_fw_policy" {
 
     firewall_source {
       id = "${cphalo_firewall_zone.tf_examples_basic_fw_in_zone.id}"
-      type = "FirewallZone"
+      kind = "FirewallZone"
     }
   }
 
@@ -29,7 +29,7 @@ resource "cphalo_firewall_policy" "tf_examples_basic_fw_policy" {
 
     firewall_target {
       id = "${cphalo_firewall_zone.tf_examples_basic_fw_out_zone.id}"
-      type = "FirewallZone"
+      kind = "FirewallZone"
     }
   }
 }
@@ -70,7 +70,7 @@ resource "cphalo_firewall_policy" "tf_examples_basic_fw_subpolicy" {
 
     firewall_source {
       id = "${data.cphalo_firewall_zone.tf_examples_basic_fw_sub_zone.id}"
-      type = "FirewallZone"
+      kind = "FirewallZone"
     }
   }
 }
