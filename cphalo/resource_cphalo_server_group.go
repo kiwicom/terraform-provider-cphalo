@@ -214,7 +214,7 @@ func resourceCPHaloServerGroupDelete(d *schema.ResourceData, i interface{}) (err
 		return fmt.Errorf("error waiting for server group %s to be deleted: %v", d.Id(), err)
 	}
 
-	logInfo("server group %s deleted", d.Id())
+	logInfof("server group %s deleted", d.Id())
 
 	return nil
 }

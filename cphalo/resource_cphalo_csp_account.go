@@ -153,7 +153,7 @@ func resourceCPHaloCSPAccountDelete(d *schema.ResourceData, i interface{}) (err 
 		return fmt.Errorf("error waiting for CSP account %s to be deleted: %v", d.Id(), err)
 	}
 
-	logInfo("server %s deleted", d.Id())
+	logInfof("server %s deleted", d.Id())
 
 	return nil
 }
