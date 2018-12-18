@@ -61,7 +61,7 @@ func resourceCPHaloCSPAccountCreate(d *schema.ResourceData, i interface{}) error
 		return fmt.Errorf("cannot create CSP account: %v", err)
 	}
 
-	d.SetId(string(resp))
+	d.SetId(resp.CSPAccount.ID)
 
 	err = createStateChangeDefault(d, func() (interface{}, error) {
 		return client.GetCSPAccount(d.Id())
@@ -153,7 +153,7 @@ func resourceCPHaloCSPAccountDelete(d *schema.ResourceData, i interface{}) (err 
 		return fmt.Errorf("error waiting for CSP account %s to be deleted: %v", d.Id(), err)
 	}
 
-	logInfof("server %s deleted", d.Id())
+	logInfof("CSP account %s deleted", d.Id())
 
 	return nil
 }
