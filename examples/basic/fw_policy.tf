@@ -12,7 +12,10 @@ resource "cphalo_firewall_policy" "tf_examples_basic_fw_policy" {
     firewall_interface = "${cphalo_firewall_interface.tf_examples_basic_fw_interface.id}"
     firewall_service = "${cphalo_firewall_service.tf_examples_basic_fw_service.id}"
 
-    firewall_source = "${cphalo_firewall_zone.tf_examples_basic_fw_in_zone.id}"
+    firewall_source {
+      id = "${cphalo_firewall_zone.tf_examples_basic_fw_in_zone.id}"
+      type = "FirewallZone"
+    }
   }
 
   rule {
@@ -24,7 +27,10 @@ resource "cphalo_firewall_policy" "tf_examples_basic_fw_policy" {
     firewall_interface = "${cphalo_firewall_interface.tf_examples_basic_fw_interface.id}"
     firewall_service = "${cphalo_firewall_service.tf_examples_basic_fw_service.id}"
 
-    firewall_target = "${cphalo_firewall_zone.tf_examples_basic_fw_out_zone.id}"
+    firewall_target {
+      id = "${cphalo_firewall_zone.tf_examples_basic_fw_out_zone.id}"
+      type = "FirewallZone"
+    }
   }
 }
 
@@ -62,7 +68,10 @@ resource "cphalo_firewall_policy" "tf_examples_basic_fw_subpolicy" {
     firewall_interface = "${data.cphalo_firewall_interface.tf_examples_basic_fw_sub_interface.id}"
     firewall_service = "${data.cphalo_firewall_service.tf_examples_basic_fw_sub_service.id}"
 
-    firewall_source = "${data.cphalo_firewall_zone.tf_examples_basic_fw_sub_zone.id}"
+    firewall_source {
+      id = "${data.cphalo_firewall_zone.tf_examples_basic_fw_sub_zone.id}"
+      type = "FirewallZone"
+    }
   }
 }
 

@@ -25,13 +25,14 @@ type expectedFirewallRule struct {
 	position    int
 	fwInterface expectedFirewallInterface
 	fwService   expectedFirewallService
-	fwSource    expectedFirewallZone
-	fwTarget    expectedFirewallZone
+	fwSource    expectedFirewallRuleSourceTarget
+	fwTarget    expectedFirewallRuleSourceTarget
 }
 
-type expectedFirewallZone struct {
+type expectedFirewallRuleSourceTarget struct {
 	name      string
 	ipAddress string
+	kind      string
 }
 
 type expectedFirewallService struct {
@@ -128,9 +129,10 @@ func TestAccFirewallPolicy_basic(t *testing.T) {
 										protocol: "TCP",
 										port:     "2222",
 									},
-									fwSource: expectedFirewallZone{
+									fwSource: expectedFirewallRuleSourceTarget{
 										name:      "tf_acc_fw_in_zone",
 										ipAddress: "1.1.1.1",
+										kind:      firewallRuleSourceTargetKindFirewallZone,
 									},
 								},
 								{
@@ -146,9 +148,9 @@ func TestAccFirewallPolicy_basic(t *testing.T) {
 										protocol: "TCP",
 										port:     "2222",
 									},
-									fwTarget: expectedFirewallZone{
-										name:      "tf_acc_fw_out_zone",
-										ipAddress: "10.10.10.10",
+									fwTarget: expectedFirewallRuleSourceTarget{
+										name: "All active servers",
+										kind: firewallRuleSourceTargetKindGroup,
 									},
 								},
 							},
@@ -179,9 +181,10 @@ func TestAccFirewallPolicy_basic(t *testing.T) {
 										protocol: "TCP",
 										port:     "80",
 									},
-									fwSource: expectedFirewallZone{
+									fwSource: expectedFirewallRuleSourceTarget{
 										name:      "any",
 										ipAddress: "0.0.0.0/0",
+										kind:      firewallRuleSourceTargetKindFirewallZone,
 									},
 								},
 							},
@@ -308,6 +311,7 @@ func testHelperCompareFirewallPolicyRuleAttributes(client *api.Client, rules []a
 				} else {
 					matches = append(matches, rule.FirewallSource.Name == expectedRule.fwSource.name)
 					matches = append(matches, rule.FirewallSource.IpAddress == expectedRule.fwSource.ipAddress)
+					matches = append(matches, rule.FirewallSource.Kind == expectedRule.fwSource.kind)
 				}
 			}
 
@@ -317,6 +321,7 @@ func testHelperCompareFirewallPolicyRuleAttributes(client *api.Client, rules []a
 				} else {
 					matches = append(matches, rule.FirewallTarget.Name == expectedRule.fwTarget.name)
 					matches = append(matches, rule.FirewallTarget.IpAddress == expectedRule.fwTarget.ipAddress)
+					matches = append(matches, rule.FirewallTarget.Kind == expectedRule.fwTarget.kind)
 				}
 			}
 

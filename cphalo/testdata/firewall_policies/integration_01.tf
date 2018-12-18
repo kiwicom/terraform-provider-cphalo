@@ -13,7 +13,10 @@ resource "cphalo_firewall_policy" "fw_policy" {
     firewall_interface = "${cphalo_firewall_interface.fw_interface.id}"
     firewall_service = "${cphalo_firewall_service.fw_service.id}"
 
-    firewall_source = "${cphalo_firewall_zone.fw_in_zone.id}"
+    firewall_source {
+      id = "${cphalo_firewall_zone.fw_in_zone.id}"
+      kind = "FirewallZone"
+    }
   }
 
   rule {
@@ -25,18 +28,16 @@ resource "cphalo_firewall_policy" "fw_policy" {
     firewall_interface = "${cphalo_firewall_interface.fw_interface.id}"
     firewall_service = "${cphalo_firewall_service.fw_service.id}"
 
-    firewall_target = "${cphalo_firewall_zone.fw_out_zone.id}"
+    firewall_target {
+      id = "All Active Servers"
+      kind = "Group"
+    }
   }
 }
 
 resource "cphalo_firewall_zone" "fw_in_zone" {
   name = "tf_acc_fw_in_zone"
   ip_address = "1.1.1.1"
-}
-
-resource "cphalo_firewall_zone" "fw_out_zone" {
-  name = "tf_acc_fw_out_zone"
-  ip_address = "10.10.10.10"
 }
 
 resource "cphalo_firewall_service" "fw_service" {

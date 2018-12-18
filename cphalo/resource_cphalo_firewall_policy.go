@@ -15,13 +15,37 @@ import (
 )
 
 var (
-	allowedFirewallPolicyPlatforms = []string{"linux", "windows"}
-	allowedFirewallRuleChains      = []string{"INPUT", "OUTPUT"}
-	allowedFirewallRuleActions     = []string{"ACCEPT", "DROP", "REJECT"}
-	allowedFirewallRuleConnStates  = []string{"NEW", "RELATED", "ESTABLISHED"}
+	allowedFirewallPolicyPlatforms    = []string{"linux", "windows"}
+	allowedFirewallRuleChains         = []string{"INPUT", "OUTPUT"}
+	allowedFirewallRuleActions        = []string{"ACCEPT", "DROP", "REJECT"}
+	allowedFirewallRuleConnStates     = []string{"NEW", "RELATED", "ESTABLISHED"}
+	allowedFirewallRuleSourcesTargets = []string{"User", "UserGroup", "Group", "FirewallZone"}
+)
+
+const (
+	firewallRuleSourceTargetKindUser         = "User"
+	firewallRuleSourceTargetKindGroup        = "Group"
+	firewallRuleSourceTargetKindUserGroup    = "UserGroup"
+	firewallRuleSourceTargetKindFirewallZone = "FirewallZone"
 )
 
 func resourceCPHaloFirewallPolicy() *schema.Resource {
+	newSourceTargetResource := func() *schema.Resource {
+		return &schema.Resource{
+			Schema: map[string]*schema.Schema{
+				"id": {
+					Type:     schema.TypeString,
+					Required: true,
+				},
+				"kind": {
+					Type:         schema.TypeString,
+					Required:     true,
+					ValidateFunc: validation.StringInSlice(allowedFirewallRuleSourcesTargets, false),
+				},
+			},
+		}
+	}
+
 	return &schema.Resource{
 		Schema: map[string]*schema.Schema{
 			"name": {
@@ -50,8 +74,9 @@ func resourceCPHaloFirewallPolicy() *schema.Resource {
 				ForceNew: true,
 			},
 			"rule": {
-				Type:     schema.TypeSet,
-				Optional: true,
+				Description: "Firewall rule",
+				Type:        schema.TypeSet,
+				Optional:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"chain": {
@@ -89,14 +114,18 @@ func resourceCPHaloFirewallPolicy() *schema.Resource {
 							Computed: true,
 						},
 						"firewall_source": {
-							Type:     schema.TypeString,
-							Optional: true,
-							Computed: true,
+							Description: "Firewall source",
+							Type:        schema.TypeSet,
+							Optional:    true,
+							Elem:        newSourceTargetResource(),
+							Set:         resourceCPHaloFirewallPolicyRuleSourceTargetHash,
 						},
 						"firewall_target": {
-							Type:     schema.TypeString,
-							Optional: true,
-							Computed: true,
+							Description: "Firewall target",
+							Type:        schema.TypeSet,
+							Optional:    true,
+							Elem:        newSourceTargetResource(),
+							Set:         resourceCPHaloFirewallPolicyRuleSourceTargetHash,
 						},
 					},
 				},
@@ -116,6 +145,24 @@ func resourceCPHaloFirewallPolicy() *schema.Resource {
 	}
 }
 
+func resourceCPHaloFirewallPolicyRuleSourceTargetHash(v interface{}) int {
+	var buf bytes.Buffer
+	m := v.(map[string]interface{})
+
+	strElements := []string{
+		"id",
+		"kind",
+	}
+
+	for _, element := range strElements {
+		if v, ok := m[element]; ok {
+			buf.WriteString(fmt.Sprintf("%s-", v.(string)))
+		}
+	}
+
+	return hashcode.String(buf.String())
+}
+
 func resourceCPHaloFirewallPolicyRuleHash(v interface{}) int {
 	var buf bytes.Buffer
 	m := v.(map[string]interface{})
@@ -126,8 +173,6 @@ func resourceCPHaloFirewallPolicyRuleHash(v interface{}) int {
 		"connection_states",
 		"firewall_interface",
 		"firewall_service",
-		"firewall_source",
-		"firewall_target",
 	}
 
 	boolElements := []string{
@@ -136,6 +181,11 @@ func resourceCPHaloFirewallPolicyRuleHash(v interface{}) int {
 
 	intElements := []string{
 		"position",
+	}
+
+	sourceTargetElements := []string{
+		"firewall_source",
+		"firewall_target",
 	}
 
 	for _, element := range strElements {
@@ -153,6 +203,20 @@ func resourceCPHaloFirewallPolicyRuleHash(v interface{}) int {
 	for _, element := range intElements {
 		if v, ok := m[element]; ok {
 			buf.WriteString(fmt.Sprintf("%d-", v.(int)))
+		}
+	}
+
+	for _, element := range sourceTargetElements {
+		if v, ok := m[element]; ok {
+			s := v.(*schema.Set)
+			if s.Len() > 0 {
+				sourceTarget := s.List()[0].(map[string]interface{})
+
+				sourceTargetID := sourceTarget["id"].(string)
+				sourceTargetType := sourceTarget["kind"].(string)
+
+				buf.WriteString(fmt.Sprintf("%s-%s-", sourceTargetID, sourceTargetType))
+			}
 		}
 	}
 
@@ -479,17 +543,35 @@ func parseFirewallPolicyRuleSet(rules interface{}) (map[int]api.FirewallRule, ma
 		}
 
 		if v, ok := data["firewall_source"]; ok {
-			if id := v.(string); id != "" {
-				rule.FirewallSource = &api.FirewallRuleInlineSourceTarget{
-					ID: id,
+			s := v.(*schema.Set)
+			if s.Len() > 1 {
+				return inputRules, outputRules, fmt.Errorf("only one unique firewall_source is allowed per firewall rule")
+			} else if s.Len() == 1 {
+				sourceTarget := s.List()[0].(map[string]interface{})
+
+				sourceTargetID := sourceTarget["id"].(string)
+				sourceTargetType := sourceTarget["kind"].(string)
+
+				rule.FirewallSource = &api.FirewallRuleSourceTarget{
+					ID:   sourceTargetID,
+					Kind: sourceTargetType,
 				}
 			}
 		}
 
 		if v, ok := data["firewall_target"]; ok {
-			if id := v.(string); id != "" {
-				rule.FirewallTarget = &api.FirewallRuleInlineSourceTarget{
-					ID: v.(string),
+			s := v.(*schema.Set)
+			if s.Len() > 1 {
+				return inputRules, outputRules, fmt.Errorf("only one unique firewall_target is allowed per firewall rule")
+			} else if s.Len() == 1 {
+				sourceTarget := s.List()[0].(map[string]interface{})
+
+				sourceTargetID := sourceTarget["id"].(string)
+				sourceTargetType := sourceTarget["kind"].(string)
+
+				rule.FirewallTarget = &api.FirewallRuleSourceTarget{
+					ID:   sourceTargetID,
+					Kind: sourceTargetType,
 				}
 			}
 		}
