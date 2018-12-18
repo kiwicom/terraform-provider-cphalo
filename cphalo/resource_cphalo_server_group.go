@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/hashicorp/terraform/helper/schema"
 	"gitlab.skypicker.com/terraform-provider-cphalo/api"
-	"log"
 	"time"
 )
 
@@ -121,7 +120,7 @@ func resourceCPHaloServerGroupUpdate(d *schema.ResourceData, i interface{}) erro
 			return fmt.Errorf("updating name of %s failed: %v", d.Id(), err)
 		}
 		d.SetPartial("name")
-		log.Println("updated name")
+		logDebug("updated name")
 	}
 
 	if d.HasChange("description") {
@@ -129,7 +128,7 @@ func resourceCPHaloServerGroupUpdate(d *schema.ResourceData, i interface{}) erro
 			return fmt.Errorf("updating description of %s failed: %v", d.Id(), err)
 		}
 		d.SetPartial("description")
-		log.Println("updated description")
+		logDebug("updated description")
 	}
 
 	if d.HasChange("tag") {
@@ -137,7 +136,7 @@ func resourceCPHaloServerGroupUpdate(d *schema.ResourceData, i interface{}) erro
 			return fmt.Errorf("updating tag of %s failed: %v", d.Id(), err)
 		}
 		d.SetPartial("tag")
-		log.Println("updated tag")
+		logDebug("updated tag")
 	}
 
 	if d.HasChange("parent_id") {
@@ -145,29 +144,27 @@ func resourceCPHaloServerGroupUpdate(d *schema.ResourceData, i interface{}) erro
 			return fmt.Errorf("updating parent_id of %s failed: %v", d.Id(), err)
 		}
 		d.SetPartial("parent_id")
-		log.Println("updated parent_id")
+		logDebug("updated parent_id")
 	}
 
 	if d.HasChange("linux_firewall_policy_id") {
 		policyID := d.Get("linux_firewall_policy_id").(string)
 
-		log.Println("POLICY ID: ", policyID)
 		if err := client.UpdateServerGroup(api.ServerGroup{ID: d.Id(), LinuxFirewallPolicyID: api.NullableString(policyID)}); err != nil {
 			return fmt.Errorf("updating linux_firewall_policy_id of %s failed: %v", d.Id(), err)
 		}
 		d.SetPartial("linux_firewall_policy_id")
-		log.Println("updated linux_firewall_policy_id")
+		logDebug("updated linux_firewall_policy_id")
 	}
 
 	if d.HasChange("alert_profile_ids") {
 		ids := expandStringList(d.Get("alert_profile_ids"))
 
-		log.Println("Profile IDs: ", ids)
 		if err := client.UpdateServerGroup(api.ServerGroup{ID: d.Id(), AlertProfileIDs: ids}); err != nil {
 			return fmt.Errorf("updating alert_profile_ids of %s failed: %v", d.Id(), err)
 		}
 		d.SetPartial("alert_profile_ids")
-		log.Println("updated alert_profile_ids")
+		logDebug("updated alert_profile_ids")
 	}
 	d.Partial(false)
 
@@ -217,7 +214,7 @@ func resourceCPHaloServerGroupDelete(d *schema.ResourceData, i interface{}) (err
 		return fmt.Errorf("error waiting for server group %s to be deleted: %v", d.Id(), err)
 	}
 
-	log.Printf("server %s deleted\n", d.Id())
+	logInfo("server group %s deleted", d.Id())
 
 	return nil
 }

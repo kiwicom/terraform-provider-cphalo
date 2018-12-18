@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/hashicorp/terraform/helper/schema"
 	"gitlab.skypicker.com/terraform-provider-cphalo/api"
-	"log"
 	"time"
 )
 
@@ -108,7 +107,7 @@ func resourceCPHaloCSPAccountUpdate(d *schema.ResourceData, i interface{}) error
 			return fmt.Errorf("updating account_display_name of %s failed: %v", d.Id(), err)
 		}
 		d.SetPartial("account_display_name")
-		log.Println("updated account_display_name")
+		logDebug("updated account_display_name")
 	}
 	d.Partial(false)
 
@@ -154,7 +153,7 @@ func resourceCPHaloCSPAccountDelete(d *schema.ResourceData, i interface{}) (err 
 		return fmt.Errorf("error waiting for CSP account %s to be deleted: %v", d.Id(), err)
 	}
 
-	log.Printf("server %s deleted\n", d.Id())
+	logInfo("server %s deleted", d.Id())
 
 	return nil
 }

@@ -1,8 +1,6 @@
 package cphalo
 
 import (
-	"log"
-
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
 )
@@ -59,7 +57,7 @@ func ConfigureProvider(d *schema.ResourceData) (interface{}, error) {
 		ApplicationKey:    d.Get("application_key").(string),
 		ApplicationSecret: d.Get("application_secret").(string),
 	}
-	log.Println("[INFO] Initializing CPHalo client")
+	logInfo("Initializing CPHalo client")
 
 	client := config.Client()
 

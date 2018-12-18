@@ -3,7 +3,6 @@ package cphalo
 import (
 	"fmt"
 	"gitlab.skypicker.com/terraform-provider-cphalo/api"
-	"log"
 	"strings"
 
 	"github.com/hashicorp/terraform/helper/schema"
@@ -50,8 +49,6 @@ func dataSourceCPHaloServerGroupRead(d *schema.ResourceData, meta interface{}) e
 	if selectedGroup.Name == "" {
 		return fmt.Errorf("resouce %s does not exists", name)
 	}
-
-	log.Println(selectedGroup)
 
 	d.SetId(selectedGroup.ID)
 	d.Set("name", selectedGroup.Name)

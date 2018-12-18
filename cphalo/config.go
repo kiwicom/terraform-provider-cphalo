@@ -2,7 +2,6 @@ package cphalo
 
 import (
 	"gitlab.skypicker.com/terraform-provider-cphalo/api"
-	"log"
 )
 
 type Config struct {
@@ -14,7 +13,7 @@ func (c *Config) Client() *api.Client {
 
 	client := api.NewClient(c.ApplicationKey, c.ApplicationSecret)
 
-	log.Printf("[INFO] CP Client configured.")
+	logInfo("CP Client configured.")
 
 	return client
 }
