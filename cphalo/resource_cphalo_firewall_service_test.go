@@ -5,7 +5,6 @@ import (
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
 	"gitlab.skypicker.com/terraform-provider-cphalo/api"
-	"io/ioutil"
 	"strings"
 	"testing"
 )
@@ -84,7 +83,7 @@ func testFirewallServiceAttributes(expectedServices []expectedFirewallService) (
 			}
 
 			matches := []bool{
-				svc.Name == expectedService.name,
+				svc.Name == testID+expectedService.name,
 				svc.Protocol == expectedService.protocol,
 				svc.Port == expectedService.port,
 			}
@@ -120,7 +119,7 @@ func testAccFirewallServiceCheckDestroy(_ *terraform.State) error {
 	var userCreatedServices []string
 
 	for _, svc := range resp.Services {
-		if !svc.System {
+		if strings.HasPrefix(svc.Name, testID) {
 			userCreatedServices = append(userCreatedServices, svc.Name)
 		}
 	}
@@ -134,12 +133,13 @@ func testAccFirewallServiceCheckDestroy(_ *terraform.State) error {
 }
 
 func testAccFirewallServiceConfig(t *testing.T, step int) string {
-	path := fmt.Sprintf("testdata/firewall_services/basic_%.2d.tf", step)
-	b, err := ioutil.ReadFile(path)
+	path := fmt.Sprintf("firewall_services/basic_%.2d.tf", step)
+
+	data, err := readTestTemplateData(path, testID)
 
 	if err != nil {
-		t.Fatalf("cannot read file %s: %v", path, err)
+		t.Fatal(err)
 	}
 
-	return string(b)
+	return data
 }
