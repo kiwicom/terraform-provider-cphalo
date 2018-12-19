@@ -1,5 +1,5 @@
 resource "cphalo_firewall_policy" "tf_acc_data_source_policy" {
-  name = "tf_acc_data_source_policy"
+  name = "{{.Prefix}}tf_acc_data_source_policy"
 
   rule {
     chain = "INPUT"

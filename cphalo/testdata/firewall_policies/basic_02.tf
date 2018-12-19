@@ -1,5 +1,5 @@
 resource "cphalo_firewall_policy" "fw" {
-  name = "tf_acc_fw_policy_changed"
+  name = "{{.Prefix}}tf_acc_fw_policy_changed"
   description = "awesome"
 
   rule {
