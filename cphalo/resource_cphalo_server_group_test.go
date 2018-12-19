@@ -5,7 +5,6 @@ import (
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
 	"gitlab.skypicker.com/terraform-provider-cphalo/api"
-	"io/ioutil"
 	"strings"
 	"testing"
 )
@@ -38,9 +37,17 @@ func TestAccServerGroup_basic(t *testing.T) {
 						return fmt.Errorf("cannot fetch server groups: %v", err)
 					}
 
-					expected := 7
-					if resp.Count != expected {
-						return fmt.Errorf("expected exactly %d server group, got %d", expected, resp.Count)
+					expected := 6
+
+					var servers []string
+					for _, g := range resp.Groups {
+						if strings.HasPrefix(g.Name, testID) {
+							servers = append(servers, g.Name)
+						}
+					}
+
+					if len(servers) != expected {
+						return fmt.Errorf("found %d server groups, expected %d: %s", len(servers), expected, strings.Join(servers, ","))
 					}
 
 					return nil
@@ -51,7 +58,7 @@ func TestAccServerGroup_basic(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(func(_ *terraform.State) error {
 					client := testAccProvider.Meta().(*api.Client)
 					resp, err := client.ListServerGroups()
-					nameExpected := "changed_name"
+					nameExpected := testID + "changed_name"
 
 					if err != nil {
 						return fmt.Errorf("cannot fetch server groups: %v", err)
@@ -67,7 +74,7 @@ func TestAccServerGroup_basic(t *testing.T) {
 					}
 
 					if len(found.ID) == 0 {
-						return fmt.Errorf("could not found server group %s", nameExpected)
+						return fmt.Errorf("could not find server group %s", nameExpected)
 					}
 
 					if len(found.AlertProfileIDs) != 1 {
@@ -89,8 +96,10 @@ func testServerGroupAttributes(nameExpected, tagExpected, descriptionExpected st
 		return fmt.Errorf("cannot fetch server groups: %v", err)
 	}
 
-	if resp.Count != 2 {
-		return fmt.Errorf("expected exactly 2 server group, got %d", resp.Count)
+	nameExpected = testID + nameExpected
+
+	if tagExpected != "" {
+		tagExpected = testID + tagExpected
 	}
 
 	var found api.ServerGroup
@@ -133,12 +142,14 @@ func testAccCPHaloCheckDestroy(_ *terraform.State) error {
 		return fmt.Errorf("cannot fetch server groups on destroy: %v", err)
 	}
 
-	if resp.Count != 1 {
-		var servers []string
-		for _, g := range resp.Groups {
+	var servers []string
+	for _, g := range resp.Groups {
+		if strings.HasPrefix(g.Name, testID) {
 			servers = append(servers, g.Name)
 		}
+	}
 
+	if len(servers) > 0 {
 		return fmt.Errorf("found %d server groups after destroy: %s", resp.Count, strings.Join(servers, ","))
 	}
 
@@ -146,12 +157,13 @@ func testAccCPHaloCheckDestroy(_ *terraform.State) error {
 }
 
 func testAccCPHaloServerGroupConfig(t *testing.T, step int) string {
-	path := fmt.Sprintf("testdata/server_groups/basic_%.2d.tf", step)
-	b, err := ioutil.ReadFile(path)
+	path := fmt.Sprintf("server_groups/basic_%.2d.tf", step)
+
+	data, err := readTestTemplateData(path, testID)
 
 	if err != nil {
-		t.Fatalf("cannot read file %s: %v", path, err)
+		t.Fatal(err)
 	}
 
-	return string(b)
+	return data
 }
