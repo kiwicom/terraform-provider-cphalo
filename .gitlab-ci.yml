@@ -9,6 +9,7 @@ stages:
 
 variables:
   GOPATH: $CI_PROJECT_DIR/go
+  CPHALO_TEST_ID: ${CI_COMMIT_REF_SLUG}_${CI_PIPELINE_IID}
 
 cache:
   key: $CI_PROJECT_PATH_SLUG-build
