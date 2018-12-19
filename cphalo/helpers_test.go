@@ -68,7 +68,7 @@ func Test_ReadTestTemplateData(t *testing.T) {
 		uniqueID string
 		expected string
 	}{
-		{"server_groups/basic_01.tf", "abc", `resource "cphalo_server_group" "root_group" { name = "abc_root group"}`},
+		{"server_groups/basic_01.tf", "abc_", `resource "cphalo_server_group" "root_group" { name = "abc_root group"}`},
 	}
 
 	for i, tt := range tests {
