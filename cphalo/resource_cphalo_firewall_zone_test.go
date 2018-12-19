@@ -5,7 +5,6 @@ import (
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
 	"gitlab.skypicker.com/terraform-provider-cphalo/api"
-	"io/ioutil"
 	"strings"
 	"testing"
 )
@@ -41,6 +40,8 @@ func testFirewallZoneAttributes(name, ipAddress, description string) (err error)
 	if resp, err = client.ListFirewallZones(); err != nil {
 		return fmt.Errorf("cannot fetch firewall zones: %v", err)
 	}
+
+	name = testID + name
 
 	var found api.FirewallZone
 	var zones []string
@@ -81,7 +82,7 @@ func testAccFirewallZoneCheckDestroy(_ *terraform.State) error {
 	var userCreatedZones []string
 
 	for _, zone := range resp.Zones {
-		if !zone.System {
+		if strings.HasPrefix(zone.Name, testID) {
 			userCreatedZones = append(userCreatedZones, zone.Name)
 		}
 	}
@@ -95,12 +96,13 @@ func testAccFirewallZoneCheckDestroy(_ *terraform.State) error {
 }
 
 func testAccFirewallZoneConfig(t *testing.T, step int) string {
-	path := fmt.Sprintf("testdata/firewall_zones/basic_%.2d.tf", step)
-	b, err := ioutil.ReadFile(path)
+	path := fmt.Sprintf("firewall_zones/basic_%.2d.tf", step)
+
+	data, err := readTestTemplateData(path, testID)
 
 	if err != nil {
-		t.Fatalf("cannot read file %s: %v", path, err)
+		t.Fatal(err)
 	}
 
-	return string(b)
+	return data
 }

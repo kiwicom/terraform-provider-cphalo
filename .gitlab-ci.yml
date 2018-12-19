@@ -9,6 +9,7 @@ stages:
 
 variables:
   GOPATH: $CI_PROJECT_DIR/go
+  CPHALO_TEST_ID: ${CI_COMMIT_SHORT_SHA}_${CI_PIPELINE_IID}
 
 cache:
   key: $CI_PROJECT_PATH_SLUG-build
@@ -50,6 +51,9 @@ build:
 
 examples_test:
   stage: preReleaseTest
+  only:
+    refs:
+      - master
   variables:
     TERRAFORM_VERSION: 0.11.10
     TERRAFORM_SHA256SUM: 43543a0e56e31b0952ea3623521917e060f2718ab06fe2b2d506cfaa14d54527

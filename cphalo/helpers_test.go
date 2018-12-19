@@ -3,6 +3,7 @@ package cphalo
 import (
 	"encoding/json"
 	"fmt"
+	"regexp"
 	"testing"
 )
 
@@ -56,6 +57,35 @@ func Test_ExpandStringList(t *testing.T) {
 
 			if !assertStringSlice(s, got) {
 				t.Errorf("expected %v; got %v", s, got)
+			}
+		})
+	}
+}
+
+func Test_ReadTestTemplateData(t *testing.T) {
+	tests := []struct {
+		path     string
+		uniqueID string
+		expected string
+	}{
+		{"server_groups/basic_01.tf", "abc_", `resource "cphalo_server_group" "root_group" { name = "abc_root group"}`},
+	}
+
+	for i, tt := range tests {
+		t.Run(fmt.Sprintf("%.2d", i), func(t *testing.T) {
+			got, err := readTestTemplateData(tt.path, tt.uniqueID)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			reNewLine := regexp.MustCompile(`\n`)
+			reWhiteSpace := regexp.MustCompile(`[\s\p{Zs}]{2,}`)
+
+			got = reNewLine.ReplaceAllString(got, "")
+			got = reWhiteSpace.ReplaceAllString(got, " ")
+
+			if got != tt.expected {
+				t.Errorf("\nexpected: %v\nreceived: %v", tt.expected, got)
 			}
 		})
 	}

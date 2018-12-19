@@ -5,7 +5,6 @@ import (
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
 	"gitlab.skypicker.com/terraform-provider-cphalo/api"
-	"io/ioutil"
 	"strings"
 	"testing"
 	"time"
@@ -52,45 +51,46 @@ func TestAccCSPAccount_basic(t *testing.T) {
 }
 
 func testAccCPHaloCSPAccountConfig(t *testing.T, step int) string {
-	prerequisitesPath := "testdata/csp_accounts/basic_00_prerequisites.tf"
+	path := "csp_accounts/basic_00_prerequisites.tf"
 
-	bPre, err := ioutil.ReadFile(prerequisitesPath)
+	preData, err := readTestTemplateData(path, testID)
 
 	if err != nil {
-		t.Fatalf("cannot read file %s: %v", prerequisitesPath, err)
+		t.Fatal(err)
 	}
 
 	if step == 0 {
-		return string(bPre)
+		return preData
 	}
 
-	path := fmt.Sprintf("testdata/csp_accounts/basic_%.2d.tf", step)
-	b, err := ioutil.ReadFile(path)
+	path = fmt.Sprintf("csp_accounts/basic_%.2d.tf", step)
+
+	data, err := readTestTemplateData(path, testID)
 
 	if err != nil {
-		t.Fatalf("cannot read file %s: %v", path, err)
+		t.Fatal(err)
 	}
 
-	return string(bPre) + string(b)
+	return preData + data
 }
 
 func testCSPAccountAttributes(name string) error {
 	client := testAccProvider.Meta().(*api.Client)
 	resp, err := client.ListCSPAccounts()
 
+	name = testID + name
+
 	if err != nil {
 		return fmt.Errorf("cannot fetch CSP accounts: %v", err)
 	}
 
-	if resp.Count != 1 {
-		return fmt.Errorf("expected excatly 1 CSP account, got %d", resp.Count)
+	for _, c := range resp.CSPAccounts {
+		if c.AccountDisplayName == name {
+			return nil
+		}
 	}
 
-	if resp.CSPAccounts[0].AccountDisplayName != name {
-		return fmt.Errorf("expected display name %s; got %s", name, resp.CSPAccounts[0].AccountDisplayName)
-	}
-
-	return nil
+	return fmt.Errorf("expected CSP account %s; not found", name)
 }
 
 func testAccCSPAccountCheckDestroy(_ *terraform.State) error {
@@ -101,12 +101,14 @@ func testAccCSPAccountCheckDestroy(_ *terraform.State) error {
 		return fmt.Errorf("cannot fetch CSP accounts on destroy: %v", err)
 	}
 
-	if resp.Count != 0 {
-		var found []string
-		for _, g := range resp.CSPAccounts {
+	var found []string
+	for _, g := range resp.CSPAccounts {
+		if strings.HasPrefix(g.AccountDisplayName, testID) {
 			found = append(found, g.ExternalID)
 		}
+	}
 
+	if len(found) > 0 {
 		return fmt.Errorf("found %d CSP accounts after destroy: %s", resp.Count, strings.Join(found, ","))
 	}
 

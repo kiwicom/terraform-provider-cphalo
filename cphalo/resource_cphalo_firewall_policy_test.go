@@ -5,7 +5,6 @@ import (
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
 	"gitlab.skypicker.com/terraform-provider-cphalo/api"
-	"io/ioutil"
 	"strings"
 	"testing"
 )
@@ -30,18 +29,21 @@ type expectedFirewallRule struct {
 }
 
 type expectedFirewallZone struct {
-	name      string
-	ipAddress string
+	name       string
+	ipAddress  string
+	dataSource bool
 }
 
 type expectedFirewallService struct {
-	name     string
-	protocol string
-	port     string
+	name       string
+	protocol   string
+	port       string
+	dataSource bool
 }
 
 type expectedFirewallInterface struct {
-	name string
+	name       string
+	dataSource bool
 }
 
 func TestAccFirewallPolicy_basic(t *testing.T) {
@@ -172,16 +174,19 @@ func TestAccFirewallPolicy_basic(t *testing.T) {
 									states:   "NEW, ESTABLISHED",
 									position: 1,
 									fwInterface: expectedFirewallInterface{
-										name: "eth0",
+										name:       "eth0",
+										dataSource: true,
 									},
 									fwService: expectedFirewallService{
-										name:     "http",
-										protocol: "TCP",
-										port:     "80",
+										name:       "http",
+										protocol:   "TCP",
+										port:       "80",
+										dataSource: true,
 									},
 									fwSource: expectedFirewallZone{
-										name:      "any",
-										ipAddress: "0.0.0.0/0",
+										name:       "any",
+										ipAddress:  "0.0.0.0/0",
+										dataSource: true,
 									},
 								},
 							},
@@ -223,6 +228,8 @@ func testHelperFindFirewallPolicyByName(name string) (policy api.FirewallPolicy,
 	client := testAccProvider.Meta().(*api.Client)
 	resp, err := client.ListFirewallPolicies()
 
+	name = testID + name
+
 	if err != nil {
 		return policy, fmt.Errorf("cannot fetch firewall policy: %v", err)
 	}
@@ -263,6 +270,7 @@ func testHelperCompareFirewallPolicyRuleAttributes(client *api.Client, rules []a
 		fetchedRules = make(map[string]api.FirewallRule, len(rules))
 	)
 
+	// TODO: cleanup this mess
 	for _, expectedRule := range expectedPolicy.rules {
 		var found api.FirewallRule
 
@@ -288,7 +296,13 @@ func testHelperCompareFirewallPolicyRuleAttributes(client *api.Client, rules []a
 				if rule.FirewallInterface == nil {
 					matches = append(matches, false)
 				} else {
-					matches = append(matches, rule.FirewallInterface.Name == expectedRule.fwInterface.name)
+					var expectedName string
+					if expectedRule.fwInterface.dataSource {
+						expectedName = expectedRule.fwInterface.name
+					} else {
+						expectedName = testID + expectedRule.fwInterface.name
+					}
+					matches = append(matches, rule.FirewallInterface.Name == expectedName)
 				}
 			}
 
@@ -296,7 +310,14 @@ func testHelperCompareFirewallPolicyRuleAttributes(client *api.Client, rules []a
 				if rule.FirewallService == nil {
 					matches = append(matches, false)
 				} else {
-					matches = append(matches, rule.FirewallService.Name == expectedRule.fwService.name)
+					var expectedName string
+					if expectedRule.fwService.dataSource {
+						expectedName = expectedRule.fwService.name
+					} else {
+						expectedName = testID + expectedRule.fwService.name
+					}
+
+					matches = append(matches, rule.FirewallService.Name == expectedName)
 					matches = append(matches, rule.FirewallService.Protocol == expectedRule.fwService.protocol)
 					matches = append(matches, rule.FirewallService.Port == expectedRule.fwService.port)
 				}
@@ -306,7 +327,14 @@ func testHelperCompareFirewallPolicyRuleAttributes(client *api.Client, rules []a
 				if rule.FirewallSource == nil {
 					matches = append(matches, false)
 				} else {
-					matches = append(matches, rule.FirewallSource.Name == expectedRule.fwSource.name)
+					var expectedName string
+					if expectedRule.fwSource.dataSource {
+						expectedName = expectedRule.fwSource.name
+					} else {
+						expectedName = testID + expectedRule.fwSource.name
+					}
+
+					matches = append(matches, rule.FirewallSource.Name == expectedName)
 					matches = append(matches, rule.FirewallSource.IpAddress == expectedRule.fwSource.ipAddress)
 				}
 			}
@@ -315,7 +343,14 @@ func testHelperCompareFirewallPolicyRuleAttributes(client *api.Client, rules []a
 				if rule.FirewallTarget == nil {
 					matches = append(matches, false)
 				} else {
-					matches = append(matches, rule.FirewallTarget.Name == expectedRule.fwTarget.name)
+					var expectedName string
+					if expectedRule.fwTarget.dataSource {
+						expectedName = expectedRule.fwTarget.name
+					} else {
+						expectedName = testID + expectedRule.fwTarget.name
+					}
+
+					matches = append(matches, rule.FirewallTarget.Name == expectedName)
 					matches = append(matches, rule.FirewallTarget.IpAddress == expectedRule.fwTarget.ipAddress)
 				}
 			}
@@ -348,12 +383,14 @@ func testAccFirewallPolicyCheckDestroy(_ *terraform.State) error {
 		return fmt.Errorf("cannot fetch firewall policies on destroy: %v", err)
 	}
 
-	if resp.Count != 0 {
-		var policies []string
-		for _, g := range resp.Policies {
-			policies = append(policies, g.Name)
+	var policies []string
+	for _, p := range resp.Policies {
+		if strings.HasPrefix(p.Name, testID) {
+			policies = append(policies, p.Name)
 		}
+	}
 
+	if len(policies) > 0 {
 		return fmt.Errorf("found %d firewall policies after destroy: %s", resp.Count, strings.Join(policies, ","))
 	}
 
@@ -361,12 +398,13 @@ func testAccFirewallPolicyCheckDestroy(_ *terraform.State) error {
 }
 
 func testAccFirewallPolicyConfig(t *testing.T, prefix string, step int) string {
-	path := fmt.Sprintf("testdata/firewall_policies/%s_%.2d.tf", prefix, step)
-	b, err := ioutil.ReadFile(path)
+	path := fmt.Sprintf("firewall_policies/%s_%.2d.tf", prefix, step)
+
+	data, err := readTestTemplateData(path, testID)
 
 	if err != nil {
-		t.Fatalf("cannot read file %s: %v", path, err)
+		t.Fatal(err)
 	}
 
-	return string(b)
+	return data
 }
