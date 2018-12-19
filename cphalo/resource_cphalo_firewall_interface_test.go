@@ -5,7 +5,6 @@ import (
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
 	"gitlab.skypicker.com/terraform-provider-cphalo/api"
-	"io/ioutil"
 	"strings"
 	"testing"
 )
@@ -42,6 +41,8 @@ func testFirewallInterfaceAttributes(name string) (err error) {
 		return fmt.Errorf("cannot fetch firewall interfaces: %v", err)
 	}
 
+	name = testID + name
+
 	var found api.FirewallInterface
 	var interfaces []string
 	for _, i := range resp.Interfaces {
@@ -73,7 +74,7 @@ func testAccFirewallInterfaceCheckDestroy(_ *terraform.State) error {
 	var userCreatedInterfaces []string
 
 	for _, ifc := range resp.Interfaces {
-		if !ifc.System {
+		if strings.HasPrefix(ifc.Name, testID) {
 			userCreatedInterfaces = append(userCreatedInterfaces, ifc.Name)
 		}
 	}
@@ -87,12 +88,13 @@ func testAccFirewallInterfaceCheckDestroy(_ *terraform.State) error {
 }
 
 func testAccFirewallInterfaceConfig(t *testing.T, step int) string {
-	path := fmt.Sprintf("testdata/firewall_interfaces/basic_%.2d.tf", step)
-	b, err := ioutil.ReadFile(path)
+	path := fmt.Sprintf("firewall_interfaces/basic_%.2d.tf", step)
+
+	data, err := readTestTemplateData(path, testID)
 
 	if err != nil {
-		t.Fatalf("cannot read file %s: %v", path, err)
+		t.Fatal(err)
 	}
 
-	return string(b)
+	return data
 }
