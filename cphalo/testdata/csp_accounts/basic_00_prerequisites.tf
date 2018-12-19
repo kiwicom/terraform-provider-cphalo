@@ -21,7 +21,7 @@ variable "cphalo_root_group" {}
 
 variable "cphalo_external_id" {
   type = "string"
-  default = "this-is-some-id-for-tf-cphalo-testacc"
+  default = "{{.Prefix}}this-is-some-id-for-tf-cphalo-testacc"
 }
 
 resource "aws_iam_role" "tf_testacc_cloudpassage_role" {
