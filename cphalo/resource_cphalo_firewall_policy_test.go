@@ -5,7 +5,6 @@ import (
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
 	"gitlab.skypicker.com/terraform-provider-cphalo/api"
-	"io/ioutil"
 	"strings"
 	"testing"
 )
@@ -30,19 +29,22 @@ type expectedFirewallRule struct {
 }
 
 type expectedFirewallRuleSourceTarget struct {
-	name      string
-	ipAddress string
-	kind      string
+	name       string
+	ipAddress  string
+	kind       string
+	dataSource bool
 }
 
 type expectedFirewallService struct {
-	name     string
-	protocol string
-	port     string
+	name       string
+	protocol   string
+	port       string
+	dataSource bool
 }
 
 type expectedFirewallInterface struct {
-	name string
+	name       string
+	dataSource bool
 }
 
 func TestAccFirewallPolicy_basic(t *testing.T) {
@@ -149,8 +151,9 @@ func TestAccFirewallPolicy_basic(t *testing.T) {
 										port:     "2222",
 									},
 									fwTarget: expectedFirewallRuleSourceTarget{
-										name: "All active servers",
-										kind: firewallRuleSourceTargetKindGroup,
+										name:       "All active servers",
+										kind:       firewallRuleSourceTargetKindGroup,
+										dataSource: true,
 									},
 								},
 							},
@@ -174,17 +177,20 @@ func TestAccFirewallPolicy_basic(t *testing.T) {
 									states:   "NEW, ESTABLISHED",
 									position: 1,
 									fwInterface: expectedFirewallInterface{
-										name: "eth0",
+										name:       "eth0",
+										dataSource: true,
 									},
 									fwService: expectedFirewallService{
-										name:     "http",
-										protocol: "TCP",
-										port:     "80",
+										name:       "http",
+										protocol:   "TCP",
+										port:       "80",
+										dataSource: true,
 									},
 									fwSource: expectedFirewallRuleSourceTarget{
-										name:      "any",
-										ipAddress: "0.0.0.0/0",
-										kind:      firewallRuleSourceTargetKindFirewallZone,
+										name:       "any",
+										ipAddress:  "0.0.0.0/0",
+										kind:       firewallRuleSourceTargetKindFirewallZone,
+										dataSource: true,
 									},
 								},
 							},
