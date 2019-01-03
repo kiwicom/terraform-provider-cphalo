@@ -5,6 +5,7 @@ import (
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
 	"gitlab.skypicker.com/terraform-provider-cphalo/api"
+	"io/ioutil"
 	"strings"
 	"testing"
 )
@@ -24,26 +25,24 @@ type expectedFirewallRule struct {
 	position    int
 	fwInterface expectedFirewallInterface
 	fwService   expectedFirewallService
-	fwSource    expectedFirewallZone
-	fwTarget    expectedFirewallZone
+	fwSource    expectedFirewallRuleSourceTarget
+	fwTarget    expectedFirewallRuleSourceTarget
 }
 
-type expectedFirewallZone struct {
-	name       string
-	ipAddress  string
-	dataSource bool
+type expectedFirewallRuleSourceTarget struct {
+	name      string
+	ipAddress string
+	kind      string
 }
 
 type expectedFirewallService struct {
-	name       string
-	protocol   string
-	port       string
-	dataSource bool
+	name     string
+	protocol string
+	port     string
 }
 
 type expectedFirewallInterface struct {
-	name       string
-	dataSource bool
+	name string
 }
 
 func TestAccFirewallPolicy_basic(t *testing.T) {
@@ -130,9 +129,10 @@ func TestAccFirewallPolicy_basic(t *testing.T) {
 										protocol: "TCP",
 										port:     "2222",
 									},
-									fwSource: expectedFirewallZone{
+									fwSource: expectedFirewallRuleSourceTarget{
 										name:      "tf_acc_fw_in_zone",
 										ipAddress: "1.1.1.1",
+										kind:      firewallRuleSourceTargetKindFirewallZone,
 									},
 								},
 								{
@@ -148,9 +148,9 @@ func TestAccFirewallPolicy_basic(t *testing.T) {
 										protocol: "TCP",
 										port:     "2222",
 									},
-									fwTarget: expectedFirewallZone{
-										name:      "tf_acc_fw_out_zone",
-										ipAddress: "10.10.10.10",
+									fwTarget: expectedFirewallRuleSourceTarget{
+										name: "All active servers",
+										kind: firewallRuleSourceTargetKindGroup,
 									},
 								},
 							},
@@ -174,19 +174,17 @@ func TestAccFirewallPolicy_basic(t *testing.T) {
 									states:   "NEW, ESTABLISHED",
 									position: 1,
 									fwInterface: expectedFirewallInterface{
-										name:       "eth0",
-										dataSource: true,
+										name: "eth0",
 									},
 									fwService: expectedFirewallService{
-										name:       "http",
-										protocol:   "TCP",
-										port:       "80",
-										dataSource: true,
+										name:     "http",
+										protocol: "TCP",
+										port:     "80",
 									},
-									fwSource: expectedFirewallZone{
-										name:       "any",
-										ipAddress:  "0.0.0.0/0",
-										dataSource: true,
+									fwSource: expectedFirewallRuleSourceTarget{
+										name:      "any",
+										ipAddress: "0.0.0.0/0",
+										kind:      firewallRuleSourceTargetKindFirewallZone,
 									},
 								},
 							},
@@ -336,6 +334,7 @@ func testHelperCompareFirewallPolicyRuleAttributes(client *api.Client, rules []a
 
 					matches = append(matches, rule.FirewallSource.Name == expectedName)
 					matches = append(matches, rule.FirewallSource.IpAddress == expectedRule.fwSource.ipAddress)
+					matches = append(matches, rule.FirewallSource.Kind == expectedRule.fwSource.kind)
 				}
 			}
 
@@ -352,6 +351,7 @@ func testHelperCompareFirewallPolicyRuleAttributes(client *api.Client, rules []a
 
 					matches = append(matches, rule.FirewallTarget.Name == expectedName)
 					matches = append(matches, rule.FirewallTarget.IpAddress == expectedRule.fwTarget.ipAddress)
+					matches = append(matches, rule.FirewallTarget.Kind == expectedRule.fwTarget.kind)
 				}
 			}
 
