@@ -11,7 +11,7 @@ build-sandbox:
 	@go build -o bin/sandbox cmd/sandbox/sandbox.go
 
 build-client:
-	@go build -o bin/client cmd/client/client.go
+	@go build -o bin/client cmd/client/*.go
 
 run-plugin: build-plugin
 	bin/plugin/current_system/terraform-provider-cphalo
