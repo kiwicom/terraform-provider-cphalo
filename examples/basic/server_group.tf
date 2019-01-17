@@ -1,3 +1,15 @@
+data "cphalo_server_group" "base_server_group" {
+  name = "kiwi.com"
+}
+
+output "name" {
+  value = "${data.cphalo_server_group.base_server_group.name}"
+}
+
+output "id" {
+  value = "${data.cphalo_server_group.base_server_group.id}"
+}
+
 resource "cphalo_server_group" "tf_examples_basic_root_group" {
   name = "tf_examples_basic_root_group"
   tag = "tf_examples_basic_tag"
