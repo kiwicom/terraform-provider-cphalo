@@ -298,7 +298,6 @@ func resourceFirewallPolicyRead(d *schema.ResourceData, i interface{}) error {
 	client := i.(*api.Client)
 
 	resp, err := client.GetFirewallPolicy(d.Id())
-
 	if err != nil {
 		return fmt.Errorf("cannot read server policy %s: %v", d.Id(), err)
 	}
@@ -310,6 +309,83 @@ func resourceFirewallPolicyRead(d *schema.ResourceData, i interface{}) error {
 	d.Set("description", policy.Description)
 	d.Set("shared", policy.Shared)
 	d.Set("ignore_forwarding_rules", policy.IgnoreForwardingRules)
+
+	apiRules, err := client.ListFirewallRules(d.Id())
+	if err != nil {
+		return fmt.Errorf("cannot read server policy (%s) rules: %v", d.Id(), err)
+	}
+
+	rules := &schema.Set{
+		F: resourceCPHaloFirewallPolicyRuleHash,
+	}
+
+	for _, r := range apiRules.Rules {
+		details, err := client.GetFirewallRule(d.Id(), r.ID)
+		if err != nil {
+			return fmt.Errorf("cannot read server policy (%s) rule details: %v", r.ID, err)
+		}
+
+		var (
+			fwInterfaceID string
+			fwServiceID   string
+			fwSource      = &schema.Set{F: resourceCPHaloFirewallPolicyRuleSourceTargetHash}
+			fwTarget      = &schema.Set{F: resourceCPHaloFirewallPolicyRuleSourceTargetHash}
+		)
+
+		if details.Rule.FirewallInterface != nil {
+			fwInterfaceID = details.Rule.FirewallInterface.ID
+		}
+
+		if details.Rule.FirewallService != nil {
+			fwServiceID = details.Rule.FirewallService.ID
+		}
+
+		applySourceTarget := func(output *schema.Set, input *api.FirewallRuleSourceTarget) {
+			// normally we take the ID
+			id := input.ID
+
+			// special cases (all servers, all users, ...) require to use `name` property instead of ID
+			if input.ID == "" {
+				id = input.Name
+			}
+
+			// fix mismatch between CloudPassage requests/responses
+			if strings.ToLower(id) == "all active servers" {
+				id = "All Active Servers"
+			} else if strings.ToLower(id) == "all ghostports users" {
+				id = "All GhostPorts users"
+			}
+
+			output.Add(map[string]interface{}{
+				"id":   id,
+				"kind": input.Kind,
+			})
+		}
+
+		if details.Rule.FirewallSource != nil {
+			applySourceTarget(fwSource, details.Rule.FirewallSource)
+		}
+
+		if details.Rule.FirewallTarget != nil {
+			applySourceTarget(fwTarget, details.Rule.FirewallTarget)
+		}
+
+		rules.Add(map[string]interface{}{
+			"chain":              details.Rule.Chain,
+			"action":             details.Rule.Action,
+			"active":             details.Rule.Active,
+			"connection_states":  details.Rule.ConnectionStates,
+			"position":           details.Rule.Position,
+			"firewall_interface": fwInterfaceID,
+			"firewall_service":   fwServiceID,
+			"firewall_source":    fwSource,
+			"firewall_target":    fwTarget,
+		})
+	}
+
+	if err := d.Set("rule", rules); err != nil {
+		return fmt.Errorf("cannot set rules for firewall policy (%s): %v", d.Id(), err)
+	}
 
 	return nil
 }
