@@ -267,6 +267,10 @@ func resourceFirewallPolicyCreate(d *schema.ResourceData, i interface{}) error {
 		return fmt.Errorf("could not parse firewall rules: %v", err)
 	}
 
+	if len(inputRules) == 0 && len(outputRules) == 0 {
+		return fmt.Errorf("policy %s does not contain any rules", policy.Name)
+	}
+
 	resp, err := client.CreateFirewallPolicy(policy)
 	if err != nil {
 		return fmt.Errorf("cannot create firewall policy: %v", err)
@@ -324,6 +328,10 @@ func resourceFirewallPolicyUpdate(d *schema.ResourceData, i interface{}) error {
 		inputRules, outputRules, err := parseFirewallPolicyRuleSet(d.Get("rule"))
 		if err != nil {
 			return fmt.Errorf("could not parse firewall rules: %v", err)
+		}
+
+		if len(inputRules) == 0 && len(outputRules) == 0 {
+			return fmt.Errorf("policy %s does not contain any rules", d.Get("name").(string))
 		}
 
 		err = applyFirewallPolicyRules(d, client, d.Id(), inputRules, outputRules)
