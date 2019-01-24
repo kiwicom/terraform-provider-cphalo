@@ -18,7 +18,7 @@ var (
 	allowedFirewallPolicyPlatforms    = []string{"linux", "windows"}
 	allowedFirewallRuleChains         = []string{"INPUT", "OUTPUT"}
 	allowedFirewallRuleActions        = []string{"ACCEPT", "DROP", "REJECT"}
-	allowedFirewallRuleConnStates     = []string{"NEW", "RELATED", "ESTABLISHED"}
+	allowedFirewallRuleConnStates     = []string{"ANY", "NEW", "RELATED", "ESTABLISHED"}
 	allowedFirewallRuleSourcesTargets = []string{"User", "UserGroup", "Group", "FirewallZone"}
 )
 
@@ -95,7 +95,8 @@ func resourceCPHaloFirewallPolicy() *schema.Resource {
 						},
 						"connection_states": {
 							Type:         schema.TypeString,
-							Required:     true,
+							Optional:     true,
+							Default:      "ANY",
 							ValidateFunc: validateFirewallRuleConnectionStates(),
 						},
 						"position": {
@@ -294,6 +295,10 @@ func validateFirewallRuleConnectionStates() schema.SchemaValidateFunc {
 		v, ok := i.(string)
 		if !ok {
 			return nil, []error{fmt.Errorf("expected type of %s to be string", k)}
+		}
+
+		if strings.Contains(v, "ANY") && v != "ANY" {
+			return nil, []error{fmt.Errorf("value `ANY` cannot be combined with other values for type %s", k)}
 		}
 
 		var found bool

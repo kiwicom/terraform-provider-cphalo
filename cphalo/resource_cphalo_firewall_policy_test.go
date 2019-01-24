@@ -198,6 +198,27 @@ func TestAccFirewallPolicy_basic(t *testing.T) {
 					)
 				}),
 			},
+			{
+				Config: testAccFirewallPolicyConfig(t, "any_connection_states", 1),
+				Check: resource.ComposeTestCheckFunc(func(_ *terraform.State) error {
+					return testFirewallPolicyAttributes(
+						expectedFirewallPolicy{
+							name:           "tf_acc_any_conn_states_fw_policy",
+							description:    "",
+							shared:         true,
+							ignoreFwdRules: false,
+							rules: []expectedFirewallRule{
+								{
+									chain:    "INPUT",
+									action:   "ACCEPT",
+									states:   "ANY",
+									position: 1,
+								},
+							},
+						},
+					)
+				}),
+			},
 		},
 	})
 }
