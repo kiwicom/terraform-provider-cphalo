@@ -61,6 +61,17 @@ bin/plugin/windows_386/terraform-provider-cphalo_%:  GOARGS = GOOS=windows GOARC
 bin/plugin/%/terraform-provider-cphalo_$(VERSION): clean
 	$(GOARGS) go build -o $@ -a cmd/tf-plugin/plugin.go
 
+bin/client/current_system/cphalo_client:  GOARGS =
+bin/client/darwin_amd64/cphalo_client:  GOARGS = GOOS=darwin GOARCH=amd64
+bin/client/linux_amd64/cphalo_client:  GOARGS = GOOS=linux GOARCH=amd64
+bin/client/linux_386/cphalo_client:  GOARGS = GOOS=linux GOARCH=386
+bin/client/linux_arm/cphalo_client:  GOARGS = GOOS=linux GOARCH=arm
+bin/client/windows_amd64/cphalo_client:  GOARGS = GOOS=windows GOARCH=amd64
+bin/client/windows_386/cphalo_client:  GOARGS = GOOS=windows GOARCH=386
+
+bin/client/%/cphalo_client:
+	$(GOARGS) go build -o $@ -a cmd/client/*.go
+
 release: \
 	bin/release/terraform-provider-cphalo_darwin_amd64.zip \
 	bin/release/terraform-provider-cphalo_linux_amd64.zip \
@@ -71,7 +82,8 @@ release: \
 
 bin/release/terraform-provider-cphalo_%.zip: NAME=terraform-provider-cphalo_$(VERSION)_$*
 bin/release/terraform-provider-cphalo_%.zip: DEST=bin/release/$(VERSION)/$(NAME)
-bin/release/terraform-provider-cphalo_%.zip: bin/plugin/%/terraform-provider-cphalo_$(VERSION)
+bin/release/terraform-provider-cphalo_%.zip: bin/plugin/%/terraform-provider-cphalo_$(VERSION) bin/client/%/cphalo_client
 	mkdir -p $(DEST)
 	cp bin/plugin/$*/terraform-provider-cphalo_$(VERSION) readme.md $(DEST)
+	cp bin/client/$*/cphalo_client $(DEST)
 	cd $(DEST) && zip -r ../$(NAME).zip . && cd .. && shasum -a 256 $(NAME).zip > $(NAME).sha256 && rm -rf $(NAME)
