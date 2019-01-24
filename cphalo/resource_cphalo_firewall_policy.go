@@ -132,10 +132,11 @@ func resourceCPHaloFirewallPolicy() *schema.Resource {
 				Set: resourceCPHaloFirewallPolicyRuleHash,
 			},
 		},
-		Create: resourceFirewallPolicyCreate,
-		Read:   resourceFirewallPolicyRead,
-		Update: resourceFirewallPolicyUpdate,
-		Delete: resourceFirewallPolicyDelete,
+		Create:        resourceFirewallPolicyCreate,
+		Read:          resourceFirewallPolicyRead,
+		Update:        resourceFirewallPolicyUpdate,
+		Delete:        resourceFirewallPolicyDelete,
+		CustomizeDiff: firewallRuleChecker,
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
@@ -143,6 +144,71 @@ func resourceCPHaloFirewallPolicy() *schema.Resource {
 			Delete: schema.DefaultTimeout(time.Minute * 5),
 		},
 	}
+}
+
+func firewallRuleChecker(d *schema.ResourceDiff, _ interface{}) error {
+	var (
+		inputRules  = make(map[int]bool)
+		outputRules = make(map[int]bool)
+		inputCount  int
+		outputCount int
+	)
+
+	rules := d.Get("rule").(*schema.Set)
+	for _, rawData := range rules.List() {
+		data := rawData.(map[string]interface{})
+
+		if v, ok := data["firewall_source"]; ok {
+			s := v.(*schema.Set)
+			if s.Len() > 1 {
+				return fmt.Errorf("only one unique firewall_source is allowed per firewall rule")
+			}
+		}
+
+		if v, ok := data["firewall_target"]; ok {
+			s := v.(*schema.Set)
+			if s.Len() > 1 {
+				return fmt.Errorf("only one unique firewall_target is allowed per firewall rule")
+			}
+		}
+
+		chain := data["chain"].(string)
+		position := data["position"].(int)
+
+		if chain == "OUTPUT" {
+			outputRules[position] = true
+			outputCount++
+		} else {
+			inputRules[position] = true
+			inputCount++
+		}
+	}
+
+	if len(inputRules) == 0 && len(outputRules) == 0 {
+		return fmt.Errorf("firewall policy %s does not contain any rules", d.Get("name").(string))
+	}
+
+	if len(inputRules) != inputCount {
+		return fmt.Errorf("INPUT rules have duplicate positions")
+	}
+
+	if len(outputRules) != outputCount {
+		return fmt.Errorf("OUTPUT rules have duplicate positions")
+	}
+
+	for i := 1; i <= inputCount; i++ {
+		if _, ok := inputRules[i]; !ok {
+			return fmt.Errorf("INPUT rule positions are not in order")
+		}
+	}
+
+	for i := 1; i <= outputCount; i++ {
+		if _, ok := outputRules[i]; !ok {
+			return fmt.Errorf("OUTPUT rule positions are not in order")
+		}
+	}
+
+	return nil
 }
 
 func resourceCPHaloFirewallPolicyRuleSourceTargetHash(v interface{}) int {
@@ -262,14 +328,7 @@ func resourceFirewallPolicyCreate(d *schema.ResourceData, i interface{}) error {
 	client := i.(*api.Client)
 
 	// parse firewall rules before creating a policy, in case there are some issues
-	inputRules, outputRules, err := parseFirewallPolicyRuleSet(d.Get("rule"))
-	if err != nil {
-		return fmt.Errorf("could not parse firewall rules: %v", err)
-	}
-
-	if len(inputRules) == 0 && len(outputRules) == 0 {
-		return fmt.Errorf("policy %s does not contain any rules", policy.Name)
-	}
+	inputRules, outputRules := parseFirewallPolicyRuleSet(d.Get("rule"))
 
 	resp, err := client.CreateFirewallPolicy(policy)
 	if err != nil {
@@ -401,14 +460,7 @@ func resourceFirewallPolicyUpdate(d *schema.ResourceData, i interface{}) error {
 	d.Partial(true)
 
 	if d.HasChange("rule") {
-		inputRules, outputRules, err := parseFirewallPolicyRuleSet(d.Get("rule"))
-		if err != nil {
-			return fmt.Errorf("could not parse firewall rules: %v", err)
-		}
-
-		if len(inputRules) == 0 && len(outputRules) == 0 {
-			return fmt.Errorf("policy %s does not contain any rules", d.Get("name").(string))
-		}
+		inputRules, outputRules := parseFirewallPolicyRuleSet(d.Get("rule"))
 
 		err = applyFirewallPolicyRules(d, client, d.Id(), inputRules, outputRules)
 		if err != nil {
@@ -568,7 +620,7 @@ func applyFirewallPolicyRules(d *schema.ResourceData, client *api.Client, policy
 	return nil
 }
 
-func parseFirewallPolicyRuleSet(rules interface{}) (map[int]api.FirewallRule, map[int]api.FirewallRule, error) {
+func parseFirewallPolicyRuleSet(rules interface{}) (map[int]api.FirewallRule, map[int]api.FirewallRule) {
 	if rules == nil {
 		rules = new(schema.Set)
 	}
@@ -576,8 +628,6 @@ func parseFirewallPolicyRuleSet(rules interface{}) (map[int]api.FirewallRule, ma
 	var (
 		inputRules  = make(map[int]api.FirewallRule)
 		outputRules = make(map[int]api.FirewallRule)
-		inputCount  int
-		outputCount int
 	)
 
 	for _, rawData := range rules.(*schema.Set).List() {
@@ -628,68 +678,36 @@ func parseFirewallPolicyRuleSet(rules interface{}) (map[int]api.FirewallRule, ma
 
 		if v, ok := data["firewall_source"]; ok {
 			s := v.(*schema.Set)
-			if s.Len() > 1 {
-				return inputRules, outputRules, fmt.Errorf("only one unique firewall_source is allowed per firewall rule")
-			} else if s.Len() == 1 {
-				sourceTarget := s.List()[0].(map[string]interface{})
-
-				sourceTargetID := sourceTarget["id"].(string)
-				sourceTargetType := sourceTarget["kind"].(string)
+			if s.Len() == 1 {
+				source := s.List()[0].(map[string]interface{})
 
 				rule.FirewallSource = &api.FirewallRuleSourceTarget{
-					ID:   sourceTargetID,
-					Kind: sourceTargetType,
+					ID:   source["id"].(string),
+					Kind: source["kind"].(string),
 				}
 			}
 		}
 
 		if v, ok := data["firewall_target"]; ok {
 			s := v.(*schema.Set)
-			if s.Len() > 1 {
-				return inputRules, outputRules, fmt.Errorf("only one unique firewall_target is allowed per firewall rule")
-			} else if s.Len() == 1 {
-				sourceTarget := s.List()[0].(map[string]interface{})
-
-				sourceTargetID := sourceTarget["id"].(string)
-				sourceTargetType := sourceTarget["kind"].(string)
+			if s.Len() == 1 {
+				target := s.List()[0].(map[string]interface{})
 
 				rule.FirewallTarget = &api.FirewallRuleSourceTarget{
-					ID:   sourceTargetID,
-					Kind: sourceTargetType,
+					ID:   target["id"].(string),
+					Kind: target["kind"].(string),
 				}
 			}
 		}
 
 		if rule.Chain == "OUTPUT" {
 			outputRules[rule.Position] = rule
-			outputCount++
 		} else {
 			inputRules[rule.Position] = rule
-			inputCount++
 		}
 	}
 
-	if len(inputRules) != inputCount {
-		return inputRules, outputRules, fmt.Errorf("INPUT rules have duplicate positions")
-	}
-
-	if len(outputRules) != outputCount {
-		return inputRules, outputRules, fmt.Errorf("OUTPUT rules have duplicate positions")
-	}
-
-	for i := 1; i <= inputCount; i++ {
-		if _, ok := inputRules[i]; !ok {
-			return inputRules, outputRules, fmt.Errorf("INPUT rule positions are not in order")
-		}
-	}
-
-	for i := 1; i <= outputCount; i++ {
-		if _, ok := outputRules[i]; !ok {
-			return inputRules, outputRules, fmt.Errorf("OUTPUT rule positions are not in order")
-		}
-	}
-
-	return inputRules, outputRules, nil
+	return inputRules, outputRules
 }
 
 func resourceFirewallPolicyDelete(d *schema.ResourceData, i interface{}) (err error) {
