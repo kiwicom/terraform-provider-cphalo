@@ -30,6 +30,8 @@ mv terraform-provider-cphalo_v0.0.0-master ~/.terraform.d/plugins
 rm terraform-provider-cphalo_v0.0.0-master_darwin_amd64.zip readme.md terraform-provider-cphalo_v0.0.0-master_darwin_amd64.sha256
 ```
 
+A `cphalo_client` command line utility is distributed in the `zip`, to allow easier listing of resources currently supported by this provider.
+
 ### Supported platforms
 
 - [macos 64-bit](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_darwin_amd64.zip) ([checksum](http://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_darwin_amd64.sha256))
