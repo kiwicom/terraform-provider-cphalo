@@ -22,6 +22,7 @@ require (
 	github.com/hashicorp/logutils v1.0.0 // indirect
 	github.com/hashicorp/terraform v0.11.10
 	github.com/hashicorp/vault v0.11.5 // indirect
+	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/jen20/awspolicyequivalence v1.0.0 // indirect
 	github.com/keybase/go-crypto v0.0.0-20181127160227-255a5089e85a // indirect
 	github.com/mitchellh/cli v1.0.0 // indirect
@@ -31,6 +32,7 @@ require (
 	github.com/mitchellh/mapstructure v1.1.2 // indirect
 	github.com/pierrec/lz4 v2.0.5+incompatible // indirect
 	github.com/pquerna/otp v1.0.0 // indirect
+	github.com/spf13/cobra v0.0.3
 	github.com/terraform-providers/terraform-provider-aws v1.50.0
 	github.com/terraform-providers/terraform-provider-template v1.0.0 // indirect
 	github.com/terraform-providers/terraform-provider-tls v1.2.0 // indirect
