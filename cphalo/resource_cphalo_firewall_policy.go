@@ -91,6 +91,7 @@ func resourceCPHaloFirewallPolicy() *schema.Resource {
 						},
 						"active": {
 							Type:     schema.TypeBool,
+							Default:  true,
 							Optional: true,
 						},
 						"connection_states": {
