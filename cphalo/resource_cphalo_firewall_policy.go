@@ -154,16 +154,25 @@ func firewallRuleChecker(d *schema.ResourceDiff, _ interface{}) error {
 		outputRules = make(map[int]bool)
 		inputCount  int
 		outputCount int
+
+		hasFirewallSource bool
+		hasFirewallTarget bool
 	)
 
 	rules := d.Get("rule").(*schema.Set)
 	for _, rawData := range rules.List() {
 		data := rawData.(map[string]interface{})
 
+		hasFirewallSource = false
+		hasFirewallTarget = false
+
 		if v, ok := data["firewall_source"]; ok {
 			s := v.(*schema.Set)
 			if s.Len() > 1 {
 				return fmt.Errorf("only one unique firewall_source is allowed per firewall rule")
+			}
+			if s.Len() == 1 {
+				hasFirewallSource = true
 			}
 		}
 
@@ -172,10 +181,21 @@ func firewallRuleChecker(d *schema.ResourceDiff, _ interface{}) error {
 			if s.Len() > 1 {
 				return fmt.Errorf("only one unique firewall_target is allowed per firewall rule")
 			}
+			if s.Len() == 1 {
+				hasFirewallTarget = true
+			}
 		}
 
 		chain := data["chain"].(string)
 		position := data["position"].(int)
+
+		if chain == "INPUT" && hasFirewallTarget {
+			return fmt.Errorf("firewall rule on INPUT chain cannot have firewall_target")
+		}
+
+		if chain == "OUTPUT" && hasFirewallSource {
+			return fmt.Errorf("firewall rule on OUTPUT chain cannot have firewall_source")
+		}
 
 		if chain == "OUTPUT" {
 			outputRules[position] = true
