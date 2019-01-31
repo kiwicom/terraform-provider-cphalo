@@ -1,4 +1,4 @@
-image: golang:1.11.5
+image: golang:latest
 
 stages:
   - test
@@ -15,7 +15,6 @@ cache:
   key: $CI_PROJECT_PATH_SLUG-build
   paths:
     - $GOPATH/pkg/mod
-#    - /root/.cache/go-build
 
 tests/unit:
   stage: test
@@ -51,19 +50,17 @@ build:
 
 examples_test:
   stage: preReleaseTest
+  cache: {}
   only:
     refs:
       - master
-  variables:
-    TERRAFORM_VERSION: 0.11.10
-    TERRAFORM_SHA256SUM: 43543a0e56e31b0952ea3623521917e060f2718ab06fe2b2d506cfaa14d54527
+  image:
+    name: hashicorp/terraform:light
+    entrypoint:
+      - '/usr/bin/env'
+      - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
   before_script:
     - apt-get update && apt-get install -y zip
-    - curl -Ss https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip > terraform_${TERRAFORM_VERSION}_linux_amd64.zip
-    - echo "${TERRAFORM_SHA256SUM} terraform_${TERRAFORM_VERSION}_linux_amd64.zip" > terraform_${TERRAFORM_VERSION}_SHA256SUMS
-    - sha256sum -c terraform_${TERRAFORM_VERSION}_SHA256SUMS
-    - unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /bin
-    - rm -f terraform_${TERRAFORM_VERSION}_linux_amd64.zip terraform_${TERRAFORM_VERSION}_SHA256SUMS
     - terraform version
   script:
     - export RELEASE_VERSION=${CI_COMMIT_TAG:-"v0.0.0-${CI_COMMIT_REF_SLUG}"}
@@ -77,9 +74,7 @@ examples_test:
     - cd ${CI_PROJECT_DIR}/examples/basic
     - terraform init
     - terraform apply -auto-approve
-    - terraform plan -no-color > output_plan.txt
-    - cat output_plan.txt
-    - grep "No changes. Infrastructure is up-to-date." output_plan.txt
+    - terraform plan -detailed-exitcode
   after_script:
     - cd ${CI_PROJECT_DIR}/examples/basic
     - terraform destroy -auto-approve
@@ -87,6 +82,7 @@ examples_test:
 copy_to_s3:
   stage: release
   image: kiwicom/s3cmd
+  cache: {}
   except:
     - schedules
   script:
