@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func resourceCPHaloCSPAccount() *schema.Resource {
+func resourceCPHaloCSPAWSAccount() *schema.Resource {
 	return &schema.Resource{
 		Schema: map[string]*schema.Schema{
 			"external_id": {
@@ -31,10 +31,10 @@ func resourceCPHaloCSPAccount() *schema.Resource {
 				Computed: true,
 			},
 		},
-		Create: resourceCPHaloCSPAccountCreate,
-		Read:   resourceCPHaloCSPAccountRead,
-		Update: resourceCPHaloCSPAccountUpdate,
-		Delete: resourceCPHaloCSPAccountDelete,
+		Create: resourceCPHaloCSPAWSAccountCreate,
+		Read:   resourceCPHaloCSPAWSAccountRead,
+		Update: resourceCPHaloCSPAWSAccountUpdate,
+		Delete: resourceCPHaloCSPAWSAccountDelete,
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
@@ -46,19 +46,20 @@ func resourceCPHaloCSPAccount() *schema.Resource {
 	}
 }
 
-func resourceCPHaloCSPAccountCreate(d *schema.ResourceData, i interface{}) error {
-	account := api.CreateCSPAccountRequest{
+func resourceCPHaloCSPAWSAccountCreate(d *schema.ResourceData, i interface{}) error {
+	account := api.CreateCSPAccountAWSRequest{
 		ExternalID:         d.Get("external_id").(string),
 		RoleArn:            d.Get("role_arn").(string),
 		GroupID:            d.Get("group_id").(string),
 		AccountDisplayName: d.Get("account_display_name").(string),
+		CSPAccountType:     "aws",
 	}
 
 	client := i.(*api.Client)
 
 	resp, err := client.CreateCSPAccount(account)
 	if err != nil {
-		return fmt.Errorf("cannot create CSP account: %v", err)
+		return fmt.Errorf("cannot create CSP AWS account: %v", err)
 	}
 
 	d.SetId(resp.CSPAccount.ID)
@@ -68,32 +69,32 @@ func resourceCPHaloCSPAccountCreate(d *schema.ResourceData, i interface{}) error
 	})
 
 	if err != nil {
-		return fmt.Errorf("error waiting for CSP account %s to be created: %v", d.Id(), err)
+		return fmt.Errorf("error waiting for CSP AWS account %s to be created: %v", d.Id(), err)
 	}
 
-	return resourceCPHaloCSPAccountRead(d, i)
+	return resourceCPHaloCSPAWSAccountRead(d, i)
 }
 
-func resourceCPHaloCSPAccountRead(d *schema.ResourceData, i interface{}) error {
+func resourceCPHaloCSPAWSAccountRead(d *schema.ResourceData, i interface{}) error {
 	client := i.(*api.Client)
 
 	resp, err := client.GetCSPAccount(d.Id())
 
 	if err != nil {
-		return fmt.Errorf("cannot read CSP account %s: %v", d.Id(), err)
+		return fmt.Errorf("cannot read CSP AWS account %s: %v", d.Id(), err)
 	}
 
 	account := resp.CSPAccount
 
-	d.Set("external_id", account.ExternalID)
-	d.Set("role_arn", account.RoleArn)
+	d.Set("external_id", account.AWSExternalID)
+	d.Set("role_arn", account.AWSRoleArn)
 	d.Set("group_id", account.GroupID)
 	d.Set("account_display_name", account.AccountDisplayName)
 
 	return nil
 }
 
-func resourceCPHaloCSPAccountUpdate(d *schema.ResourceData, i interface{}) error {
+func resourceCPHaloCSPAWSAccountUpdate(d *schema.ResourceData, i interface{}) error {
 	client := i.(*api.Client)
 	_, err := client.GetCSPAccount(d.Id())
 
@@ -101,15 +102,17 @@ func resourceCPHaloCSPAccountUpdate(d *schema.ResourceData, i interface{}) error
 		return fmt.Errorf("update failed: %v", err)
 	}
 
-	d.Partial(true)
 	if d.HasChange("account_display_name") {
-		if err := client.UpdateCSPAccount(api.CSPAccount{ID: d.Id(), AccountDisplayName: d.Get("account_display_name").(string)}); err != nil {
-			return fmt.Errorf("updating account_display_name of %s failed: %v", d.Id(), err)
+		cspAccount := api.CSPAccount{
+			ID:                 d.Id(),
+			AccountDisplayName: d.Get("account_display_name").(string),
+			AWSRoleArn:         d.Get("role_arn").(string),
 		}
-		d.SetPartial("account_display_name")
-		logDebug("updated account_display_name")
+		if err := client.UpdateCSPAccount(cspAccount); err != nil {
+			return fmt.Errorf("updating csp AWS account of %s failed: %v", d.Id(), err)
+		}
+		logDebug("updated csp AWS account")
 	}
-	d.Partial(false)
 
 	err = updateStateChange(d, func() (result interface{}, state string, err error) {
 		resp, err := client.GetCSPAccount(d.Id())
@@ -120,6 +123,7 @@ func resourceCPHaloCSPAccountUpdate(d *schema.ResourceData, i interface{}) error
 
 		matches := []bool{
 			resp.CSPAccount.AccountDisplayName == d.Get("account_display_name").(string),
+			resp.CSPAccount.AWSRoleArn == d.Get("role_arn").(string),
 		}
 
 		for _, match := range matches {
@@ -132,13 +136,13 @@ func resourceCPHaloCSPAccountUpdate(d *schema.ResourceData, i interface{}) error
 	})
 
 	if err != nil {
-		return fmt.Errorf("error waiting for CSP account %s to be updated: %v", d.Id(), err)
+		return fmt.Errorf("error waiting for CSP AWS account %s to be updated: %v", d.Id(), err)
 	}
 
-	return resourceCPHaloCSPAccountRead(d, i)
+	return resourceCPHaloCSPAWSAccountRead(d, i)
 }
 
-func resourceCPHaloCSPAccountDelete(d *schema.ResourceData, i interface{}) (err error) {
+func resourceCPHaloCSPAWSAccountDelete(d *schema.ResourceData, i interface{}) (err error) {
 	client := i.(*api.Client)
 
 	if err := client.DeleteCSPAccount(d.Id()); err != nil {
@@ -150,10 +154,10 @@ func resourceCPHaloCSPAccountDelete(d *schema.ResourceData, i interface{}) (err 
 	})
 
 	if err != nil {
-		return fmt.Errorf("error waiting for CSP account %s to be deleted: %v", d.Id(), err)
+		return fmt.Errorf("error waiting for CSP AWS account %s to be deleted: %v", d.Id(), err)
 	}
 
-	logInfof("CSP account %s deleted", d.Id())
+	logInfof("CSP AWS account %s deleted", d.Id())
 
 	return nil
 }

@@ -49,7 +49,7 @@ EOF
 
 resource "aws_iam_policy" "tf_testacc_cloudpassage_service_policy" {
   name = "{{.Prefix}}tf_testacc_cloudpassage_service_policy"
-  policy = "${file("testdata/csp_accounts/aws_cphalo_policy.json")}"
+  policy = "${file("testdata/csp_aws_accounts/aws_cphalo_policy.json")}"
 }
 
 resource "aws_iam_policy_attachment" "tf_testacc_cloudpassage_role_attach" {

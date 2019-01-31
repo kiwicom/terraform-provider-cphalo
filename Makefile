@@ -19,7 +19,7 @@ run-plugin: build-plugin
 run-sandbox: build-sandbox
 	$(vars) bin/sandbox
 
-run-client: endpoint=server_groups
+run-client: endpoint=csp-accounts
 run-client: build-client
 	@$(vars) bin/client $(endpoint)
 
@@ -30,7 +30,7 @@ race:
 	go test -v -race -timeout 2m ./api
 
 testacc:
-	$(vars) TF_ACC=1 go test -cover -v -timeout 15m -failfast ./cphalo
+	$(vars) TF_ACC=1 go test -cover -v -timeout 15m -failfast ./cphalo -run TestAccCSPAWSAccount_basic
 
 .env:
 	cp .env.example .env

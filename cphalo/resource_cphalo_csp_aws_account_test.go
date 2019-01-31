@@ -10,14 +10,14 @@ import (
 	"time"
 )
 
-func TestAccCSPAccount_basic(t *testing.T) {
+func TestAccCSPAWSAccount_basic(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProvidersWithAWS,
-		CheckDestroy: testAccCSPAccountCheckDestroy,
+		CheckDestroy: testAccCSPAWSAccountCheckDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCPHaloCSPAccountConfig(t, 0),
+				Config: testAccCPHaloCSPAWSAccountConfig(t, 0),
 				Check: resource.ComposeTestCheckFunc(func(_ *terraform.State) error {
 					if isCI() {
 						time.Sleep(time.Second * 5)
@@ -26,9 +26,9 @@ func TestAccCSPAccount_basic(t *testing.T) {
 				}),
 			},
 			{
-				Config: testAccCPHaloCSPAccountConfig(t, 1),
+				Config: testAccCPHaloCSPAWSAccountConfig(t, 1),
 				Check: resource.ComposeTestCheckFunc(func(s *terraform.State) error {
-					err := testCSPAccountAttributes("tf_aws_testacc_basic_01")
+					err := testCSPAWSAccountAttributes("tf_aws_testacc_basic_01")
 					if err != nil {
 						return err
 					}
@@ -41,17 +41,17 @@ func TestAccCSPAccount_basic(t *testing.T) {
 				}),
 			},
 			{
-				Config: testAccCPHaloCSPAccountConfig(t, 2),
+				Config: testAccCPHaloCSPAWSAccountConfig(t, 2),
 				Check: resource.ComposeTestCheckFunc(func(s *terraform.State) error {
-					return testCSPAccountAttributes("tf_aws_testacc_basic_02")
+					return testCSPAWSAccountAttributes("tf_aws_testacc_basic_02")
 				}),
 			},
 		},
 	})
 }
 
-func testAccCPHaloCSPAccountConfig(t *testing.T, step int) string {
-	path := "csp_accounts/basic_00_prerequisites.tf"
+func testAccCPHaloCSPAWSAccountConfig(t *testing.T, step int) string {
+	path := "csp_aws_accounts/basic_00_prerequisites.tf"
 
 	preData, err := readTestTemplateData(path, testID)
 
@@ -63,7 +63,7 @@ func testAccCPHaloCSPAccountConfig(t *testing.T, step int) string {
 		return preData
 	}
 
-	path = fmt.Sprintf("csp_accounts/basic_%.2d.tf", step)
+	path = fmt.Sprintf("csp_aws_accounts/basic_%.2d.tf", step)
 
 	data, err := readTestTemplateData(path, testID)
 
@@ -74,14 +74,14 @@ func testAccCPHaloCSPAccountConfig(t *testing.T, step int) string {
 	return preData + data
 }
 
-func testCSPAccountAttributes(name string) error {
+func testCSPAWSAccountAttributes(name string) error {
 	client := testAccProvider.Meta().(*api.Client)
 	resp, err := client.ListCSPAccounts()
 
 	name = testID + name
 
 	if err != nil {
-		return fmt.Errorf("cannot fetch CSP accounts: %v", err)
+		return fmt.Errorf("cannot fetch CSP AWS accounts: %v", err)
 	}
 
 	for _, c := range resp.CSPAccounts {
@@ -90,26 +90,26 @@ func testCSPAccountAttributes(name string) error {
 		}
 	}
 
-	return fmt.Errorf("expected CSP account %s; not found", name)
+	return fmt.Errorf("expected CSP AWS account %s; not found", name)
 }
 
-func testAccCSPAccountCheckDestroy(_ *terraform.State) error {
+func testAccCSPAWSAccountCheckDestroy(_ *terraform.State) error {
 	client := testAccProvider.Meta().(*api.Client)
 	resp, err := client.ListCSPAccounts()
 
 	if err != nil {
-		return fmt.Errorf("cannot fetch CSP accounts on destroy: %v", err)
+		return fmt.Errorf("cannot fetch CSP AWS accounts on destroy: %v", err)
 	}
 
 	var found []string
 	for _, g := range resp.CSPAccounts {
 		if strings.HasPrefix(g.AccountDisplayName, testID) {
-			found = append(found, g.ExternalID)
+			found = append(found, g.AWSExternalID)
 		}
 	}
 
 	if len(found) > 0 {
-		return fmt.Errorf("found %d CSP accounts after destroy: %s", resp.Count, strings.Join(found, ","))
+		return fmt.Errorf("found %d CSP AWS accounts after destroy: %s", resp.Count, strings.Join(found, ","))
 	}
 
 	return nil
