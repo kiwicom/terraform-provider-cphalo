@@ -8,10 +8,10 @@ build: build-plugin build-sandbox build-client
 build-plugin: bin/plugin/current_system/terraform-provider-cphalo_$(VERSION)
 
 build-sandbox:
-	@go build -o bin/sandbox cmd/sandbox/sandbox.go
+	CGO_ENABLED=0 go build -o bin/sandbox -ldflags="-s -w" cmd/sandbox/sandbox.go
 
 build-client:
-	@go build -o bin/client cmd/client/*.go
+	CGO_ENABLED=0 go build -o bin/client -ldflags="-s -w" cmd/client/*.go
 
 run-plugin: build-plugin
 	bin/plugin/current_system/terraform-provider-cphalo
@@ -30,7 +30,7 @@ race:
 	go test -v -race -timeout 2m ./api
 
 testacc:
-	$(vars) TF_ACC=1 go test -cover -v -timeout 15m -failfast ./cphalo -run TestAccCSPAWSAccount_basic
+	$(vars) TF_ACC=1 go test -cover -v -timeout 15m -failfast ./cphalo
 
 .env:
 	cp .env.example .env
@@ -59,7 +59,7 @@ bin/plugin/windows_amd64/terraform-provider-cphalo_%:  GOARGS = GOOS=windows GOA
 bin/plugin/windows_386/terraform-provider-cphalo_%:  GOARGS = GOOS=windows GOARCH=386
 
 bin/plugin/%/terraform-provider-cphalo_$(VERSION): clean
-	$(GOARGS) go build -o $@ -a cmd/tf-plugin/plugin.go
+	$(GOARGS) CGO_ENABLED=0 go build -o $@ -ldflags="-s -w" -a cmd/tf-plugin/plugin.go
 
 bin/client/current_system/cphalo_client:  GOARGS =
 bin/client/darwin_amd64/cphalo_client:  GOARGS = GOOS=darwin GOARCH=amd64
@@ -70,7 +70,7 @@ bin/client/windows_amd64/cphalo_client:  GOARGS = GOOS=windows GOARCH=amd64
 bin/client/windows_386/cphalo_client:  GOARGS = GOOS=windows GOARCH=386
 
 bin/client/%/cphalo_client:
-	$(GOARGS) go build -o $@ -a cmd/client/*.go
+	$(GOARGS) CGO_ENABLED=0 go build -o $@ -ldflags="-s -w" -a cmd/client/*.go
 
 release: \
 	bin/release/terraform-provider-cphalo_darwin_amd64.zip \
@@ -86,4 +86,4 @@ bin/release/terraform-provider-cphalo_%.zip: bin/plugin/%/terraform-provider-cph
 	mkdir -p $(DEST)
 	cp bin/plugin/$*/terraform-provider-cphalo_$(VERSION) readme.md $(DEST)
 	cp bin/client/$*/cphalo_client $(DEST)
-	cd $(DEST) && zip -r ../$(NAME).zip . && cd .. && shasum -a 256 $(NAME).zip > $(NAME).sha256 && rm -rf $(NAME)
+	cd $(DEST) && zip -r ../$(NAME).zip . && cd .. && sha256sum $(NAME).zip > $(NAME).sha256 && rm -rf $(NAME)
