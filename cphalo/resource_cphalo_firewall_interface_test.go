@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
-	"gitlab.skypicker.com/terraform-provider-cphalo/api"
+	"gitlab.com/kiwicom/cphalo-go"
 	"strings"
 	"testing"
 )
@@ -33,8 +33,8 @@ func TestAccFirewallInterface_basic(t *testing.T) {
 
 func testFirewallInterfaceAttributes(name string) (err error) {
 	var (
-		client = testAccProvider.Meta().(*api.Client)
-		resp   api.ListFirewallInterfacesResponse
+		client = testAccProvider.Meta().(*cphalo.Client)
+		resp   cphalo.ListFirewallInterfacesResponse
 	)
 
 	if resp, err = client.ListFirewallInterfaces(); err != nil {
@@ -43,7 +43,7 @@ func testFirewallInterfaceAttributes(name string) (err error) {
 
 	name = testID + name
 
-	var found api.FirewallInterface
+	var found cphalo.FirewallInterface
 	var interfaces []string
 	for _, i := range resp.Interfaces {
 		interfaces = append(interfaces, i.Name)
@@ -64,7 +64,7 @@ func testFirewallInterfaceAttributes(name string) (err error) {
 }
 
 func testAccFirewallInterfaceCheckDestroy(_ *terraform.State) error {
-	client := testAccProvider.Meta().(*api.Client)
+	client := testAccProvider.Meta().(*cphalo.Client)
 	resp, err := client.ListFirewallInterfaces()
 
 	if err != nil {

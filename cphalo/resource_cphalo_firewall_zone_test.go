@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
-	"gitlab.skypicker.com/terraform-provider-cphalo/api"
+	"gitlab.com/kiwicom/cphalo-go"
 	"strings"
 	"testing"
 )
@@ -33,8 +33,8 @@ func TestAccFirewallZone_basic(t *testing.T) {
 
 func testFirewallZoneAttributes(name, ipAddress, description string) (err error) {
 	var (
-		client = testAccProvider.Meta().(*api.Client)
-		resp   api.ListFirewallZonesResponse
+		client = testAccProvider.Meta().(*cphalo.Client)
+		resp   cphalo.ListFirewallZonesResponse
 	)
 
 	if resp, err = client.ListFirewallZones(); err != nil {
@@ -43,7 +43,7 @@ func testFirewallZoneAttributes(name, ipAddress, description string) (err error)
 
 	name = testID + name
 
-	var found api.FirewallZone
+	var found cphalo.FirewallZone
 	var zones []string
 	for _, i := range resp.Zones {
 		zones = append(zones, i.Name)
@@ -60,8 +60,8 @@ func testFirewallZoneAttributes(name, ipAddress, description string) (err error)
 		return fmt.Errorf("expected firewall zone %s; found only: %s", name, strings.Join(zones, ","))
 	}
 
-	if found.IpAddress != ipAddress {
-		return fmt.Errorf("expected firewall zone %s to have ip_address %s; got: %s", name, ipAddress, found.IpAddress)
+	if found.IPAddress != ipAddress {
+		return fmt.Errorf("expected firewall zone %s to have ip_address %s; got: %s", name, ipAddress, found.IPAddress)
 	}
 
 	if found.Description != description {
@@ -72,7 +72,7 @@ func testFirewallZoneAttributes(name, ipAddress, description string) (err error)
 }
 
 func testAccFirewallZoneCheckDestroy(_ *terraform.State) error {
-	client := testAccProvider.Meta().(*api.Client)
+	client := testAccProvider.Meta().(*cphalo.Client)
 	resp, err := client.ListFirewallZones()
 
 	if err != nil {

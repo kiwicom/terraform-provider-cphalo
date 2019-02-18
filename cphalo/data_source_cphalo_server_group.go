@@ -2,7 +2,7 @@ package cphalo
 
 import (
 	"fmt"
-	"gitlab.skypicker.com/terraform-provider-cphalo/api"
+	"gitlab.com/kiwicom/cphalo-go"
 	"strings"
 
 	"github.com/hashicorp/terraform/helper/schema"
@@ -30,7 +30,7 @@ func dataSourceCPHaloServerGroup() *schema.Resource {
 }
 
 func dataSourceCPHaloServerGroupRead(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*api.Client)
+	client := meta.(*cphalo.Client)
 
 	gs, err := client.ListServerGroups()
 	if err != nil {
@@ -38,7 +38,7 @@ func dataSourceCPHaloServerGroupRead(d *schema.ResourceData, meta interface{}) e
 	}
 	name := d.Get("name").(string)
 
-	var selectedGroup api.ServerGroup
+	var selectedGroup cphalo.ServerGroup
 	for _, g := range gs.Groups {
 		if strings.TrimSpace(g.Name) == name {
 			selectedGroup = g

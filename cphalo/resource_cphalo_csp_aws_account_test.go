@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
-	"gitlab.skypicker.com/terraform-provider-cphalo/api"
+	"gitlab.com/kiwicom/cphalo-go"
 	"strings"
 	"testing"
 	"time"
@@ -75,7 +75,7 @@ func testAccCPHaloCSPAWSAccountConfig(t *testing.T, step int) string {
 }
 
 func testCSPAWSAccountAttributes(name string) error {
-	client := testAccProvider.Meta().(*api.Client)
+	client := testAccProvider.Meta().(*cphalo.Client)
 	resp, err := client.ListCSPAccounts()
 
 	name = testID + name
@@ -94,7 +94,7 @@ func testCSPAWSAccountAttributes(name string) error {
 }
 
 func testAccCSPAWSAccountCheckDestroy(_ *terraform.State) error {
-	client := testAccProvider.Meta().(*api.Client)
+	client := testAccProvider.Meta().(*cphalo.Client)
 	resp, err := client.ListCSPAccounts()
 
 	if err != nil {

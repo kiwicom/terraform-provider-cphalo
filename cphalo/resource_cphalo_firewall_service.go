@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/helper/validation"
-	"gitlab.skypicker.com/terraform-provider-cphalo/api"
+	"gitlab.com/kiwicom/cphalo-go"
 	"log"
 	"time"
 )
@@ -44,13 +44,13 @@ func resourceCPHaloFirewallService() *schema.Resource {
 }
 
 func resourceFirewallServiceCreate(d *schema.ResourceData, i interface{}) error {
-	policy := api.FirewallService{
+	policy := cphalo.FirewallService{
 		Name:     d.Get("name").(string),
 		Protocol: d.Get("protocol").(string),
 		Port:     d.Get("port").(string),
 	}
 
-	client := i.(*api.Client)
+	client := i.(*cphalo.Client)
 
 	resp, err := client.CreateFirewallService(policy)
 	if err != nil {
@@ -71,7 +71,7 @@ func resourceFirewallServiceCreate(d *schema.ResourceData, i interface{}) error 
 }
 
 func resourceFirewallServiceRead(d *schema.ResourceData, i interface{}) error {
-	client := i.(*api.Client)
+	client := i.(*cphalo.Client)
 
 	resp, err := client.GetFirewallService(d.Id())
 
@@ -89,7 +89,7 @@ func resourceFirewallServiceRead(d *schema.ResourceData, i interface{}) error {
 }
 
 func resourceFirewallServiceUpdate(d *schema.ResourceData, i interface{}) error {
-	client := i.(*api.Client)
+	client := i.(*cphalo.Client)
 	_, err := client.GetFirewallService(d.Id())
 
 	if err != nil {
@@ -99,7 +99,7 @@ func resourceFirewallServiceUpdate(d *schema.ResourceData, i interface{}) error 
 	d.Partial(true)
 
 	if d.HasChange("name") {
-		err := client.UpdateFirewallService(api.FirewallService{
+		err := client.UpdateFirewallService(cphalo.FirewallService{
 			ID:   d.Id(),
 			Name: d.Get("name").(string),
 		})
@@ -113,7 +113,7 @@ func resourceFirewallServiceUpdate(d *schema.ResourceData, i interface{}) error 
 	}
 
 	if d.HasChange("protocol") {
-		err := client.UpdateFirewallService(api.FirewallService{
+		err := client.UpdateFirewallService(cphalo.FirewallService{
 			ID:       d.Id(),
 			Protocol: d.Get("protocol").(string),
 		})
@@ -127,7 +127,7 @@ func resourceFirewallServiceUpdate(d *schema.ResourceData, i interface{}) error 
 	}
 
 	if d.HasChange("port") {
-		err := client.UpdateFirewallService(api.FirewallService{
+		err := client.UpdateFirewallService(cphalo.FirewallService{
 			ID:   d.Id(),
 			Port: d.Get("port").(string),
 		})
@@ -172,7 +172,7 @@ func resourceFirewallServiceUpdate(d *schema.ResourceData, i interface{}) error 
 }
 
 func resourceFirewallServiceDelete(d *schema.ResourceData, i interface{}) (err error) {
-	client := i.(*api.Client)
+	client := i.(*cphalo.Client)
 
 	if err := client.DeleteFirewallService(d.Id()); err != nil {
 		return fmt.Errorf("failed to delete %s: %v", d.Id(), err)

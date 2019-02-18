@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
-	"gitlab.skypicker.com/terraform-provider-cphalo/api"
+	"gitlab.com/kiwicom/cphalo-go"
 	"strings"
 	"testing"
 )
@@ -53,11 +53,11 @@ func TestAccFirewallService_basic(t *testing.T) {
 
 func testFirewallServiceAttributes(expectedServices []expectedFirewallService) (err error) {
 	var (
-		svc             api.FirewallService
-		svcResp         api.GetFirewallServiceResponse
-		client          = testAccProvider.Meta().(*api.Client)
-		resp            api.ListFirewallServicesResponse
-		fetchedServices = make(map[string]api.FirewallService)
+		svc             cphalo.FirewallService
+		svcResp         cphalo.GetFirewallServiceResponse
+		client          = testAccProvider.Meta().(*cphalo.Client)
+		resp            cphalo.ListFirewallServicesResponse
+		fetchedServices = make(map[string]cphalo.FirewallService)
 	)
 
 	if resp, err = client.ListFirewallServices(); err != nil {
@@ -65,7 +65,7 @@ func testFirewallServiceAttributes(expectedServices []expectedFirewallService) (
 	}
 
 	for _, expectedService := range expectedServices {
-		var found api.FirewallService
+		var found cphalo.FirewallService
 
 		for _, s := range resp.Services {
 			if s.System {
@@ -109,7 +109,7 @@ func testFirewallServiceAttributes(expectedServices []expectedFirewallService) (
 }
 
 func testAccFirewallServiceCheckDestroy(_ *terraform.State) error {
-	client := testAccProvider.Meta().(*api.Client)
+	client := testAccProvider.Meta().(*cphalo.Client)
 	resp, err := client.ListFirewallServices()
 
 	if err != nil {

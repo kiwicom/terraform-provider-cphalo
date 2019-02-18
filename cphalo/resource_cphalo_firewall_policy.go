@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/helper/validation"
-	"gitlab.skypicker.com/terraform-provider-cphalo/api"
+	"gitlab.com/kiwicom/cphalo-go"
 	"log"
 	"math"
 	"strings"
@@ -343,7 +343,7 @@ func validateFirewallRuleConnectionStates() schema.SchemaValidateFunc {
 }
 
 func resourceFirewallPolicyCreate(d *schema.ResourceData, i interface{}) error {
-	policy := api.FirewallPolicy{
+	policy := cphalo.FirewallPolicy{
 		Name:                  d.Get("name").(string),
 		Platform:              d.Get("platform").(string),
 		Description:           d.Get("description").(string),
@@ -351,7 +351,7 @@ func resourceFirewallPolicyCreate(d *schema.ResourceData, i interface{}) error {
 		IgnoreForwardingRules: d.Get("ignore_forwarding_rules").(bool),
 	}
 
-	client := i.(*api.Client)
+	client := i.(*cphalo.Client)
 
 	// parse firewall rules before creating a policy, in case there are some issues
 	inputRules, outputRules := parseFirewallPolicyRuleSet(d.Get("rule"))
@@ -380,7 +380,7 @@ func resourceFirewallPolicyCreate(d *schema.ResourceData, i interface{}) error {
 }
 
 func resourceFirewallPolicyRead(d *schema.ResourceData, i interface{}) error {
-	client := i.(*api.Client)
+	client := i.(*cphalo.Client)
 
 	resp, err := client.GetFirewallPolicy(d.Id())
 	if err != nil {
@@ -425,7 +425,7 @@ func resourceFirewallPolicyRead(d *schema.ResourceData, i interface{}) error {
 			fwServiceID = details.Rule.FirewallService.ID
 		}
 
-		applySourceTarget := func(output *schema.Set, input *api.FirewallRuleSourceTarget) {
+		applySourceTarget := func(output *schema.Set, input *cphalo.FirewallRuleSourceTarget) {
 			// normally we take the ID
 			id := input.ID
 
@@ -476,7 +476,7 @@ func resourceFirewallPolicyRead(d *schema.ResourceData, i interface{}) error {
 }
 
 func resourceFirewallPolicyUpdate(d *schema.ResourceData, i interface{}) error {
-	client := i.(*api.Client)
+	client := i.(*cphalo.Client)
 	_, err := client.GetFirewallPolicy(d.Id())
 
 	if err != nil {
@@ -498,7 +498,7 @@ func resourceFirewallPolicyUpdate(d *schema.ResourceData, i interface{}) error {
 	}
 
 	if d.HasChange("name") {
-		err := client.UpdateFirewallPolicy(api.FirewallPolicy{
+		err := client.UpdateFirewallPolicy(cphalo.FirewallPolicy{
 			ID:   d.Id(),
 			Name: d.Get("name").(string),
 		})
@@ -512,7 +512,7 @@ func resourceFirewallPolicyUpdate(d *schema.ResourceData, i interface{}) error {
 	}
 
 	if d.HasChange("platform") {
-		err := client.UpdateFirewallPolicy(api.FirewallPolicy{
+		err := client.UpdateFirewallPolicy(cphalo.FirewallPolicy{
 			ID:       d.Id(),
 			Platform: d.Get("platform").(string),
 		})
@@ -526,7 +526,7 @@ func resourceFirewallPolicyUpdate(d *schema.ResourceData, i interface{}) error {
 	}
 
 	if d.HasChange("description") {
-		err := client.UpdateFirewallPolicy(api.FirewallPolicy{
+		err := client.UpdateFirewallPolicy(cphalo.FirewallPolicy{
 			ID:          d.Id(),
 			Description: d.Get("description").(string),
 		})
@@ -570,7 +570,7 @@ func resourceFirewallPolicyUpdate(d *schema.ResourceData, i interface{}) error {
 	return resourceFirewallPolicyRead(d, i)
 }
 
-func applyFirewallPolicyRules(d *schema.ResourceData, client *api.Client, policyID string, inputRules, outputRules map[int]api.FirewallRule) error {
+func applyFirewallPolicyRules(d *schema.ResourceData, client *cphalo.Client, policyID string, inputRules, outputRules map[int]cphalo.FirewallRule) error {
 	existingRules, err := client.ListFirewallRules(policyID)
 	if err != nil {
 		return fmt.Errorf("could not fetch existing firewall rules for policy %s: %v", policyID, err)
@@ -608,7 +608,7 @@ func applyFirewallPolicyRules(d *schema.ResourceData, client *api.Client, policy
 
 	log.Printf("existing rules for policy %s have been deleted\n", d.Id())
 
-	createRule := func(rule api.FirewallRule) error {
+	createRule := func(rule cphalo.FirewallRule) error {
 		_, err := client.CreateFirewallRule(policyID, rule)
 		if err != nil {
 			return fmt.Errorf("cannot create firewall rule (%+v): %v", rule, err)
@@ -646,20 +646,20 @@ func applyFirewallPolicyRules(d *schema.ResourceData, client *api.Client, policy
 	return nil
 }
 
-func parseFirewallPolicyRuleSet(rules interface{}) (map[int]api.FirewallRule, map[int]api.FirewallRule) {
+func parseFirewallPolicyRuleSet(rules interface{}) (map[int]cphalo.FirewallRule, map[int]cphalo.FirewallRule) {
 	if rules == nil {
 		rules = new(schema.Set)
 	}
 
 	var (
-		inputRules  = make(map[int]api.FirewallRule)
-		outputRules = make(map[int]api.FirewallRule)
+		inputRules  = make(map[int]cphalo.FirewallRule)
+		outputRules = make(map[int]cphalo.FirewallRule)
 	)
 
 	for _, rawData := range rules.(*schema.Set).List() {
 		data := rawData.(map[string]interface{})
 
-		rule := api.FirewallRule{
+		rule := cphalo.FirewallRule{
 			FirewallInterface: nil,
 			FirewallService:   nil,
 			FirewallSource:    nil,
@@ -688,7 +688,7 @@ func parseFirewallPolicyRuleSet(rules interface{}) (map[int]api.FirewallRule, ma
 
 		if v, ok := data["firewall_interface"]; ok {
 			if id := v.(string); id != "" {
-				rule.FirewallInterface = &api.FirewallInterface{
+				rule.FirewallInterface = &cphalo.FirewallInterface{
 					ID: id,
 				}
 			}
@@ -696,7 +696,7 @@ func parseFirewallPolicyRuleSet(rules interface{}) (map[int]api.FirewallRule, ma
 
 		if v, ok := data["firewall_service"]; ok {
 			if id := v.(string); id != "" {
-				rule.FirewallService = &api.FirewallService{
+				rule.FirewallService = &cphalo.FirewallService{
 					ID: id,
 				}
 			}
@@ -707,7 +707,7 @@ func parseFirewallPolicyRuleSet(rules interface{}) (map[int]api.FirewallRule, ma
 			if s.Len() == 1 {
 				source := s.List()[0].(map[string]interface{})
 
-				rule.FirewallSource = &api.FirewallRuleSourceTarget{
+				rule.FirewallSource = &cphalo.FirewallRuleSourceTarget{
 					ID:   source["id"].(string),
 					Kind: source["kind"].(string),
 				}
@@ -719,7 +719,7 @@ func parseFirewallPolicyRuleSet(rules interface{}) (map[int]api.FirewallRule, ma
 			if s.Len() == 1 {
 				target := s.List()[0].(map[string]interface{})
 
-				rule.FirewallTarget = &api.FirewallRuleSourceTarget{
+				rule.FirewallTarget = &cphalo.FirewallRuleSourceTarget{
 					ID:   target["id"].(string),
 					Kind: target["kind"].(string),
 				}
@@ -737,7 +737,7 @@ func parseFirewallPolicyRuleSet(rules interface{}) (map[int]api.FirewallRule, ma
 }
 
 func resourceFirewallPolicyDelete(d *schema.ResourceData, i interface{}) (err error) {
-	client := i.(*api.Client)
+	client := i.(*cphalo.Client)
 
 	if err := client.DeleteFirewallPolicy(d.Id()); err != nil {
 		return fmt.Errorf("failed to delete %s: %v", d.Id(), err)

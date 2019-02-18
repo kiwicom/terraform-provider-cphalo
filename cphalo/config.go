@@ -1,7 +1,7 @@
 package cphalo
 
 import (
-	"gitlab.skypicker.com/terraform-provider-cphalo/api"
+	"gitlab.com/kiwicom/cphalo-go"
 )
 
 type Config struct {
@@ -9,9 +9,9 @@ type Config struct {
 	ApplicationSecret string
 }
 
-func (c *Config) Client() *api.Client {
+func (c *Config) Client() *cphalo.Client {
 
-	client := api.NewClient(c.ApplicationKey, c.ApplicationSecret)
+	client := cphalo.NewClient(c.ApplicationKey, c.ApplicationSecret)
 
 	logInfo("CP Client configured.")
 

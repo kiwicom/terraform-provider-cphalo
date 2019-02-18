@@ -3,7 +3,7 @@ package cphalo
 import (
 	"fmt"
 	"github.com/hashicorp/terraform/helper/schema"
-	"gitlab.skypicker.com/terraform-provider-cphalo/api"
+	"gitlab.com/kiwicom/cphalo-go"
 	"log"
 	"time"
 )
@@ -30,11 +30,11 @@ func resourceCPHaloFirewallInterface() *schema.Resource {
 }
 
 func resourceFirewallInterfaceCreate(d *schema.ResourceData, i interface{}) error {
-	policy := api.FirewallInterface{
+	policy := cphalo.FirewallInterface{
 		Name: d.Get("name").(string),
 	}
 
-	client := i.(*api.Client)
+	client := i.(*cphalo.Client)
 
 	resp, err := client.CreateFirewallInterface(policy)
 	if err != nil {
@@ -55,7 +55,7 @@ func resourceFirewallInterfaceCreate(d *schema.ResourceData, i interface{}) erro
 }
 
 func resourceFirewallInterfaceRead(d *schema.ResourceData, i interface{}) error {
-	client := i.(*api.Client)
+	client := i.(*cphalo.Client)
 
 	resp, err := client.GetFirewallInterface(d.Id())
 
@@ -71,7 +71,7 @@ func resourceFirewallInterfaceRead(d *schema.ResourceData, i interface{}) error 
 }
 
 func resourceFirewallInterfaceUpdate(d *schema.ResourceData, i interface{}) error {
-	client := i.(*api.Client)
+	client := i.(*cphalo.Client)
 	_, err := client.GetFirewallInterface(d.Id())
 
 	if err != nil {
@@ -81,7 +81,7 @@ func resourceFirewallInterfaceUpdate(d *schema.ResourceData, i interface{}) erro
 	d.Partial(true)
 
 	if d.HasChange("name") {
-		err := client.UpdateFirewallInterface(api.FirewallInterface{
+		err := client.UpdateFirewallInterface(cphalo.FirewallInterface{
 			ID:   d.Id(),
 			Name: d.Get("name").(string),
 		})
@@ -124,7 +124,7 @@ func resourceFirewallInterfaceUpdate(d *schema.ResourceData, i interface{}) erro
 }
 
 func resourceFirewallInterfaceDelete(d *schema.ResourceData, i interface{}) (err error) {
-	client := i.(*api.Client)
+	client := i.(*cphalo.Client)
 
 	if err := client.DeleteFirewallInterface(d.Id()); err != nil {
 		return fmt.Errorf("failed to delete %s: %v", d.Id(), err)

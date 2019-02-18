@@ -3,7 +3,7 @@ package cphalo
 import (
 	"fmt"
 	"github.com/hashicorp/terraform/helper/schema"
-	"gitlab.skypicker.com/terraform-provider-cphalo/api"
+	"gitlab.com/kiwicom/cphalo-go"
 	"time"
 )
 
@@ -55,16 +55,16 @@ func resourceCPHaloServerGroup() *schema.Resource {
 func resourceCPHaloServerGroupCreate(d *schema.ResourceData, i interface{}) error {
 	policyID := d.Get("linux_firewall_policy_id").(string)
 
-	group := api.ServerGroup{
+	group := cphalo.ServerGroup{
 		Name:                  d.Get("name").(string),
 		Description:           d.Get("description").(string),
 		ParentID:              d.Get("parent_id").(string),
 		Tag:                   d.Get("tag").(string),
-		LinuxFirewallPolicyID: api.NullableString(policyID),
+		LinuxFirewallPolicyID: cphalo.NullableString(policyID),
 		AlertProfileIDs:       expandStringList(d.Get("alert_profile_ids")),
 	}
 
-	client := i.(*api.Client)
+	client := i.(*cphalo.Client)
 
 	resp, err := client.CreateServerGroup(group)
 	if err != nil {
@@ -85,7 +85,7 @@ func resourceCPHaloServerGroupCreate(d *schema.ResourceData, i interface{}) erro
 }
 
 func resourceCPHaloServerGroupRead(d *schema.ResourceData, i interface{}) error {
-	client := i.(*api.Client)
+	client := i.(*cphalo.Client)
 
 	resp, err := client.GetServerGroup(d.Id())
 
@@ -107,7 +107,7 @@ func resourceCPHaloServerGroupRead(d *schema.ResourceData, i interface{}) error 
 }
 
 func resourceCPHaloServerGroupUpdate(d *schema.ResourceData, i interface{}) error {
-	client := i.(*api.Client)
+	client := i.(*cphalo.Client)
 	_, err := client.GetServerGroup(d.Id())
 
 	if err != nil {
@@ -116,7 +116,7 @@ func resourceCPHaloServerGroupUpdate(d *schema.ResourceData, i interface{}) erro
 
 	d.Partial(true)
 	if d.HasChange("name") {
-		if err := client.UpdateServerGroup(api.ServerGroup{ID: d.Id(), Name: d.Get("name").(string)}); err != nil {
+		if err := client.UpdateServerGroup(cphalo.ServerGroup{ID: d.Id(), Name: d.Get("name").(string)}); err != nil {
 			return fmt.Errorf("updating name of %s failed: %v", d.Id(), err)
 		}
 		d.SetPartial("name")
@@ -124,7 +124,7 @@ func resourceCPHaloServerGroupUpdate(d *schema.ResourceData, i interface{}) erro
 	}
 
 	if d.HasChange("description") {
-		if err := client.UpdateServerGroup(api.ServerGroup{ID: d.Id(), Description: d.Get("description").(string)}); err != nil {
+		if err := client.UpdateServerGroup(cphalo.ServerGroup{ID: d.Id(), Description: d.Get("description").(string)}); err != nil {
 			return fmt.Errorf("updating description of %s failed: %v", d.Id(), err)
 		}
 		d.SetPartial("description")
@@ -132,7 +132,7 @@ func resourceCPHaloServerGroupUpdate(d *schema.ResourceData, i interface{}) erro
 	}
 
 	if d.HasChange("tag") {
-		if err := client.UpdateServerGroup(api.ServerGroup{ID: d.Id(), Tag: d.Get("tag").(string)}); err != nil {
+		if err := client.UpdateServerGroup(cphalo.ServerGroup{ID: d.Id(), Tag: d.Get("tag").(string)}); err != nil {
 			return fmt.Errorf("updating tag of %s failed: %v", d.Id(), err)
 		}
 		d.SetPartial("tag")
@@ -140,7 +140,7 @@ func resourceCPHaloServerGroupUpdate(d *schema.ResourceData, i interface{}) erro
 	}
 
 	if d.HasChange("parent_id") {
-		if err := client.UpdateServerGroup(api.ServerGroup{ID: d.Id(), ParentID: d.Get("parent_id").(string)}); err != nil {
+		if err := client.UpdateServerGroup(cphalo.ServerGroup{ID: d.Id(), ParentID: d.Get("parent_id").(string)}); err != nil {
 			return fmt.Errorf("updating parent_id of %s failed: %v", d.Id(), err)
 		}
 		d.SetPartial("parent_id")
@@ -150,7 +150,7 @@ func resourceCPHaloServerGroupUpdate(d *schema.ResourceData, i interface{}) erro
 	if d.HasChange("linux_firewall_policy_id") {
 		policyID := d.Get("linux_firewall_policy_id").(string)
 
-		if err := client.UpdateServerGroup(api.ServerGroup{ID: d.Id(), LinuxFirewallPolicyID: api.NullableString(policyID)}); err != nil {
+		if err := client.UpdateServerGroup(cphalo.ServerGroup{ID: d.Id(), LinuxFirewallPolicyID: cphalo.NullableString(policyID)}); err != nil {
 			return fmt.Errorf("updating linux_firewall_policy_id of %s failed: %v", d.Id(), err)
 		}
 		d.SetPartial("linux_firewall_policy_id")
@@ -160,7 +160,7 @@ func resourceCPHaloServerGroupUpdate(d *schema.ResourceData, i interface{}) erro
 	if d.HasChange("alert_profile_ids") {
 		ids := expandStringList(d.Get("alert_profile_ids"))
 
-		if err := client.UpdateServerGroup(api.ServerGroup{ID: d.Id(), AlertProfileIDs: ids}); err != nil {
+		if err := client.UpdateServerGroup(cphalo.ServerGroup{ID: d.Id(), AlertProfileIDs: ids}); err != nil {
 			return fmt.Errorf("updating alert_profile_ids of %s failed: %v", d.Id(), err)
 		}
 		d.SetPartial("alert_profile_ids")
@@ -179,7 +179,7 @@ func resourceCPHaloServerGroupUpdate(d *schema.ResourceData, i interface{}) erro
 			resp.Group.Name == d.Get("name").(string),
 			resp.Group.Tag == d.Get("tag").(string),
 			resp.Group.ParentID == d.Get("parent_id").(string),
-			resp.Group.LinuxFirewallPolicyID == api.NullableString(d.Get("linux_firewall_policy_id").(string)),
+			resp.Group.LinuxFirewallPolicyID == cphalo.NullableString(d.Get("linux_firewall_policy_id").(string)),
 			assertStringSlice(resp.Group.AlertProfileIDs, expandStringList(d.Get("alert_profile_ids"))),
 		}
 
@@ -200,7 +200,7 @@ func resourceCPHaloServerGroupUpdate(d *schema.ResourceData, i interface{}) erro
 }
 
 func resourceCPHaloServerGroupDelete(d *schema.ResourceData, i interface{}) (err error) {
-	client := i.(*api.Client)
+	client := i.(*cphalo.Client)
 
 	if err := client.DeleteServerGroup(d.Id()); err != nil {
 		return fmt.Errorf("failed to delete %s: %v", d.Id(), err)

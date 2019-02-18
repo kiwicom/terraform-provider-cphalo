@@ -3,7 +3,7 @@ package cphalo
 import (
 	"fmt"
 	"github.com/hashicorp/terraform/helper/schema"
-	"gitlab.skypicker.com/terraform-provider-cphalo/api"
+	"gitlab.com/kiwicom/cphalo-go"
 	"time"
 )
 
@@ -47,7 +47,7 @@ func resourceCPHaloCSPAWSAccount() *schema.Resource {
 }
 
 func resourceCPHaloCSPAWSAccountCreate(d *schema.ResourceData, i interface{}) error {
-	account := api.CreateCSPAccountAWSRequest{
+	account := cphalo.CreateCSPAccountAWSRequest{
 		ExternalID:         d.Get("external_id").(string),
 		RoleArn:            d.Get("role_arn").(string),
 		GroupID:            d.Get("group_id").(string),
@@ -55,7 +55,7 @@ func resourceCPHaloCSPAWSAccountCreate(d *schema.ResourceData, i interface{}) er
 		CSPAccountType:     "aws",
 	}
 
-	client := i.(*api.Client)
+	client := i.(*cphalo.Client)
 
 	resp, err := client.CreateCSPAccount(account)
 	if err != nil {
@@ -76,7 +76,7 @@ func resourceCPHaloCSPAWSAccountCreate(d *schema.ResourceData, i interface{}) er
 }
 
 func resourceCPHaloCSPAWSAccountRead(d *schema.ResourceData, i interface{}) error {
-	client := i.(*api.Client)
+	client := i.(*cphalo.Client)
 
 	resp, err := client.GetCSPAccount(d.Id())
 
@@ -95,7 +95,7 @@ func resourceCPHaloCSPAWSAccountRead(d *schema.ResourceData, i interface{}) erro
 }
 
 func resourceCPHaloCSPAWSAccountUpdate(d *schema.ResourceData, i interface{}) error {
-	client := i.(*api.Client)
+	client := i.(*cphalo.Client)
 	_, err := client.GetCSPAccount(d.Id())
 
 	if err != nil {
@@ -103,7 +103,7 @@ func resourceCPHaloCSPAWSAccountUpdate(d *schema.ResourceData, i interface{}) er
 	}
 
 	if d.HasChange("account_display_name") {
-		cspAccount := api.CSPAccount{
+		cspAccount := cphalo.CSPAccount{
 			ID:                 d.Id(),
 			AccountDisplayName: d.Get("account_display_name").(string),
 			AWSRoleArn:         d.Get("role_arn").(string),
@@ -143,7 +143,7 @@ func resourceCPHaloCSPAWSAccountUpdate(d *schema.ResourceData, i interface{}) er
 }
 
 func resourceCPHaloCSPAWSAccountDelete(d *schema.ResourceData, i interface{}) (err error) {
-	client := i.(*api.Client)
+	client := i.(*cphalo.Client)
 
 	if err := client.DeleteCSPAccount(d.Id()); err != nil {
 		return fmt.Errorf("failed to delete %s: %v", d.Id(), err)

@@ -3,7 +3,7 @@ package cphalo
 import (
 	"fmt"
 	"github.com/hashicorp/terraform/helper/schema"
-	"gitlab.skypicker.com/terraform-provider-cphalo/api"
+	"gitlab.com/kiwicom/cphalo-go"
 	"log"
 	"time"
 )
@@ -38,13 +38,13 @@ func resourceCPHaloFirewallZone() *schema.Resource {
 }
 
 func resourceFirewallZoneCreate(d *schema.ResourceData, i interface{}) error {
-	policy := api.FirewallZone{
+	policy := cphalo.FirewallZone{
 		Name:        d.Get("name").(string),
-		IpAddress:   d.Get("ip_address").(string),
+		IPAddress:   d.Get("ip_address").(string),
 		Description: d.Get("description").(string),
 	}
 
-	client := i.(*api.Client)
+	client := i.(*cphalo.Client)
 
 	resp, err := client.CreateFirewallZone(policy)
 	if err != nil {
@@ -65,7 +65,7 @@ func resourceFirewallZoneCreate(d *schema.ResourceData, i interface{}) error {
 }
 
 func resourceFirewallZoneRead(d *schema.ResourceData, i interface{}) error {
-	client := i.(*api.Client)
+	client := i.(*cphalo.Client)
 
 	resp, err := client.GetFirewallZone(d.Id())
 
@@ -76,14 +76,14 @@ func resourceFirewallZoneRead(d *schema.ResourceData, i interface{}) error {
 	zone := resp.Zone
 
 	d.Set("name", zone.Name)
-	d.Set("ip_address", zone.IpAddress)
+	d.Set("ip_address", zone.IPAddress)
 	d.Set("description", zone.Description)
 
 	return nil
 }
 
 func resourceFirewallZoneUpdate(d *schema.ResourceData, i interface{}) error {
-	client := i.(*api.Client)
+	client := i.(*cphalo.Client)
 	_, err := client.GetFirewallZone(d.Id())
 
 	if err != nil {
@@ -93,7 +93,7 @@ func resourceFirewallZoneUpdate(d *schema.ResourceData, i interface{}) error {
 	d.Partial(true)
 
 	if d.HasChange("name") {
-		err := client.UpdateFirewallZone(api.FirewallZone{
+		err := client.UpdateFirewallZone(cphalo.FirewallZone{
 			ID:   d.Id(),
 			Name: d.Get("name").(string),
 		})
@@ -107,9 +107,9 @@ func resourceFirewallZoneUpdate(d *schema.ResourceData, i interface{}) error {
 	}
 
 	if d.HasChange("ip_address") {
-		err := client.UpdateFirewallZone(api.FirewallZone{
+		err := client.UpdateFirewallZone(cphalo.FirewallZone{
 			ID:        d.Id(),
-			IpAddress: d.Get("ip_address").(string),
+			IPAddress: d.Get("ip_address").(string),
 		})
 
 		if err != nil {
@@ -121,7 +121,7 @@ func resourceFirewallZoneUpdate(d *schema.ResourceData, i interface{}) error {
 	}
 
 	if d.HasChange("description") {
-		err := client.UpdateFirewallZone(api.FirewallZone{
+		err := client.UpdateFirewallZone(cphalo.FirewallZone{
 			ID:          d.Id(),
 			Description: d.Get("description").(string),
 		})
@@ -145,7 +145,7 @@ func resourceFirewallZoneUpdate(d *schema.ResourceData, i interface{}) error {
 
 		matches := []bool{
 			resp.Zone.Name == d.Get("name").(string),
-			resp.Zone.IpAddress == d.Get("ip_address").(string),
+			resp.Zone.IPAddress == d.Get("ip_address").(string),
 		}
 
 		for _, match := range matches {
@@ -165,7 +165,7 @@ func resourceFirewallZoneUpdate(d *schema.ResourceData, i interface{}) error {
 }
 
 func resourceFirewallZoneDelete(d *schema.ResourceData, i interface{}) (err error) {
-	client := i.(*api.Client)
+	client := i.(*cphalo.Client)
 
 	if err := client.DeleteFirewallZone(d.Id()); err != nil {
 		return fmt.Errorf("failed to delete %s: %v", d.Id(), err)

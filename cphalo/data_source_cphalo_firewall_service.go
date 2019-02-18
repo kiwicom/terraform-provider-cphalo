@@ -2,7 +2,7 @@ package cphalo
 
 import (
 	"fmt"
-	"gitlab.skypicker.com/terraform-provider-cphalo/api"
+	"gitlab.com/kiwicom/cphalo-go"
 	"strings"
 
 	"github.com/hashicorp/terraform/helper/schema"
@@ -28,10 +28,10 @@ func dataSourceCPHaloFirewallService() *schema.Resource {
 func dataSourceFirewallServiceRead(d *schema.ResourceData, meta interface{}) error {
 	var (
 		err             error
-		client          = meta.(*api.Client)
+		client          = meta.(*cphalo.Client)
 		name            = d.Get("name").(string)
-		services        api.ListFirewallServicesResponse
-		selectedService api.FirewallService
+		services        cphalo.ListFirewallServicesResponse
+		selectedService cphalo.FirewallService
 	)
 
 	if services, err = client.ListFirewallServices(); err != nil {

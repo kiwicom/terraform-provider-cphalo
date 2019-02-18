@@ -3,7 +3,7 @@ package cphalo
 import (
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/helper/schema"
-	"gitlab.skypicker.com/terraform-provider-cphalo/api"
+	"gitlab.com/kiwicom/cphalo-go"
 	"time"
 )
 
@@ -53,7 +53,7 @@ func createStateChangeDefault(d *schema.ResourceData, f func() (interface{}, err
 			return resp, StateChangeChanged, nil
 		}
 
-		if _, ok := err.(*api.ResponseError404); ok {
+		if _, ok := err.(*cphalo.ResponseError404); ok {
 			return resp, StateChangeWaiting, nil
 		}
 
@@ -74,7 +74,7 @@ func deleteStateChangeDefault(d *schema.ResourceData, f func() (interface{}, err
 			return resp, StateChangeWaiting, nil
 		}
 
-		if _, ok := err.(*api.ResponseError404); ok {
+		if _, ok := err.(*cphalo.ResponseError404); ok {
 			return resp, StateChangeChanged, nil
 		}
 

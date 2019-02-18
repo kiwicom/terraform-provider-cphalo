@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
-	"gitlab.skypicker.com/terraform-provider-cphalo/api"
+	"gitlab.com/kiwicom/cphalo-go"
 	"strings"
 	"testing"
 )
@@ -225,9 +225,9 @@ func TestAccFirewallPolicy_basic(t *testing.T) {
 
 func testFirewallPolicyAttributes(expectedPolicy expectedFirewallPolicy) (err error) {
 	var (
-		client = testAccProvider.Meta().(*api.Client)
-		policy api.FirewallPolicy
-		resp   api.ListFirewallRulesResponse
+		client = testAccProvider.Meta().(*cphalo.Client)
+		policy cphalo.FirewallPolicy
+		resp   cphalo.ListFirewallRulesResponse
 	)
 
 	if policy, err = testHelperFindFirewallPolicyByName(expectedPolicy.name); err != nil {
@@ -249,8 +249,8 @@ func testFirewallPolicyAttributes(expectedPolicy expectedFirewallPolicy) (err er
 	return nil
 }
 
-func testHelperFindFirewallPolicyByName(name string) (policy api.FirewallPolicy, err error) {
-	client := testAccProvider.Meta().(*api.Client)
+func testHelperFindFirewallPolicyByName(name string) (policy cphalo.FirewallPolicy, err error) {
+	client := testAccProvider.Meta().(*cphalo.Client)
 	resp, err := client.ListFirewallPolicies()
 
 	name = testID + name
@@ -268,7 +268,7 @@ func testHelperFindFirewallPolicyByName(name string) (policy api.FirewallPolicy,
 	return policy, nil
 }
 
-func testHelperCompareFirewallPolicyAttributes(policy api.FirewallPolicy, expectedPolicy expectedFirewallPolicy) error {
+func testHelperCompareFirewallPolicyAttributes(policy cphalo.FirewallPolicy, expectedPolicy expectedFirewallPolicy) error {
 	if policy.Name == "" {
 		return fmt.Errorf("could not find firewall policy %s", expectedPolicy.name)
 	}
@@ -288,16 +288,16 @@ func testHelperCompareFirewallPolicyAttributes(policy api.FirewallPolicy, expect
 	return nil
 }
 
-func testHelperCompareFirewallPolicyRuleAttributes(client *api.Client, rules []api.FirewallRule, policy api.FirewallPolicy, expectedPolicy expectedFirewallPolicy) (err error) {
+func testHelperCompareFirewallPolicyRuleAttributes(client *cphalo.Client, rules []cphalo.FirewallRule, policy cphalo.FirewallPolicy, expectedPolicy expectedFirewallPolicy) (err error) {
 	var (
-		rule         api.FirewallRule
-		ruleResp     api.GetFirewallRuleResponse
-		fetchedRules = make(map[string]api.FirewallRule, len(rules))
+		rule         cphalo.FirewallRule
+		ruleResp     cphalo.GetFirewallRuleResponse
+		fetchedRules = make(map[string]cphalo.FirewallRule, len(rules))
 	)
 
 	// TODO: cleanup this mess
 	for _, expectedRule := range expectedPolicy.rules {
-		var found api.FirewallRule
+		var found cphalo.FirewallRule
 
 		for _, r := range rules {
 			var ok bool
@@ -360,7 +360,7 @@ func testHelperCompareFirewallPolicyRuleAttributes(client *api.Client, rules []a
 					}
 
 					matches = append(matches, rule.FirewallSource.Name == expectedName)
-					matches = append(matches, rule.FirewallSource.IpAddress == expectedRule.fwSource.ipAddress)
+					matches = append(matches, rule.FirewallSource.IPAddress == expectedRule.fwSource.ipAddress)
 					matches = append(matches, rule.FirewallSource.Kind == expectedRule.fwSource.kind)
 				}
 			}
@@ -377,7 +377,7 @@ func testHelperCompareFirewallPolicyRuleAttributes(client *api.Client, rules []a
 					}
 
 					matches = append(matches, rule.FirewallTarget.Name == expectedName)
-					matches = append(matches, rule.FirewallTarget.IpAddress == expectedRule.fwTarget.ipAddress)
+					matches = append(matches, rule.FirewallTarget.IPAddress == expectedRule.fwTarget.ipAddress)
 					matches = append(matches, rule.FirewallTarget.Kind == expectedRule.fwTarget.kind)
 				}
 			}
@@ -403,7 +403,7 @@ func testHelperCompareFirewallPolicyRuleAttributes(client *api.Client, rules []a
 }
 
 func testAccFirewallPolicyCheckDestroy(_ *terraform.State) error {
-	client := testAccProvider.Meta().(*api.Client)
+	client := testAccProvider.Meta().(*cphalo.Client)
 	resp, err := client.ListFirewallPolicies()
 
 	if err != nil {

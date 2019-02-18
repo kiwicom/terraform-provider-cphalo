@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
-	"gitlab.skypicker.com/terraform-provider-cphalo/api"
+	"gitlab.com/kiwicom/cphalo-go"
 	"strings"
 	"testing"
 )
@@ -30,7 +30,7 @@ func TestAccServerGroup_basic(t *testing.T) {
 			{
 				Config: testAccCPHaloServerGroupConfig(t, 3),
 				Check: resource.ComposeTestCheckFunc(func(_ *terraform.State) error {
-					client := testAccProvider.Meta().(*api.Client)
+					client := testAccProvider.Meta().(*cphalo.Client)
 					resp, err := client.ListServerGroups()
 
 					if err != nil {
@@ -56,7 +56,7 @@ func TestAccServerGroup_basic(t *testing.T) {
 			{
 				Config: testAccCPHaloServerGroupConfig(t, 4),
 				Check: resource.ComposeTestCheckFunc(func(_ *terraform.State) error {
-					client := testAccProvider.Meta().(*api.Client)
+					client := testAccProvider.Meta().(*cphalo.Client)
 					resp, err := client.ListServerGroups()
 					nameExpected := testID + "changed_name"
 
@@ -64,7 +64,7 @@ func TestAccServerGroup_basic(t *testing.T) {
 						return fmt.Errorf("cannot fetch server groups: %v", err)
 					}
 
-					var found api.ServerGroup
+					var found cphalo.ServerGroup
 					var servers []string
 					for _, g := range resp.Groups {
 						servers = append(servers, g.Name)
@@ -89,7 +89,7 @@ func TestAccServerGroup_basic(t *testing.T) {
 }
 
 func testServerGroupAttributes(nameExpected, tagExpected, descriptionExpected string) error {
-	client := testAccProvider.Meta().(*api.Client)
+	client := testAccProvider.Meta().(*cphalo.Client)
 	resp, err := client.ListServerGroups()
 
 	if err != nil {
@@ -102,7 +102,7 @@ func testServerGroupAttributes(nameExpected, tagExpected, descriptionExpected st
 		tagExpected = testID + tagExpected
 	}
 
-	var found api.ServerGroup
+	var found cphalo.ServerGroup
 	var servers []string
 	for _, g := range resp.Groups {
 		servers = append(servers, g.Name)
@@ -135,7 +135,7 @@ func testServerGroupAttributes(nameExpected, tagExpected, descriptionExpected st
 }
 
 func testAccCPHaloCheckDestroy(_ *terraform.State) error {
-	client := testAccProvider.Meta().(*api.Client)
+	client := testAccProvider.Meta().(*cphalo.Client)
 	resp, err := client.ListServerGroups()
 
 	if err != nil {
