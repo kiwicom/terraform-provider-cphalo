@@ -1,10 +1,11 @@
 package cphalo
 
 import (
+	"time"
+
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/helper/schema"
 	"gitlab.com/kiwicom/cphalo-go"
-	"time"
 )
 
 const (

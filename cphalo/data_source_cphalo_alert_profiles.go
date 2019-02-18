@@ -2,6 +2,7 @@ package cphalo
 
 import (
 	"fmt"
+
 	"github.com/hashicorp/terraform/helper/schema"
 	"gitlab.com/kiwicom/cphalo-go"
 )
@@ -48,7 +49,7 @@ func dataSourceAlertProfileRead(d *schema.ResourceData, meta interface{}) error 
 	}
 
 	d.SetId(selected.ID)
-	d.Set("name", selected.Name)
+	_ = d.Set("name", selected.Name)
 
 	return nil
 }

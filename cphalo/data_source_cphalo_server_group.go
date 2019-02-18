@@ -2,10 +2,10 @@ package cphalo
 
 import (
 	"fmt"
-	"gitlab.com/kiwicom/cphalo-go"
 	"strings"
 
 	"github.com/hashicorp/terraform/helper/schema"
+	"gitlab.com/kiwicom/cphalo-go"
 )
 
 func dataSourceCPHaloServerGroup() *schema.Resource {
@@ -51,8 +51,8 @@ func dataSourceCPHaloServerGroupRead(d *schema.ResourceData, meta interface{}) e
 	}
 
 	d.SetId(selectedGroup.ID)
-	d.Set("name", selectedGroup.Name)
-	d.Set("parent_id", selectedGroup.ParentID)
+	_ = d.Set("name", selectedGroup.Name)
+	_ = d.Set("parent_id", selectedGroup.ParentID)
 
 	return nil
 }

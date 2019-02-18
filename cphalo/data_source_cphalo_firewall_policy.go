@@ -2,10 +2,10 @@ package cphalo
 
 import (
 	"fmt"
-	"gitlab.com/kiwicom/cphalo-go"
 	"strings"
 
 	"github.com/hashicorp/terraform/helper/schema"
+	"gitlab.com/kiwicom/cphalo-go"
 )
 
 func dataSourceCPHaloFirewallPolicy() *schema.Resource {
@@ -50,7 +50,7 @@ func dataSourceFirewallPolicyRead(d *schema.ResourceData, meta interface{}) erro
 	}
 
 	d.SetId(selectedPolicy.ID)
-	d.Set("name", selectedPolicy.Name)
+	_ = d.Set("name", selectedPolicy.Name)
 
 	return nil
 }

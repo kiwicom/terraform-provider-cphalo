@@ -2,11 +2,12 @@ package cphalo
 
 import (
 	"fmt"
+	"log"
+	"time"
+
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/helper/validation"
 	"gitlab.com/kiwicom/cphalo-go"
-	"log"
-	"time"
 )
 
 var (
@@ -81,9 +82,9 @@ func resourceFirewallServiceRead(d *schema.ResourceData, i interface{}) error {
 
 	service := resp.Service
 
-	d.Set("name", service.Name)
-	d.Set("protocol", service.Protocol)
-	d.Set("port", service.Port)
+	_ = d.Set("name", service.Name)
+	_ = d.Set("protocol", service.Protocol)
+	_ = d.Set("port", service.Port)
 
 	return nil
 }

@@ -2,9 +2,10 @@ package cphalo
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/hashicorp/terraform/helper/schema"
 	"gitlab.com/kiwicom/cphalo-go"
-	"time"
 )
 
 func resourceCPHaloCSPAWSAccount() *schema.Resource {
@@ -86,10 +87,10 @@ func resourceCPHaloCSPAWSAccountRead(d *schema.ResourceData, i interface{}) erro
 
 	account := resp.CSPAccount
 
-	d.Set("external_id", account.AWSExternalID)
-	d.Set("role_arn", account.AWSRoleArn)
-	d.Set("group_id", account.GroupID)
-	d.Set("account_display_name", account.AccountDisplayName)
+	_ = d.Set("external_id", account.AWSExternalID)
+	_ = d.Set("role_arn", account.AWSRoleArn)
+	_ = d.Set("group_id", account.GroupID)
+	_ = d.Set("account_display_name", account.AccountDisplayName)
 
 	return nil
 }

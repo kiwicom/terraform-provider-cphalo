@@ -2,11 +2,12 @@ package cphalo
 
 import (
 	"fmt"
+	"strings"
+	"testing"
+
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
 	"gitlab.com/kiwicom/cphalo-go"
-	"strings"
-	"testing"
 )
 
 func TestAccFirewallService_basic(t *testing.T) {

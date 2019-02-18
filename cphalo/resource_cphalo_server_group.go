@@ -2,9 +2,10 @@ package cphalo
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/hashicorp/terraform/helper/schema"
 	"gitlab.com/kiwicom/cphalo-go"
-	"time"
 )
 
 func resourceCPHaloServerGroup() *schema.Resource {
@@ -96,12 +97,12 @@ func resourceCPHaloServerGroupRead(d *schema.ResourceData, i interface{}) error 
 
 	group := resp.Group
 
-	d.Set("name", group.Name)
-	d.Set("description", group.Description)
-	d.Set("parent_id", group.ParentID)
-	d.Set("tag", group.Tag)
-	d.Set("linux_firewall_policy_id", group.LinuxFirewallPolicyID)
-	d.Set("alert_profile_ids", group.AlertProfileIDs)
+	_ = d.Set("name", group.Name)
+	_ = d.Set("description", group.Description)
+	_ = d.Set("parent_id", group.ParentID)
+	_ = d.Set("tag", group.Tag)
+	_ = d.Set("linux_firewall_policy_id", group.LinuxFirewallPolicyID)
+	_ = d.Set("alert_profile_ids", group.AlertProfileIDs)
 
 	return nil
 }

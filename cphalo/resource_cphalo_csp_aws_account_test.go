@@ -2,12 +2,13 @@ package cphalo
 
 import (
 	"fmt"
-	"github.com/hashicorp/terraform/helper/resource"
-	"github.com/hashicorp/terraform/terraform"
-	"gitlab.com/kiwicom/cphalo-go"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/hashicorp/terraform/helper/resource"
+	"github.com/hashicorp/terraform/terraform"
+	"gitlab.com/kiwicom/cphalo-go"
 )
 
 func TestAccCSPAWSAccount_basic(t *testing.T) {

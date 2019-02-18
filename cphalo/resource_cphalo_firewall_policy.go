@@ -3,15 +3,16 @@ package cphalo
 import (
 	"bytes"
 	"fmt"
+	"log"
+	"math"
+	"strings"
+	"time"
+
 	"github.com/hashicorp/terraform/helper/hashcode"
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/helper/validation"
 	"gitlab.com/kiwicom/cphalo-go"
-	"log"
-	"math"
-	"strings"
-	"time"
 )
 
 var (
@@ -389,11 +390,11 @@ func resourceFirewallPolicyRead(d *schema.ResourceData, i interface{}) error {
 
 	policy := resp.Policy
 
-	d.Set("name", policy.Name)
-	d.Set("platform", policy.Platform)
-	d.Set("description", policy.Description)
-	d.Set("shared", policy.Shared)
-	d.Set("ignore_forwarding_rules", policy.IgnoreForwardingRules)
+	_ = d.Set("name", policy.Name)
+	_ = d.Set("platform", policy.Platform)
+	_ = d.Set("description", policy.Description)
+	_ = d.Set("shared", policy.Shared)
+	_ = d.Set("ignore_forwarding_rules", policy.IgnoreForwardingRules)
 
 	apiRules, err := client.ListFirewallRules(d.Id())
 	if err != nil {

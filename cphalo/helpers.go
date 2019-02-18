@@ -69,7 +69,7 @@ func setTestID() {
 	testID = os.Getenv("CPHALO_TEST_ID")
 	if testID == "" {
 		h := sha1.New()
-		h.Write([]byte(time.Now().String() + string(rand.Int())))
+		_, _ = h.Write([]byte(time.Now().String() + string(rand.Int())))
 		testID = fmt.Sprintf("%x", h.Sum(nil))[:6]
 	}
 

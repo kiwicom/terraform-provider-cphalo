@@ -2,10 +2,11 @@ package cphalo
 
 import (
 	"fmt"
-	"github.com/hashicorp/terraform/helper/schema"
-	"gitlab.com/kiwicom/cphalo-go"
 	"log"
 	"time"
+
+	"github.com/hashicorp/terraform/helper/schema"
+	"gitlab.com/kiwicom/cphalo-go"
 )
 
 func resourceCPHaloFirewallZone() *schema.Resource {
@@ -75,9 +76,9 @@ func resourceFirewallZoneRead(d *schema.ResourceData, i interface{}) error {
 
 	zone := resp.Zone
 
-	d.Set("name", zone.Name)
-	d.Set("ip_address", zone.IPAddress)
-	d.Set("description", zone.Description)
+	_ = d.Set("name", zone.Name)
+	_ = d.Set("ip_address", zone.IPAddress)
+	_ = d.Set("description", zone.Description)
 
 	return nil
 }
