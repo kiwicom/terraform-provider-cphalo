@@ -66,8 +66,6 @@ github.com/hashicorp/vault v0.10.4 h1:4x0lHxui/ZRp/B3E0Auv1QNBJpzETqHR2kQD3mHSBJ
 github.com/hashicorp/vault v0.10.4/go.mod h1:KfSyffbKxoVyspOdlaGVjIuwLobi07qD1bAbosPMpP0=
 github.com/hashicorp/yamux v0.0.0-20160720233140-d1caa6c97c9f h1:K4RDeor/qhbs5ETM85SN8xekXkk+KkOBclNXXM8+UR0=
 github.com/hashicorp/yamux v0.0.0-20160720233140-d1caa6c97c9f/go.mod h1:+NfK9FKeTrX5uv1uIXGdwYDTeHna2qgaIlx54MXqjAM=
-github.com/inconshreveable/mousetrap v1.0.0 h1:Z8tu5sraLXCXIcARxBp/8cbvlwVa7Z1NHg9XEKhtSvM=
-github.com/inconshreveable/mousetrap v1.0.0/go.mod h1:PxqpIevigyE2G7u3NXJIT2ANytuPF1OarO4DADm73n8=
 github.com/jen20/awspolicyequivalence v1.0.0 h1:jLRh4GRf0IfIpMm9/m+krLnjAda4NpI9+2o5Kb/Q+G4=
 github.com/jen20/awspolicyequivalence v1.0.0/go.mod h1:PV1fS2xyHhCLp83vbgSMFr2drM4GzG61wkz+k4pOG3E=
 github.com/jmespath/go-jmespath v0.0.0-20180206201540-c2b33e8439af h1:pmfjZENx5imkbgOkpRUYLnmbU7UEFbjtDA2hxJ1ichM=
@@ -108,8 +106,6 @@ github.com/posener/complete v0.0.0-20170730193024-f4461a52b632 h1:/BqixcUMwSgBfl
 github.com/posener/complete v0.0.0-20170730193024-f4461a52b632/go.mod h1:em0nMJCgc9GFtwrmVmEMR/ZL6WyhyjMBndrE9hABlRI=
 github.com/pquerna/otp v0.0.0-20180813144649-be78767b3e39 h1:XgT+Lddv+T5lOP+FauMBWuHqf3zJH4FkkrFrRGzrino=
 github.com/pquerna/otp v0.0.0-20180813144649-be78767b3e39/go.mod h1:Zad1CMQfSQZI5KLpahDiSUX4tMMREnXw98IvL1nhgMk=
-github.com/spf13/cobra v0.0.3 h1:ZlrZ4XsMRm04Fr5pSFxBgfND2EBVa1nLpiy1stUsX/8=
-github.com/spf13/cobra v0.0.3/go.mod h1:1l0Ry5zgKvJasoi3XT1TypsSe7PqH0Sj9dhYf7v3XqQ=
 github.com/spf13/pflag v1.0.3 h1:zPAT6CGy6wXeQ7NtTnaTerfKOsV6V6F8agHXFiazDkg=
 github.com/spf13/pflag v1.0.3/go.mod h1:DYY7MBk1bdzusC3SYhjObp+wFpr4gzcvqqNjLnInEg4=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
@@ -125,8 +121,6 @@ github.com/ulikunitz/xz v0.5.4 h1:zATC2OoZ8H1TZll3FpbX+ikwmadbO699PE06cIkm9oU=
 github.com/ulikunitz/xz v0.5.4/go.mod h1:2bypXElzHzzJZwzH67Y6wb67pO62Rzfn7BSiF4ABRW8=
 github.com/zclconf/go-cty v0.0.0-20180106055834-709e4033eeb0 h1:xHRHIyTGBaOmmNAbnHBRJvPUrOP1/cOfNHFOGc4OoSM=
 github.com/zclconf/go-cty v0.0.0-20180106055834-709e4033eeb0/go.mod h1:LnDKxj8gN4aatfXUqmUNooaDjvmDcLPbAN3hYBIVoJE=
-gitlab.com/kiwicom/cphalo-go v0.0.0-20190215120936-a5e91319a337 h1:fCIPujC7KNGADnDa+0NTZoB7+f7JqJ/O6eX/9snae2s=
-gitlab.com/kiwicom/cphalo-go v0.0.0-20190215120936-a5e91319a337/go.mod h1:duBL6WrYBUBVNrYCvVvRmQvJYaxUnzeYOO/raRsyJgA=
 gitlab.com/kiwicom/cphalo-go v0.0.0-20190218101341-17c89763143f h1:HzjJ12/wbnWHxb+kYmLCYpRlLcvTggF2kAf+oTvcsBs=
 gitlab.com/kiwicom/cphalo-go v0.0.0-20190218101341-17c89763143f/go.mod h1:duBL6WrYBUBVNrYCvVvRmQvJYaxUnzeYOO/raRsyJgA=
 golang.org/x/crypto v0.0.0-20180110145155-b3c9a1d25cfb h1:lexDMTenYWvxW3Jdsfw/G56ScdrDWVlfljIeYM6ZG60=
