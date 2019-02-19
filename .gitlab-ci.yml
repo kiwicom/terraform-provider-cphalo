@@ -21,23 +21,19 @@ cache:
   before_script:
     - apk add --update zip make git
 
-tests/unit:
+tests:
   <<: *install-deps
   stage: test
   script:
-    - make .env
     - make test
 
-tests/race:
-  image: golang
-  variables:
-    CGO_ENABLED: 1
+lint:
+  <<: *install-deps
   stage: test
   script:
-    - make .env
-    - make race
+    - make lint
 
-tests_acceptance:
+tests_acc:
   <<: *install-deps
   stage: acceptanceTest
   script:
@@ -47,8 +43,6 @@ build:
   <<: *install-deps
   stage: build
   script:
-    - make build-sandbox
-    - make build-client
     - export RELEASE_VERSION=${CI_COMMIT_TAG:-"v0.0.0-${CI_COMMIT_REF_SLUG}"}
     - echo "Building version ${RELEASE_VERSION}"
     - make release VERSION=${RELEASE_VERSION}

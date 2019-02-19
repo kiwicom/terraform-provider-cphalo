@@ -1,77 +1,47 @@
-.PHONY: build build-plugin build-sandbox build-client run-plugin run-sandbox run-client test race testacc tf-init tf-apply tf-plan tf-destroy clean release
+.PHONY: build run lint testacc test clean release
 
 vars:=$(shell test -f .env && grep -v '^\#' .env | xargs)
 VERSION:=v0.0.0-local
 
-build: build-plugin build-sandbox build-client
+#? build: build binary for current system
+build: bin/current_system/terraform-provider-cphalo_$(VERSION)
 
-build-plugin: bin/plugin/current_system/terraform-provider-cphalo_$(VERSION)
+#? run: run plugin
+run: build
+	bin/current_system/terraform-provider-cphalo
 
-build-sandbox:
-	CGO_ENABLED=0 go build -o bin/sandbox -ldflags="-s -w" cmd/sandbox/sandbox.go
+#? lint: run a meta linter
+lint:
+	@hash golangci-lint || (echo "Download golangci-lint from https://github.com/golangci/golangci-lint#install" && exit 1)
+	golangci-lint run
 
-build-client:
-	CGO_ENABLED=0 go build -o bin/client -ldflags="-s -w" cmd/client/*.go
-
-run-plugin: build-plugin
-	bin/plugin/current_system/terraform-provider-cphalo
-
-run-sandbox: build-sandbox
-	$(vars) bin/sandbox
-
-run-client: endpoint=csp-accounts
-run-client: build-client
-	@$(vars) bin/client $(endpoint)
-
-test:
-	go test -v -cover -timeout 1m ./api
-
-race:
-	go test -v -race -timeout 2m ./api
-
+#? testacc: run acceptance tests
 testacc:
 	$(vars) TF_ACC=1 go test -cover -v -timeout 15m -failfast ./cphalo
+
+#? test: run unit tests
+test:
+	$(vars) go test -v ./...
 
 .env:
 	cp .env.example .env
 
-tf-init: build-plugin
-	terraform init -plugin-dir=bin/plugin/current_system/
-
-tf-apply: tf-init
-	$(vars) terraform apply
-
-tf-plan: tf-init
-	$(vars) terraform plan
-
-tf-destroy:
-	$(vars) terraform destroy
-
+#? clean: removes all artificats
 clean:
-	rm -fr terraform.tfstate* crash.log bin/*
+	rm -fr bin/
 
-bin/plugin/current_system/terraform-provider-cphalo_%:  GOARGS =
-bin/plugin/darwin_amd64/terraform-provider-cphalo_%:  GOARGS = GOOS=darwin GOARCH=amd64
-bin/plugin/linux_amd64/terraform-provider-cphalo_%:  GOARGS = GOOS=linux GOARCH=amd64
-bin/plugin/linux_386/terraform-provider-cphalo_%:  GOARGS = GOOS=linux GOARCH=386
-bin/plugin/linux_arm/terraform-provider-cphalo_%:  GOARGS = GOOS=linux GOARCH=arm
-bin/plugin/windows_amd64/terraform-provider-cphalo_%:  GOARGS = GOOS=windows GOARCH=amd64
-bin/plugin/windows_386/terraform-provider-cphalo_%:  GOARGS = GOOS=windows GOARCH=386
+bin/current_system/terraform-provider-cphalo_%:  GOARGS =
+bin/darwin_amd64/terraform-provider-cphalo_%:  GOARGS = GOOS=darwin GOARCH=amd64
+bin/linux_amd64/terraform-provider-cphalo_%:  GOARGS = GOOS=linux GOARCH=amd64
+bin/linux_386/terraform-provider-cphalo_%:  GOARGS = GOOS=linux GOARCH=386
+bin/linux_arm/terraform-provider-cphalo_%:  GOARGS = GOOS=linux GOARCH=arm
+bin/windows_amd64/terraform-provider-cphalo_%:  GOARGS = GOOS=windows GOARCH=amd64
+bin/windows_386/terraform-provider-cphalo_%:  GOARGS = GOOS=windows GOARCH=386
 
-bin/plugin/%/terraform-provider-cphalo_$(VERSION): clean
-	$(GOARGS) CGO_ENABLED=0 go build -o $@ -ldflags="-s -w" -a cmd/tf-plugin/plugin.go
+bin/%/terraform-provider-cphalo_$(VERSION): clean
+	$(GOARGS) CGO_ENABLED=0 go build -o $@ -ldflags="-s -w" .
 
-bin/client/current_system/cphalo_client:  GOARGS =
-bin/client/darwin_amd64/cphalo_client:  GOARGS = GOOS=darwin GOARCH=amd64
-bin/client/linux_amd64/cphalo_client:  GOARGS = GOOS=linux GOARCH=amd64
-bin/client/linux_386/cphalo_client:  GOARGS = GOOS=linux GOARCH=386
-bin/client/linux_arm/cphalo_client:  GOARGS = GOOS=linux GOARCH=arm
-bin/client/windows_amd64/cphalo_client:  GOARGS = GOOS=windows GOARCH=amd64
-bin/client/windows_386/cphalo_client:  GOARGS = GOOS=windows GOARCH=386
-
-bin/client/%/cphalo_client:
-	$(GOARGS) CGO_ENABLED=0 go build -o $@ -ldflags="-s -w" -a cmd/client/*.go
-
+#? release: make a release for all systems
 release: \
 	bin/release/terraform-provider-cphalo_darwin_amd64.zip \
 	bin/release/terraform-provider-cphalo_linux_amd64.zip \
@@ -82,8 +52,12 @@ release: \
 
 bin/release/terraform-provider-cphalo_%.zip: NAME=terraform-provider-cphalo_$(VERSION)_$*
 bin/release/terraform-provider-cphalo_%.zip: DEST=bin/release/$(VERSION)/$(NAME)
-bin/release/terraform-provider-cphalo_%.zip: bin/plugin/%/terraform-provider-cphalo_$(VERSION) bin/client/%/cphalo_client
+bin/release/terraform-provider-cphalo_%.zip: bin/%/terraform-provider-cphalo_$(VERSION)
 	mkdir -p $(DEST)
-	cp bin/plugin/$*/terraform-provider-cphalo_$(VERSION) readme.md $(DEST)
-	cp bin/client/$*/cphalo_client $(DEST)
+	cp bin/$*/terraform-provider-cphalo_$(VERSION) readme.md $(DEST)
 	cd $(DEST) && zip -r ../$(NAME).zip . && cd .. && sha256sum $(NAME).zip > $(NAME).sha256 && rm -rf $(NAME)
+
+#? help: display help
+help: Makefile
+	@printf "Available make targets:\n\n"
+	@sed -n 's/^#?//p' $< | column -t -s ':' |  sed -e 's/^/ /'

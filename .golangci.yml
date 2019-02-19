@@ -1,0 +1,23 @@
+linters:
+  enable:
+    - goimports
+    - unconvert
+    - misspell
+    - golint
+    - govet
+    - gofmt
+    - megacheck
+  enable-all: false
+
+linters-settings:
+  golint:
+    min-confidence: 0
+  govet:
+    check-shadowing: true
+
+issues:
+  max-same-issues: 0
+  exclude-use-default: false
+  exclude:
+    - Error return value of .((os\.)?std(out|err)\..*|.*Close|.*Flush|os\.Remove(All)?|.*printf?|os\.(Un)?Setenv). is not checked
+    - should have a package comment, unless it's in another file for this package
