@@ -4,14 +4,14 @@ import (
 	"gitlab.com/kiwicom/cphalo-go"
 )
 
-type Config struct {
-	ApplicationKey    string
-	ApplicationSecret string
+type config struct {
+	applicationKey    string
+	applicationSecret string
 }
 
-func (c *Config) Client() *cphalo.Client {
+func (c *config) client() *cphalo.Client {
 
-	client := cphalo.NewClient(c.ApplicationKey, c.ApplicationSecret)
+	client := cphalo.NewClient(c.applicationKey, c.applicationSecret)
 
 	logInfo("CP Client configured.")
 

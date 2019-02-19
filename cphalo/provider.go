@@ -14,6 +14,7 @@ func init() {
 	}
 }
 
+// Provider returns CPHalo Resource provider
 func Provider() terraform.ResourceProvider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
@@ -48,18 +49,18 @@ func Provider() terraform.ResourceProvider {
 			"cphalo_csp_aws_account":    resourceCPHaloCSPAWSAccount(),
 		},
 
-		ConfigureFunc: ConfigureProvider,
+		ConfigureFunc: configureProvider,
 	}
 }
 
-func ConfigureProvider(d *schema.ResourceData) (interface{}, error) {
-	config := Config{
-		ApplicationKey:    d.Get("application_key").(string),
-		ApplicationSecret: d.Get("application_secret").(string),
+func configureProvider(d *schema.ResourceData) (interface{}, error) {
+	c := config{
+		applicationKey:    d.Get("application_key").(string),
+		applicationSecret: d.Get("application_secret").(string),
 	}
 	logInfo("Initializing CPHalo client")
 
-	client := config.Client()
+	client := c.client()
 
 	return client, nil
 }
