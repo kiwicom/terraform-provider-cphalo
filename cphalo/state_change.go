@@ -13,10 +13,6 @@ const (
 	stateChangeChanged = "changed"
 )
 
-type ResponseGetter interface {
-	GetResponse()
-}
-
 func baseStateChange(actionTimeout string, d *schema.ResourceData, f resource.StateRefreshFunc) error {
 	stateConf := &resource.StateChangeConf{
 		Pending:    []string{stateChangeWaiting},
