@@ -1,7 +1,5 @@
 run:
   deadline: 5m
-  skip-dirs:
-    - \.tmp/
 
 linters:
   enable:

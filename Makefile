@@ -13,7 +13,7 @@ run: build
 #? lint: run a meta linter
 lint:
 	@hash golangci-lint || (echo "Download golangci-lint from https://github.com/golangci/golangci-lint#install" && exit 1)
-	golangci-lint run
+	golangci-lint run cphalo/...
 
 #? testacc: run acceptance tests
 testacc:
@@ -28,7 +28,7 @@ test:
 
 #? clean: removes all artificats
 clean:
-	rm -fr bin/
+	rm -fr bin/ .tmp/
 
 bin/current_system/terraform-provider-cphalo_%:  GOARGS =
 bin/darwin_amd64/terraform-provider-cphalo_%:  GOARGS = GOOS=darwin GOARCH=amd64

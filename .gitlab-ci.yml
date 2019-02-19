@@ -8,9 +8,9 @@ stages:
   - release
 
 variables:
-  GOPATH: $CI_PROJECT_DIR/go
+  GOPATH: $CI_PROJECT_DIR/.tmp/go
   CPHALO_TEST_ID: ${CI_COMMIT_SHORT_SHA}_${CI_PIPELINE_IID}
-  CGO_ENABLED: 0
+  CGO_ENABLED: "0"
 
 cache:
   key: $CI_PROJECT_PATH_SLUG
@@ -28,9 +28,11 @@ tests:
     - make test
 
 lint:
-  <<: *install-deps
   stage: test
+  image: golangci/golangci-lint
+  allow_failure: true
   script:
+    - go mod download
     - make lint
 
 tests_acc:
