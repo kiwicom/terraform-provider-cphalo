@@ -109,7 +109,7 @@ func resourceCPHaloCSPAWSAccountUpdate(d *schema.ResourceData, i interface{}) er
 			AccountDisplayName: d.Get("account_display_name").(string),
 			AWSRoleArn:         d.Get("role_arn").(string),
 		}
-		if err := client.UpdateCSPAccount(cspAccount); err != nil {
+		if err = client.UpdateCSPAccount(cspAccount); err != nil {
 			return fmt.Errorf("updating csp AWS account of %s failed: %v", d.Id(), err)
 		}
 		logDebug("updated csp AWS account")
@@ -146,7 +146,7 @@ func resourceCPHaloCSPAWSAccountUpdate(d *schema.ResourceData, i interface{}) er
 func resourceCPHaloCSPAWSAccountDelete(d *schema.ResourceData, i interface{}) (err error) {
 	client := i.(*cphalo.Client)
 
-	if err := client.DeleteCSPAccount(d.Id()); err != nil {
+	if err = client.DeleteCSPAccount(d.Id()); err != nil {
 		return fmt.Errorf("failed to delete %s: %v", d.Id(), err)
 	}
 

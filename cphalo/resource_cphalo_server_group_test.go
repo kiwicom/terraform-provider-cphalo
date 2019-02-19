@@ -66,9 +66,7 @@ func TestAccServerGroup_basic(t *testing.T) {
 					}
 
 					var found cphalo.ServerGroup
-					var servers []string
 					for _, g := range resp.Groups {
-						servers = append(servers, g.Name)
 						if g.Name == nameExpected {
 							found = g
 						}

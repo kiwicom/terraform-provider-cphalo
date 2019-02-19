@@ -24,9 +24,7 @@ var (
 )
 
 const (
-	firewallRuleSourceTargetKindUser         = "User"
 	firewallRuleSourceTargetKindGroup        = "Group"
-	firewallRuleSourceTargetKindUserGroup    = "UserGroup"
 	firewallRuleSourceTargetKindFirewallZone = "FirewallZone"
 )
 
@@ -499,7 +497,7 @@ func resourceFirewallPolicyUpdate(d *schema.ResourceData, i interface{}) error {
 	}
 
 	if d.HasChange("name") {
-		err := client.UpdateFirewallPolicy(cphalo.FirewallPolicy{
+		err = client.UpdateFirewallPolicy(cphalo.FirewallPolicy{
 			ID:   d.Id(),
 			Name: d.Get("name").(string),
 		})
@@ -513,7 +511,7 @@ func resourceFirewallPolicyUpdate(d *schema.ResourceData, i interface{}) error {
 	}
 
 	if d.HasChange("platform") {
-		err := client.UpdateFirewallPolicy(cphalo.FirewallPolicy{
+		err = client.UpdateFirewallPolicy(cphalo.FirewallPolicy{
 			ID:       d.Id(),
 			Platform: d.Get("platform").(string),
 		})
@@ -527,7 +525,7 @@ func resourceFirewallPolicyUpdate(d *schema.ResourceData, i interface{}) error {
 	}
 
 	if d.HasChange("description") {
-		err := client.UpdateFirewallPolicy(cphalo.FirewallPolicy{
+		err = client.UpdateFirewallPolicy(cphalo.FirewallPolicy{
 			ID:          d.Id(),
 			Description: d.Get("description").(string),
 		})
@@ -740,7 +738,7 @@ func parseFirewallPolicyRuleSet(rules interface{}) (map[int]cphalo.FirewallRule,
 func resourceFirewallPolicyDelete(d *schema.ResourceData, i interface{}) (err error) {
 	client := i.(*cphalo.Client)
 
-	if err := client.DeleteFirewallPolicy(d.Id()); err != nil {
+	if err = client.DeleteFirewallPolicy(d.Id()); err != nil {
 		return fmt.Errorf("failed to delete %s: %v", d.Id(), err)
 	}
 

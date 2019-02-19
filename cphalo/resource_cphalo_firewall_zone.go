@@ -94,7 +94,7 @@ func resourceFirewallZoneUpdate(d *schema.ResourceData, i interface{}) error {
 	d.Partial(true)
 
 	if d.HasChange("name") {
-		err := client.UpdateFirewallZone(cphalo.FirewallZone{
+		err = client.UpdateFirewallZone(cphalo.FirewallZone{
 			ID:   d.Id(),
 			Name: d.Get("name").(string),
 		})
@@ -108,7 +108,7 @@ func resourceFirewallZoneUpdate(d *schema.ResourceData, i interface{}) error {
 	}
 
 	if d.HasChange("ip_address") {
-		err := client.UpdateFirewallZone(cphalo.FirewallZone{
+		err = client.UpdateFirewallZone(cphalo.FirewallZone{
 			ID:        d.Id(),
 			IPAddress: d.Get("ip_address").(string),
 		})
@@ -122,7 +122,7 @@ func resourceFirewallZoneUpdate(d *schema.ResourceData, i interface{}) error {
 	}
 
 	if d.HasChange("description") {
-		err := client.UpdateFirewallZone(cphalo.FirewallZone{
+		err = client.UpdateFirewallZone(cphalo.FirewallZone{
 			ID:          d.Id(),
 			Description: d.Get("description").(string),
 		})
@@ -168,7 +168,7 @@ func resourceFirewallZoneUpdate(d *schema.ResourceData, i interface{}) error {
 func resourceFirewallZoneDelete(d *schema.ResourceData, i interface{}) (err error) {
 	client := i.(*cphalo.Client)
 
-	if err := client.DeleteFirewallZone(d.Id()); err != nil {
+	if err = client.DeleteFirewallZone(d.Id()); err != nil {
 		return fmt.Errorf("failed to delete %s: %v", d.Id(), err)
 	}
 

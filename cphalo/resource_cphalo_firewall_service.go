@@ -100,7 +100,7 @@ func resourceFirewallServiceUpdate(d *schema.ResourceData, i interface{}) error 
 	d.Partial(true)
 
 	if d.HasChange("name") {
-		err := client.UpdateFirewallService(cphalo.FirewallService{
+		err = client.UpdateFirewallService(cphalo.FirewallService{
 			ID:   d.Id(),
 			Name: d.Get("name").(string),
 		})
@@ -114,7 +114,7 @@ func resourceFirewallServiceUpdate(d *schema.ResourceData, i interface{}) error 
 	}
 
 	if d.HasChange("protocol") {
-		err := client.UpdateFirewallService(cphalo.FirewallService{
+		err = client.UpdateFirewallService(cphalo.FirewallService{
 			ID:       d.Id(),
 			Protocol: d.Get("protocol").(string),
 		})
@@ -128,7 +128,7 @@ func resourceFirewallServiceUpdate(d *schema.ResourceData, i interface{}) error 
 	}
 
 	if d.HasChange("port") {
-		err := client.UpdateFirewallService(cphalo.FirewallService{
+		err = client.UpdateFirewallService(cphalo.FirewallService{
 			ID:   d.Id(),
 			Port: d.Get("port").(string),
 		})
@@ -175,7 +175,7 @@ func resourceFirewallServiceUpdate(d *schema.ResourceData, i interface{}) error 
 func resourceFirewallServiceDelete(d *schema.ResourceData, i interface{}) (err error) {
 	client := i.(*cphalo.Client)
 
-	if err := client.DeleteFirewallService(d.Id()); err != nil {
+	if err = client.DeleteFirewallService(d.Id()); err != nil {
 		return fmt.Errorf("failed to delete %s: %v", d.Id(), err)
 	}
 

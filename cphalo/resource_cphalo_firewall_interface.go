@@ -82,7 +82,7 @@ func resourceFirewallInterfaceUpdate(d *schema.ResourceData, i interface{}) erro
 	d.Partial(true)
 
 	if d.HasChange("name") {
-		err := client.UpdateFirewallInterface(cphalo.FirewallInterface{
+		err = client.UpdateFirewallInterface(cphalo.FirewallInterface{
 			ID:   d.Id(),
 			Name: d.Get("name").(string),
 		})
@@ -127,7 +127,7 @@ func resourceFirewallInterfaceUpdate(d *schema.ResourceData, i interface{}) erro
 func resourceFirewallInterfaceDelete(d *schema.ResourceData, i interface{}) (err error) {
 	client := i.(*cphalo.Client)
 
-	if err := client.DeleteFirewallInterface(d.Id()); err != nil {
+	if err = client.DeleteFirewallInterface(d.Id()); err != nil {
 		return fmt.Errorf("failed to delete %s: %v", d.Id(), err)
 	}
 
