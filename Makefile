@@ -21,7 +21,7 @@ testacc:
 
 #? test: run unit tests
 test:
-	$(vars) go test -v ./...
+	$(vars) go test $(shell go list ./... | grep -v /\.tmp/ ) -v ./...
 
 .env:
 	cp .env.example .env
