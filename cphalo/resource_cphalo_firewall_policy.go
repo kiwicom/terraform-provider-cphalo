@@ -555,11 +555,11 @@ func resourceFirewallPolicyUpdate(d *schema.ResourceData, i interface{}) error {
 
 		for _, match := range matches {
 			if !match {
-				return resp, StateChangeWaiting, err
+				return resp, stateChangeWaiting, err
 			}
 		}
 
-		return resp, StateChangeChanged, nil
+		return resp, stateChangeChanged, nil
 	})
 
 	if err != nil {
@@ -582,8 +582,8 @@ func applyFirewallPolicyRules(d *schema.ResourceData, client *cphalo.Client, pol
 	}
 
 	stateConf := &resource.StateChangeConf{
-		Pending:    []string{StateChangeWaiting},
-		Target:     []string{StateChangeChanged},
+		Pending:    []string{stateChangeWaiting},
+		Target:     []string{stateChangeChanged},
 		MinTimeout: time.Second,
 		Timeout:    d.Timeout(schema.TimeoutDelete),
 		Refresh: func() (result interface{}, state string, err error) {
@@ -594,10 +594,10 @@ func applyFirewallPolicyRules(d *schema.ResourceData, client *cphalo.Client, pol
 			}
 
 			if len(resp.Rules) > 0 {
-				return resp, StateChangeWaiting, nil
+				return resp, stateChangeWaiting, nil
 			}
 
-			return resp, StateChangeChanged, nil
+			return resp, stateChangeChanged, nil
 		},
 	}
 

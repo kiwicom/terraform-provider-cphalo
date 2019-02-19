@@ -129,11 +129,11 @@ func resourceCPHaloCSPAWSAccountUpdate(d *schema.ResourceData, i interface{}) er
 
 		for _, match := range matches {
 			if !match {
-				return resp, StateChangeWaiting, err
+				return resp, stateChangeWaiting, err
 			}
 		}
 
-		return resp, StateChangeChanged, nil
+		return resp, stateChangeChanged, nil
 	})
 
 	if err != nil {

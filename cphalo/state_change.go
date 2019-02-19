@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	StateChangeWaiting = "waiting"
-	StateChangeChanged = "changed"
+	stateChangeWaiting = "waiting"
+	stateChangeChanged = "changed"
 )
 
 type ResponseGetter interface {
@@ -19,8 +19,8 @@ type ResponseGetter interface {
 
 func baseStateChange(actionTimeout string, d *schema.ResourceData, f resource.StateRefreshFunc) error {
 	stateConf := &resource.StateChangeConf{
-		Pending:    []string{StateChangeWaiting},
-		Target:     []string{StateChangeChanged},
+		Pending:    []string{stateChangeWaiting},
+		Target:     []string{stateChangeChanged},
 		MinTimeout: time.Second,
 		Timeout:    d.Timeout(actionTimeout),
 		Refresh:    f,
@@ -51,11 +51,11 @@ func createStateChangeDefault(d *schema.ResourceData, f func() (interface{}, err
 		resp, err := f()
 
 		if err == nil {
-			return resp, StateChangeChanged, nil
+			return resp, stateChangeChanged, nil
 		}
 
 		if _, ok := err.(*cphalo.ResponseError404); ok {
-			return resp, StateChangeWaiting, nil
+			return resp, stateChangeWaiting, nil
 		}
 
 		return resp, "", err
@@ -72,11 +72,11 @@ func deleteStateChangeDefault(d *schema.ResourceData, f func() (interface{}, err
 		resp, err := f()
 
 		if err == nil {
-			return resp, StateChangeWaiting, nil
+			return resp, stateChangeWaiting, nil
 		}
 
 		if _, ok := err.(*cphalo.ResponseError404); ok {
-			return resp, StateChangeChanged, nil
+			return resp, stateChangeChanged, nil
 		}
 
 		return resp, "", err
