@@ -1,4 +1,4 @@
-.PHONY: build run lint testacc test clean release
+.PHONY: build run lint testacc test clean website-serve website-build release
 
 vars:=$(shell test -f .env && grep -v '^\#' .env | xargs)
 VERSION:=v0.0.0-local
@@ -28,7 +28,15 @@ test:
 
 #? clean: removes all artificats
 clean:
-	rm -fr bin/ .tmp/
+	rm -fr bin/ .tmp/ website/public website/resources
+
+#? website-serve: serve documentation website
+website-serve:
+	@hugo -s website server
+
+#? website-build: build website
+website-build:
+	@hugo -s website
 
 bin/current_system/terraform-provider-cphalo_%:  GOARGS =
 bin/darwin_amd64/terraform-provider-cphalo_%:  GOARGS = GOOS=darwin GOARCH=amd64
