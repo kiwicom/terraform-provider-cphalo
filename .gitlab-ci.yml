@@ -30,7 +30,6 @@ tests:
 lint:
   stage: test
   image: golangci/golangci-lint
-  allow_failure: true
   script:
     - go mod download
     - make lint
