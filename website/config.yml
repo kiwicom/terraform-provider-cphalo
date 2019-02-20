@@ -1,0 +1,17 @@
+theme: book
+title: Terraform CloudPassage Halo Provider
+baseURL: https://example.com/
+
+disableKinds: ["taxonomy", "taxonomyTerm"]
+disablePathToLower: true
+enableGitInfo: true
+
+pygmentsuseclasses: false
+pygmentscodefences: true
+pygmentsStyle: pygments
+
+params:
+  BookShowToC: false
+  BookMenuBundle: /menu
+  BookRepo: https://gitlab.com/kiwicom/terraform-provider-cphalo
+  BookEditPath: /edit/master/website/content
