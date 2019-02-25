@@ -64,7 +64,7 @@ func resourceCPHaloFirewallPolicy() *schema.Resource {
 			"shared": {
 				Type:     schema.TypeBool,
 				Optional: true,
-				Default:  true, // TODO: this value must be sent as string and is returned as boolean
+				Default:  true,
 				ForceNew: true,
 			},
 			"ignore_forwarding_rules": {
@@ -127,6 +127,18 @@ func resourceCPHaloFirewallPolicy() *schema.Resource {
 							Optional:    true,
 							Elem:        newSourceTargetResource(),
 							Set:         resourceCPHaloFirewallPolicyRuleSourceTargetHash,
+						},
+						"log": {
+							Type:     schema.TypeBool,
+							Optional: true,
+						},
+						"log_prefix": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"comment": {
+							Type:     schema.TypeString,
+							Optional: true,
 						},
 					},
 				},
@@ -260,10 +272,13 @@ func resourceCPHaloFirewallPolicyRuleHash(v interface{}) int {
 		"connection_states",
 		"firewall_interface",
 		"firewall_service",
+		"log_prefix",
+		"comment",
 	}
 
 	boolElements := []string{
 		"active",
+		"log",
 	}
 
 	intElements := []string{
@@ -460,6 +475,9 @@ func resourceFirewallPolicyRead(d *schema.ResourceData, i interface{}) error {
 			"active":             details.Rule.Active,
 			"connection_states":  details.Rule.ConnectionStates,
 			"position":           details.Rule.Position,
+			"log":                details.Rule.Log,
+			"log_prefix":         details.Rule.LogPrefix,
+			"comment":            details.Rule.Comment,
 			"firewall_interface": fwInterfaceID,
 			"firewall_service":   fwServiceID,
 			"firewall_source":    fwSource,
@@ -683,6 +701,18 @@ func parseFirewallPolicyRuleSet(rules interface{}) (map[int]cphalo.FirewallRule,
 
 		if v, ok := data["active"]; ok {
 			rule.Active = v.(bool)
+		}
+
+		if v, ok := data["log"]; ok {
+			rule.Log = v.(bool)
+		}
+
+		if v, ok := data["log_prefix"]; ok {
+			rule.LogPrefix = v.(string)
+		}
+
+		if v, ok := data["comment"]; ok {
+			rule.Comment = v.(string)
 		}
 
 		if v, ok := data["firewall_interface"]; ok {

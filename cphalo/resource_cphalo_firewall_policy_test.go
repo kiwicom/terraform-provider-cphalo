@@ -23,6 +23,9 @@ type expectedFirewallRule struct {
 	action      string
 	states      string
 	position    int
+	log         bool
+	logPrefix   string
+	comment     string
 	fwInterface expectedFirewallInterface
 	fwService   expectedFirewallService
 	fwSource    expectedFirewallRuleSourceTarget
@@ -220,6 +223,49 @@ func TestAccFirewallPolicy_basic(t *testing.T) {
 					)
 				}),
 			},
+			{
+				Config: testAccFirewallPolicyConfig(t, "logs_and_comments", 1),
+				Check: resource.ComposeTestCheckFunc(func(_ *terraform.State) error {
+					return testFirewallPolicyAttributes(
+						expectedFirewallPolicy{
+							name:   "tf_acc_fw_logging_policy",
+							shared: true,
+							rules: []expectedFirewallRule{
+								{
+									chain:     "INPUT",
+									action:    "ACCEPT",
+									states:    "ANY",
+									position:  1,
+									log:       true,
+									logPrefix: "tf_acc_test_",
+									comment:   "tf_acc",
+								},
+							},
+						},
+					)
+				}),
+			},
+			{
+				Config: testAccFirewallPolicyConfig(t, "logs_and_comments", 2),
+				Check: resource.ComposeTestCheckFunc(func(_ *terraform.State) error {
+					return testFirewallPolicyAttributes(
+						expectedFirewallPolicy{
+							name:   "tf_acc_fw_logging_policy",
+							shared: true,
+							rules: []expectedFirewallRule{
+								{
+									chain:    "INPUT",
+									action:   "ACCEPT",
+									states:   "ANY",
+									position: 1,
+									log:      false,
+									comment:  "tf_acc_v2",
+								},
+							},
+						},
+					)
+				}),
+			},
 		},
 	})
 }
@@ -316,6 +362,9 @@ func testHelperCompareFirewallPolicyRuleAttributes(client *cphalo.Client, rules 
 				rule.Action == expectedRule.action,
 				rule.ConnectionStates == expectedRule.states,
 				rule.Position == expectedRule.position,
+				rule.Log == expectedRule.log,
+				rule.LogPrefix == expectedRule.logPrefix,
+				rule.Comment == expectedRule.comment,
 			}
 
 			if expectedRule.fwInterface.name != "" {
