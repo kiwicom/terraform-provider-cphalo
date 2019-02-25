@@ -1,6 +1,6 @@
 # cphalo_server_group
 
-Provides details about a specific server group in the CPHalo provider.
+Provides details about a specific server group in the CPHalo provider.  
 For further information on firewall zones, consult the
 [CloudPassage Halo documentation](https://library.cloudpassage.com/help/cloudpassage-api-documentation#server-groups).
 

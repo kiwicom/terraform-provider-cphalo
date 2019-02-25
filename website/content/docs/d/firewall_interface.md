@@ -1,6 +1,6 @@
 # cphalo_firewall_interface
 
-Provides details about a specific firewall interface in the CPHalo provider.
+Provides details about a specific firewall interface in the CPHalo provider.  
 For further information on firewall interfaces, consult the
 [CloudPassage Halo documentation](https://library.cloudpassage.com/help/cloudpassage-api-documentation#firewall-interfaces).
 

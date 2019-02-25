@@ -1,6 +1,6 @@
 # cphalo_firewall_zone
 
-Provides details about a specific firewall zone in the CPHalo provider.
+Provides details about a specific firewall zone in the CPHalo provider.  
 For further information on firewall zones, consult the
 [CloudPassage Halo documentation](https://library.cloudpassage.com/help/cloudpassage-api-documentation#firewall-zones).
 

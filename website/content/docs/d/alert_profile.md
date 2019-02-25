@@ -1,6 +1,6 @@
 # cphalo_alert_profile
 
-Provides details about a specific alert profile in the CPHalo provider.
+Provides details about a specific alert profile in the CPHalo provider.  
 For further information on alert profiles, consult the
 [CloudPassage Halo documentation](https://library.cloudpassage.com/help/cloudpassage-api-documentation#alert-profiles).
 

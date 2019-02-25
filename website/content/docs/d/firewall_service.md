@@ -1,6 +1,6 @@
 # cphalo_firewall_service
 
-Provides details about a specific firewall service in the CPHalo provider.
+Provides details about a specific firewall service in the CPHalo provider.  
 For further information on firewall services, consult the
 [CloudPassage Halo documentation](https://library.cloudpassage.com/help/cloudpassage-api-documentation#firewall-services).
 
