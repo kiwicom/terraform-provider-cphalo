@@ -3,7 +3,7 @@ title: Provider
 type: docs
 ---
 
-# Terraform CloudPassage Halo Provider
+# Terraform CloudPassage Halo Provider `v0.0.0-master`
 
 The CloudPassage Halo provider is used to interact with CloudPassage Halo resources.  
 To read more about CloudPassage, consult the [official docs](https://library.cloudpassage.com/help/) (*account is needed for access*).
