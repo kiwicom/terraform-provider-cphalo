@@ -9,6 +9,6 @@ variable "cphalo_service_id" {}
 variable "cphalo_root_group" {}
 
 variable "cphalo_external_id" {
-  type = "string"
+  type    = "string"
   default = "this-is-some-id-for-tf-cphalo-testacc"
 }
