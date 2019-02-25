@@ -16,23 +16,23 @@ Since it's a non official Terraform provider, you have to install it manually.
 
 **Available systems:**
 
-- [macos 64-bit](https://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_darwin_amd64.zip) ([checksum](https://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_darwin_amd64.sha256))
-- [linux 32-bit](https://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_linux_386.zip) ([checksum](https://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_linux_386.sha256))
-- [linux 64-bit](https://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_linux_amd64.zip) ([checksum](https://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_linux_amd64.sha256))
-- [linux arm](https://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_linux_arm.zip) ([checksum](https://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_linux_arm.sha256))
-- [windows 32-bit](https://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_windows_386.zip) ([checksum](https://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_windows_386.sha256))
-- [windows 64-bit](https://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_windows_amd64.zip) ([checksum](https://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_windows_amd64.sha256))
+- [macos 64-bit](https://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/Releases/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_darwin_amd64.zip) ([checksum](https://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/Releases/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_darwin_amd64.sha256))
+- [linux 32-bit](https://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/Releases/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_linux_386.zip) ([checksum](https://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/Releases/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_linux_386.sha256))
+- [linux 64-bit](https://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/Releases/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_linux_amd64.zip) ([checksum](https://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/Releases/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_linux_amd64.sha256))
+- [linux arm](https://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/Releases/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_linux_arm.zip) ([checksum](https://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/Releases/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_linux_arm.sha256))
+- [windows 32-bit](https://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/Releases/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_windows_386.zip) ([checksum](https://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/Releases/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_windows_386.sha256))
+- [windows 64-bit](https://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/Releases/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_windows_amd64.zip) ([checksum](https://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/Releases/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_windows_amd64.sha256))
 
 **Download binary**
 
 ```bash
-wget https://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_darwin_amd64.zip
+wget https://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/Releases/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_darwin_amd64.zip
 ```
 
 **Download checksum**
 
 ```bash
-wget https://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_darwin_amd64.sha256
+wget https://s3.eu-west-1.amazonaws.com/kw-terraform-providers/cphalo/Releases/v0.0.0-master/terraform-provider-cphalo_v0.0.0-master_darwin_amd64.sha256
 ```
 
 **Verify integrity**
