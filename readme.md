@@ -7,6 +7,10 @@
 [![go doc](https://godoc.org/gitlab.com/kiwicom/terraform-provider-cphalo?status.svg)](https://godoc.org/gitlab.com/kiwicom/terraform-provider-cphalo)
 [![contribute](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](https://gitlab.com/kiwicom/terraform-provider-cphalo/forks/new)
 
+The CloudPassage Halo provider is used to interact with CloudPassage Halo resources.
+
+*Acceptance tests run every night, to ensure the provider is working. Check the Pipeline status badge.*
+
 - Website: TODO
 - API Docs: https://library.cloudpassage.com/help/cloudpassage-api-documentation
 
