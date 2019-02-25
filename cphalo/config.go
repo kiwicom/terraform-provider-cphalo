@@ -1,9 +1,10 @@
 package cphalo
 
 import (
+	"net/http"
+
 	"github.com/hashicorp/terraform/helper/logging"
 	"gitlab.com/kiwicom/cphalo-go"
-	"net/http"
 )
 
 type config struct {
