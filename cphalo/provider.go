@@ -21,13 +21,13 @@ func Provider() terraform.ResourceProvider {
 			"application_key": {
 				Type:        schema.TypeString,
 				Required:    true,
-				DefaultFunc: schema.EnvDefaultFunc("CP_APPLICATION_KEY", nil),
+				DefaultFunc: schema.EnvDefaultFunc("CPHALO_APPLICATION_KEY", nil),
 				Description: descriptions["application_key"],
 			},
 			"application_secret": {
 				Type:        schema.TypeString,
 				Required:    true,
-				DefaultFunc: schema.EnvDefaultFunc("CP_APPLICATION_SECRET", nil),
+				DefaultFunc: schema.EnvDefaultFunc("CPHALO_APPLICATION_SECRET", nil),
 				Description: descriptions["application_secret"],
 			},
 		},

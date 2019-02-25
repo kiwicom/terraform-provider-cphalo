@@ -23,7 +23,7 @@ func dataSourceCPHaloServerGroup() *schema.Resource {
 			},
 			"parent_id": {
 				Type:     schema.TypeString,
-				Optional: true,
+				Computed: true,
 			},
 		},
 	}

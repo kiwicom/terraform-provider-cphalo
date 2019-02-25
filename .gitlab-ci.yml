@@ -34,6 +34,22 @@ lint:
     - go mod download
     - make lint
 
+website:
+  stage: test
+  image: monachus/hugo
+  cache: {}
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+  artifacts:
+    paths:
+      - website/public
+    expire_in: 1 hour
+  before_script:
+    - apt-get update
+    - apt-get install make
+  script:
+    - make website-build
+
 tests_acc:
   <<: *install-deps
   stage: acceptanceTest
@@ -96,3 +112,18 @@ copy_to_s3:
       --recursive
       --default-mime-type="application/zip"
       bin/release/* s3://kw-terraform-providers/cphalo/
+
+pages:
+  stage: release
+  dependencies:
+    - website
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - mv website/public public
+  artifacts:
+    paths:
+      - public
+  only:
+    refs:
+      - master
