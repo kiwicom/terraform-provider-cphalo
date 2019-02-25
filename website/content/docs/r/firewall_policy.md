@@ -8,53 +8,53 @@ For further information on firewall policies, consult the
 
 ```terraform
 resource "cphalo_firewall_policy" "example" {
-  name = "example_policy"
-  description = "example"
+  name                    = "example_policy"
+  description             = "example"
   ignore_forwarding_rules = false
-  shared = true
+  shared                  = true
 
   rule {
-    chain = "INPUT"
-    action = "ACCEPT"
-    active = false
+    chain             = "INPUT"
+    action            = "ACCEPT"
+    active            = false
     connection_states = "NEW, ESTABLISHED"
-    position = 1
+    position          = 1
 
     firewall_interface = "${cphalo_firewall_interface.example.id}"
-    firewall_service = "${cphalo_firewall_service.example.id}"
+    firewall_service   = "${cphalo_firewall_service.example.id}"
 
     firewall_source {
-      id = "${cphalo_firewall_zone.example.id}"
+      id   = "${cphalo_firewall_zone.example.id}"
       kind = "FirewallZone"
     }
   }
 
   rule {
-    chain = "OUTPUT"
-    action = "ACCEPT"
+    chain             = "OUTPUT"
+    action            = "ACCEPT"
     connection_states = "NEW, ESTABLISHED"
-    position = 1
+    position          = 1
 
     firewall_interface = "${cphalo_firewall_interface.example.id}"
-    firewall_service = "${cphalo_firewall_service.example.id}"
+    firewall_service   = "${cphalo_firewall_service.example.id}"
 
     firewall_target {
-      id = "All Active Servers"
+      id   = "All Active Servers"
       kind = "Group"
     }
   }
 }
 
 resource "cphalo_firewall_zone" "example" {
-  name = "databases"
-  ip_address = "10.20.30.40,10.20.30.41"
+  name        = "databases"
+  ip_address  = "10.20.30.40,10.20.30.41"
   description = "dev"
 }
 
 resource "cphalo_firewall_service" "example" {
-  name = "custom_ssh"
+  name     = "custom_ssh"
   protocol = "TCP"
-  port = "1022"
+  port     = "1022"
 }
 
 resource "cphalo_firewall_interface" "example" {

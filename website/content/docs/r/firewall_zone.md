@@ -8,8 +8,8 @@ For further information on firewall zones, consult the
 
 ```terraform
 resource "cphalo_firewall_zone" "example" {
-  name = "databases"
-  ip_address = "10.20.30.40,10.20.30.41"
+  name        = "databases"
+  ip_address  = "10.20.30.40,10.20.30.41"
   description = "dev"
 }
 ```

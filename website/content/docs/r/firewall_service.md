@@ -8,9 +8,9 @@ For further information on firewall services, consult the
 
 ```terraform
 resource "cphalo_firewall_service" "example" {
-  name = "custom_ssh"
+  name     = "custom_ssh"
   protocol = "TCP"
-  port = "1022"
+  port     = "1022"
 }
 ```
 
