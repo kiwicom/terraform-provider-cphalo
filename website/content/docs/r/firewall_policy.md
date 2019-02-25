@@ -86,6 +86,12 @@ The following arguments are supported:
     
     * `position` - (Optional, int) The position order of the rule in the chain.
     
+    * `log` - (Optional, bool) Linux-only. Whether matches to this rule are logged or not.
+    
+    * `log_prefix` - (Optional, string) Linux-only. A user-defined string (max. 29 characters) to attach to the beginning of the log message whenever this rule is matched and logged. The purpose of attaching a prefix is to help Log-Based Intrusion Detection to detect occurrences of matches to this rule in the firewall log file.
+    
+    * `comment` - (Optional, string) An optional description of this rule.
+    
     * `firewall_interface` - (Optional, string) Linux-only. The specified firewall interface for this rule. Specify the ID of the interface you wish to use.
     
     * `firewall_service` - (Optional, string) The specified firewall service for this rule. Specify the ID of the service you wish to use.
