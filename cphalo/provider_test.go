@@ -35,10 +35,10 @@ func TestProvider_implementation(t *testing.T) {
 }
 
 func testAccPreCheck(t *testing.T) {
-	if v := os.Getenv("CP_APPLICATION_KEY"); v == "" {
-		t.Fatal("CP_APPLICATION_KEY must be set for acceptance tests")
+	if v := os.Getenv("CPHALO_APPLICATION_KEY"); v == "" {
+		t.Fatal("CPHALO_APPLICATION_KEY must be set for acceptance tests")
 	}
-	if v := os.Getenv("CP_APPLICATION_SECRET"); v == "" {
-		t.Fatal("CP_APPLICATION_SECRET must be set for acceptance tests")
+	if v := os.Getenv("CPHALO_APPLICATION_SECRET"); v == "" {
+		t.Fatal("CPHALO_APPLICATION_SECRET must be set for acceptance tests")
 	}
 }
