@@ -1,7 +1,9 @@
 package cphalo
 
 import (
+	"github.com/hashicorp/terraform/helper/logging"
 	"gitlab.com/kiwicom/cphalo-go"
+	"net/http"
 )
 
 type config struct {
@@ -11,7 +13,14 @@ type config struct {
 
 func (c *config) client() *cphalo.Client {
 
-	client := cphalo.NewClient(c.applicationKey, c.applicationSecret)
+	t := &http.Transport{
+		Proxy: http.ProxyFromEnvironment,
+	}
+	transport := logging.NewTransport("CPHalo", t)
+
+	httpClient := &http.Client{Transport: transport}
+
+	client := cphalo.NewClient(c.applicationKey, c.applicationSecret, httpClient)
 
 	logInfo("CP Client configured.")
 
