@@ -1,6 +1,6 @@
 theme: book
 title: Terraform CloudPassage Halo Provider
-baseURL: https://example.com/
+baseURL: https://kiwicom.gitlab.io/terraform-provider-cphalo/
 
 disableKinds: ["taxonomy", "taxonomyTerm"]
 disablePathToLower: true
