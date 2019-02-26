@@ -9,7 +9,7 @@ stages:
 
 variables:
   GOPATH: $CI_PROJECT_DIR/.tmp/go
-  CPHALO_TEST_ID: ${CI_COMMIT_SHORT_SHA}_${CI_PIPELINE_IID}
+  CPHALO_TEST_ID: ${CI_COMMIT_SHORT_SHA}_${CI_JOB_ID}
   CGO_ENABLED: "0"
 
 cache:
