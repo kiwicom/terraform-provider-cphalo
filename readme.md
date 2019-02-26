@@ -11,7 +11,7 @@ The CloudPassage Halo provider is used to interact with CloudPassage Halo resour
 
 *Acceptance tests run every night, to ensure the provider is working. Check the Pipeline status badge.*
 
-- Website: TODO
+- Documentation: https://kiwicom.gitlab.io/terraform-provider-cphalo/
 - API Docs: https://library.cloudpassage.com/help/cloudpassage-api-documentation
 
 ## Requirements
