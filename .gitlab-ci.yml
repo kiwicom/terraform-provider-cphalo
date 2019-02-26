@@ -127,6 +127,8 @@ pages:
   artifacts:
     paths:
       - public
+  except:
+    - schedules
   only:
     refs:
       - master
