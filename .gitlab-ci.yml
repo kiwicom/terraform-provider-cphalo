@@ -24,12 +24,16 @@ cache:
 tests:
   <<: *install-deps
   stage: test
+  except:
+    - tags
   script:
     - make test
 
 lint:
   stage: test
   image: golangci/golangci-lint
+  except:
+    - tags
   script:
     - go mod download
     - make lint
@@ -54,6 +58,8 @@ website:
 tests_acc:
   <<: *install-deps
   stage: acceptanceTest
+  except:
+    - tags
   script:
     - make testacc
 
@@ -130,5 +136,4 @@ pages:
   except:
     - schedules
   only:
-    refs:
-      - master
+    - tags
