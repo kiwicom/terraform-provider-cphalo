@@ -48,7 +48,7 @@ website:
     - apt-get update
     - apt-get install make
   script:
-    - sed -i -e "s/v0.0.0-master/${CI_COMMIT_TAG}/g" website/content/_index.md
+    - sed -i -e "s/v0.0.0-master/${CI_COMMIT_TAG:-v0.0.0}/g" website/content/_index.md
     - make website-build
 
 tests_acc:
