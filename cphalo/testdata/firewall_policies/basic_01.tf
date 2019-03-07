@@ -1,5 +1,6 @@
 resource "cphalo_firewall_policy" "fw" {
   name = "{{.Prefix}}tf_acc_fw_policy"
+  shared = false
 
   rule {
     chain = "OUTPUT"
