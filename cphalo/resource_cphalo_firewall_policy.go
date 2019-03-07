@@ -361,7 +361,7 @@ func resourceFirewallPolicyCreate(d *schema.ResourceData, i interface{}) error {
 		Name:                  d.Get("name").(string),
 		Platform:              d.Get("platform").(string),
 		Description:           d.Get("description").(string),
-		Shared:                d.Get("shared").(bool),
+		Shared:                cphalo.StringableBool(d.Get("shared").(bool)),
 		IgnoreForwardingRules: d.Get("ignore_forwarding_rules").(bool),
 	}
 
