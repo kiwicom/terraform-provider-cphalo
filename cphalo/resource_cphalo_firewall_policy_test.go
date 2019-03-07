@@ -13,7 +13,7 @@ import (
 type expectedFirewallPolicy struct {
 	name           string
 	description    string
-	shared         bool
+	shared         cphalo.StringableBool
 	ignoreFwdRules bool
 	rules          []expectedFirewallRule
 }
@@ -64,7 +64,7 @@ func TestAccFirewallPolicy_basic(t *testing.T) {
 						expectedFirewallPolicy{
 							name:           "tf_acc_fw_policy",
 							description:    "",
-							shared:         true,
+							shared:         false,
 							ignoreFwdRules: false,
 							rules: []expectedFirewallRule{
 								{chain: "INPUT", action: "DROP", states: "NEW", position: 1},
