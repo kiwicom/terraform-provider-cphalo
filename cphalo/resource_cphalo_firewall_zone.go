@@ -3,6 +3,7 @@ package cphalo
 import (
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/hashicorp/terraform/helper/schema"
@@ -17,8 +18,9 @@ func resourceCPHaloFirewallZone() *schema.Resource {
 				Required: true,
 			},
 			"ip_address": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeList,
 				Required: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
 			"description": {
 				Type:     schema.TypeString,
@@ -41,7 +43,7 @@ func resourceCPHaloFirewallZone() *schema.Resource {
 func resourceFirewallZoneCreate(d *schema.ResourceData, i interface{}) error {
 	policy := cphalo.FirewallZone{
 		Name:        d.Get("name").(string),
-		IPAddress:   d.Get("ip_address").(string),
+		IPAddress:   flattenIpAddress(d.Get("ip_address").([]interface{})),
 		Description: d.Get("description").(string),
 	}
 
@@ -77,7 +79,7 @@ func resourceFirewallZoneRead(d *schema.ResourceData, i interface{}) error {
 	zone := resp.Zone
 
 	_ = d.Set("name", zone.Name)
-	_ = d.Set("ip_address", zone.IPAddress)
+	_ = d.Set("ip_address", expandIpAddress(zone.IPAddress))
 	_ = d.Set("description", zone.Description)
 
 	return nil
@@ -110,7 +112,7 @@ func resourceFirewallZoneUpdate(d *schema.ResourceData, i interface{}) error {
 	if d.HasChange("ip_address") {
 		err = client.UpdateFirewallZone(cphalo.FirewallZone{
 			ID:        d.Id(),
-			IPAddress: d.Get("ip_address").(string),
+			IPAddress: flattenIpAddress(d.Get("ip_address").([]interface{})),
 		})
 
 		if err != nil {
@@ -137,6 +139,8 @@ func resourceFirewallZoneUpdate(d *schema.ResourceData, i interface{}) error {
 
 	d.Partial(false)
 
+	flatIPs := flattenIpAddress(d.Get("ip_address").([]interface{}))
+
 	err = updateStateChange(d, func() (result interface{}, state string, err error) {
 		resp, err := client.GetFirewallZone(d.Id())
 
@@ -146,7 +150,7 @@ func resourceFirewallZoneUpdate(d *schema.ResourceData, i interface{}) error {
 
 		matches := []bool{
 			resp.Zone.Name == d.Get("name").(string),
-			resp.Zone.IPAddress == d.Get("ip_address").(string),
+			resp.Zone.IPAddress == flatIPs,
 		}
 
 		for _, match := range matches {
@@ -183,4 +187,16 @@ func resourceFirewallZoneDelete(d *schema.ResourceData, i interface{}) (err erro
 	log.Printf("firewall zone %s deleted\n", d.Id())
 
 	return nil
+}
+
+func flattenIpAddress(ips []interface{}) string {
+	var result []string
+	for _, ip := range ips {
+		result = append(result, ip.(string))
+	}
+	return strings.Join(result, ",")
+}
+
+func expandIpAddress(ips string) []string {
+	return strings.Split(ips, ",")
 }

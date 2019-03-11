@@ -19,13 +19,13 @@ func TestAccFirewallZone_basic(t *testing.T) {
 			{
 				Config: testAccFirewallZoneConfig(t, 1),
 				Check: resource.ComposeTestCheckFunc(func(s *terraform.State) error {
-					return testFirewallZoneAttributes("tf_acc_fw_zone", "1.1.1.1", "")
+					return testFirewallZoneAttributes("tf_acc_fw_zone", "1.1.1.1,2.2.2.2", "")
 				}),
 			},
 			{
 				Config: testAccFirewallZoneConfig(t, 2),
 				Check: resource.ComposeTestCheckFunc(func(_ *terraform.State) error {
-					return testFirewallZoneAttributes("tf_acc_fw_zone", "2.2.2.2", "fw zone")
+					return testFirewallZoneAttributes("tf_acc_fw_zone", "3.3.3.3,4.4.4.4", "fw zone")
 				}),
 			},
 		},
