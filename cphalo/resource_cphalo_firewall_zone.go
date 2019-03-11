@@ -43,7 +43,7 @@ func resourceCPHaloFirewallZone() *schema.Resource {
 func resourceFirewallZoneCreate(d *schema.ResourceData, i interface{}) error {
 	policy := cphalo.FirewallZone{
 		Name:        d.Get("name").(string),
-		IPAddress:   flattenIpAddress(d.Get("ip_address").([]interface{})),
+		IPAddress:   flattenIPAddress(d.Get("ip_address").([]interface{})),
 		Description: d.Get("description").(string),
 	}
 
@@ -79,7 +79,7 @@ func resourceFirewallZoneRead(d *schema.ResourceData, i interface{}) error {
 	zone := resp.Zone
 
 	_ = d.Set("name", zone.Name)
-	_ = d.Set("ip_address", expandIpAddress(zone.IPAddress))
+	_ = d.Set("ip_address", expandIPAddress(zone.IPAddress))
 	_ = d.Set("description", zone.Description)
 
 	return nil
@@ -112,7 +112,7 @@ func resourceFirewallZoneUpdate(d *schema.ResourceData, i interface{}) error {
 	if d.HasChange("ip_address") {
 		err = client.UpdateFirewallZone(cphalo.FirewallZone{
 			ID:        d.Id(),
-			IPAddress: flattenIpAddress(d.Get("ip_address").([]interface{})),
+			IPAddress: flattenIPAddress(d.Get("ip_address").([]interface{})),
 		})
 
 		if err != nil {
@@ -139,7 +139,7 @@ func resourceFirewallZoneUpdate(d *schema.ResourceData, i interface{}) error {
 
 	d.Partial(false)
 
-	flatIPs := flattenIpAddress(d.Get("ip_address").([]interface{}))
+	flatIPs := flattenIPAddress(d.Get("ip_address").([]interface{}))
 
 	err = updateStateChange(d, func() (result interface{}, state string, err error) {
 		resp, err := client.GetFirewallZone(d.Id())
@@ -189,7 +189,7 @@ func resourceFirewallZoneDelete(d *schema.ResourceData, i interface{}) (err erro
 	return nil
 }
 
-func flattenIpAddress(ips []interface{}) string {
+func flattenIPAddress(ips []interface{}) string {
 	var result []string
 	for _, ip := range ips {
 		result = append(result, ip.(string))
@@ -197,6 +197,6 @@ func flattenIpAddress(ips []interface{}) string {
 	return strings.Join(result, ",")
 }
 
-func expandIpAddress(ips string) []string {
+func expandIPAddress(ips string) []string {
 	return strings.Split(ips, ",")
 }
