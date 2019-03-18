@@ -235,6 +235,8 @@ gitlab.com/kiwicom/cphalo-go v0.1.2-0.20190307192654-df83dd7bec79 h1:SWjL/ku1zkH
 gitlab.com/kiwicom/cphalo-go v0.1.2-0.20190307192654-df83dd7bec79/go.mod h1:duBL6WrYBUBVNrYCvVvRmQvJYaxUnzeYOO/raRsyJgA=
 gitlab.com/kiwicom/cphalo-go v0.1.2-0.20190307200223-ee1ce7d2b50f h1:Q+tCAhCOwuEPKZT7Nb8LhhPXn8Lc4jCxQCHthWk8ENw=
 gitlab.com/kiwicom/cphalo-go v0.1.2-0.20190307200223-ee1ce7d2b50f/go.mod h1:duBL6WrYBUBVNrYCvVvRmQvJYaxUnzeYOO/raRsyJgA=
+gitlab.com/kiwicom/cphalo-go v0.1.2 h1:W3QeasD0HIubh3xagYbLIqvORkVqi2hCOX6qd7rgwUY=
+gitlab.com/kiwicom/cphalo-go v0.1.2/go.mod h1:duBL6WrYBUBVNrYCvVvRmQvJYaxUnzeYOO/raRsyJgA=
 golang.org/x/crypto v0.0.0-20180110145155-b3c9a1d25cfb h1:lexDMTenYWvxW3Jdsfw/G56ScdrDWVlfljIeYM6ZG60=
 golang.org/x/crypto v0.0.0-20180110145155-b3c9a1d25cfb/go.mod h1:6SG95UA2DQfeDnfUPMdvaQW0Q7yPrPDi9nlGo2tz2b4=
 golang.org/x/crypto v0.0.0-20180816225734-aabede6cba87/go.mod h1:6SG95UA2DQfeDnfUPMdvaQW0Q7yPrPDi9nlGo2tz2b4=
