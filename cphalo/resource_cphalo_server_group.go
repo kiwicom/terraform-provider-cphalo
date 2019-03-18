@@ -28,10 +28,6 @@ func resourceCPHaloServerGroup() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"linux_firewall_policy_id": {
-				Type:     schema.TypeString,
-				Optional: true,
-			},
 			"alert_profile_ids": {
 				Type:     schema.TypeList,
 				Optional: true,
@@ -54,15 +50,12 @@ func resourceCPHaloServerGroup() *schema.Resource {
 }
 
 func resourceCPHaloServerGroupCreate(d *schema.ResourceData, i interface{}) error {
-	policyID := d.Get("linux_firewall_policy_id").(string)
-
 	group := cphalo.ServerGroup{
-		Name:                  d.Get("name").(string),
-		Description:           d.Get("description").(string),
-		ParentID:              d.Get("parent_id").(string),
-		Tag:                   d.Get("tag").(string),
-		LinuxFirewallPolicyID: cphalo.NullableString(policyID),
-		AlertProfileIDs:       expandStringList(d.Get("alert_profile_ids")),
+		Name:            d.Get("name").(string),
+		Description:     d.Get("description").(string),
+		ParentID:        d.Get("parent_id").(string),
+		Tag:             d.Get("tag").(string),
+		AlertProfileIDs: expandStringList(d.Get("alert_profile_ids")),
 	}
 
 	client := i.(*cphalo.Client)
@@ -101,7 +94,6 @@ func resourceCPHaloServerGroupRead(d *schema.ResourceData, i interface{}) error 
 	_ = d.Set("description", group.Description)
 	_ = d.Set("parent_id", group.ParentID)
 	_ = d.Set("tag", group.Tag)
-	_ = d.Set("linux_firewall_policy_id", group.LinuxFirewallPolicyID)
 	_ = d.Set("alert_profile_ids", group.AlertProfileIDs)
 
 	return nil
@@ -148,16 +140,6 @@ func resourceCPHaloServerGroupUpdate(d *schema.ResourceData, i interface{}) erro
 		logDebug("updated parent_id")
 	}
 
-	if d.HasChange("linux_firewall_policy_id") {
-		policyID := d.Get("linux_firewall_policy_id").(string)
-
-		if err = client.UpdateServerGroup(cphalo.ServerGroup{ID: d.Id(), LinuxFirewallPolicyID: cphalo.NullableString(policyID)}); err != nil {
-			return fmt.Errorf("updating linux_firewall_policy_id of %s failed: %v", d.Id(), err)
-		}
-		d.SetPartial("linux_firewall_policy_id")
-		logDebug("updated linux_firewall_policy_id")
-	}
-
 	if d.HasChange("alert_profile_ids") {
 		ids := expandStringList(d.Get("alert_profile_ids"))
 
@@ -180,7 +162,6 @@ func resourceCPHaloServerGroupUpdate(d *schema.ResourceData, i interface{}) erro
 			resp.Group.Name == d.Get("name").(string),
 			resp.Group.Tag == d.Get("tag").(string),
 			resp.Group.ParentID == d.Get("parent_id").(string),
-			resp.Group.LinuxFirewallPolicyID == cphalo.NullableString(d.Get("linux_firewall_policy_id").(string)),
 			assertStringSlice(resp.Group.AlertProfileIDs, expandStringList(d.Get("alert_profile_ids"))),
 		}
 

@@ -16,3 +16,4 @@ headless: true
   - [Firewall Service]({{< relref "/docs/r/firewall_service.md" >}})
   - [Firewall Zone]({{< relref "/docs/r/firewall_zone.md" >}})
   - [Server Group]({{< relref "/docs/r/server_group.md" >}})
+  - [Server Group Firewall Policy]({{< relref "/docs/r/server_group_firewall_policy.md" >}})
