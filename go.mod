@@ -28,7 +28,7 @@ require (
 	github.com/terraform-providers/terraform-provider-tls v1.2.0 // indirect
 	github.com/ulikunitz/xz v0.5.6 // indirect
 	github.com/zclconf/go-cty v0.0.0-20190212192503-19dda139b164 // indirect
-	gitlab.com/kiwicom/cphalo-go v0.1.2-0.20190307200223-ee1ce7d2b50f
+	gitlab.com/kiwicom/cphalo-go v0.1.2
 	golang.org/x/crypto v0.0.0-20190222235706-ffb98f73852f // indirect
 	golang.org/x/net v0.0.0-20190213061140-3a22650c66bd // indirect
 	golang.org/x/sys v0.0.0-20190225065934-cc5685c2db12 // indirect
