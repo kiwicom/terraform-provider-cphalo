@@ -9,7 +9,10 @@ For further information on firewall zones, consult the
 ```terraform
 resource "cphalo_firewall_zone" "example" {
   name        = "databases"
-  ip_address  = "10.20.30.40,10.20.30.41"
+  ip_address  = [
+    "10.20.30.40",
+    "10.20.30.41"
+  ]
   description = "dev"
 }
 ```
@@ -20,7 +23,7 @@ The following arguments are supported:
 
 * `name` - (Required, string) A unique name given to the firewall interface.
 
-* `ip_address` - (Required, string) The specified IP address(es) of the firewall zone.
+* `ip_address` - (Required, list) The specified IP address(es) of the firewall zone.
 
 * `description` - (Optional, string) Description of the firewall zone.
 
