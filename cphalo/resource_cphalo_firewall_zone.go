@@ -3,7 +3,6 @@ package cphalo
 import (
 	"fmt"
 	"log"
-	"strings"
 	"time"
 
 	"github.com/hashicorp/terraform/helper/schema"
@@ -43,7 +42,7 @@ func resourceCPHaloFirewallZone() *schema.Resource {
 func resourceFirewallZoneCreate(d *schema.ResourceData, i interface{}) error {
 	policy := cphalo.FirewallZone{
 		Name:        d.Get("name").(string),
-		IPAddress:   flattenIPAddress(d.Get("ip_address").([]interface{})),
+		IPAddress:   convertToIPList(d.Get("ip_address").([]interface{})),
 		Description: d.Get("description").(string),
 	}
 
@@ -79,7 +78,7 @@ func resourceFirewallZoneRead(d *schema.ResourceData, i interface{}) error {
 	zone := resp.Zone
 
 	_ = d.Set("name", zone.Name)
-	_ = d.Set("ip_address", expandIPAddress(zone.IPAddress))
+	_ = d.Set("ip_address", zone.IPAddress)
 	_ = d.Set("description", zone.Description)
 
 	return nil
@@ -112,7 +111,7 @@ func resourceFirewallZoneUpdate(d *schema.ResourceData, i interface{}) error {
 	if d.HasChange("ip_address") {
 		err = client.UpdateFirewallZone(cphalo.FirewallZone{
 			ID:        d.Id(),
-			IPAddress: flattenIPAddress(d.Get("ip_address").([]interface{})),
+			IPAddress: convertToIPList(d.Get("ip_address").([]interface{})),
 		})
 
 		if err != nil {
@@ -139,7 +138,7 @@ func resourceFirewallZoneUpdate(d *schema.ResourceData, i interface{}) error {
 
 	d.Partial(false)
 
-	flatIPs := flattenIPAddress(d.Get("ip_address").([]interface{}))
+	flatIPs := convertToIPList(d.Get("ip_address").([]interface{}))
 
 	err = updateStateChange(d, func() (result interface{}, state string, err error) {
 		resp, err := client.GetFirewallZone(d.Id())
@@ -150,7 +149,7 @@ func resourceFirewallZoneUpdate(d *schema.ResourceData, i interface{}) error {
 
 		matches := []bool{
 			resp.Zone.Name == d.Get("name").(string),
-			resp.Zone.IPAddress == flatIPs,
+			fmt.Sprintf("%s", resp.Zone.IPAddress) == fmt.Sprintf("%s", flatIPs),
 		}
 
 		for _, match := range matches {
@@ -189,14 +188,10 @@ func resourceFirewallZoneDelete(d *schema.ResourceData, i interface{}) (err erro
 	return nil
 }
 
-func flattenIPAddress(ips []interface{}) string {
+func convertToIPList(ips []interface{}) []string {
 	var result []string
 	for _, ip := range ips {
 		result = append(result, ip.(string))
 	}
-	return strings.Join(result, ",")
-}
-
-func expandIPAddress(ips string) []string {
-	return strings.Split(ips, ",")
+	return result
 }
