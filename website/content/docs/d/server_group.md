@@ -7,7 +7,7 @@ For further information on firewall zones, consult the
 ## Example Usage
 
 ```terraform
-resource "cphalo_server_group" "foo" {
+data "cphalo_server_group" "foo" {
   name = "foo"
 }
 ```

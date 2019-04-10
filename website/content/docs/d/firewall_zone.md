@@ -23,3 +23,7 @@ The following arguments are supported:
 The following attributes are exported:
 
 * `id` - (string) A unique identifier of the firewall zone.
+
+* `ip_address` - (list) The specified IP address(es) of the firewall zone.
+
+* `description` - (string) Description of the firewall zone.

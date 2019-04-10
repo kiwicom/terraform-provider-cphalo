@@ -23,3 +23,7 @@ The following arguments are supported:
 The following attributes are exported:
 
 * `id` - (string) A unique identifier of the firewall service.
+
+* `protocol` - (string) The specified protocol of the firewall service. TCP, UDP, and ICMP are allowed.
+
+* `port` - (string) The specified port(s) of the firewall service.
