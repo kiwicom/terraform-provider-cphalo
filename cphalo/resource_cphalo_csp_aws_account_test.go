@@ -85,13 +85,15 @@ func testCSPAWSAccountAttributes(name string) error {
 		return fmt.Errorf("cannot fetch CSP AWS accounts: %v", err)
 	}
 
+	var found []string
 	for _, c := range resp.CSPAccounts {
+		found = append(found, c.AccountDisplayName)
 		if c.AccountDisplayName == name {
 			return nil
 		}
 	}
 
-	return fmt.Errorf("expected CSP AWS account %s; not found", name)
+	return fmt.Errorf("expected CSP AWS account %s; found only: %v", name, strings.Join(found, ","))
 }
 
 func testAccCSPAWSAccountCheckDestroy(_ *terraform.State) error {
