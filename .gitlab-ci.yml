@@ -2,7 +2,6 @@ image: golang:alpine
 
 stages:
   - test
-  - acceptanceTest
   - build
   - preReleaseTest
   - release
@@ -20,14 +19,6 @@ cache:
 .install-deps: &install-deps
   before_script:
     - apk add --update zip make git
-
-tests:
-  <<: *install-deps
-  stage: test
-  except:
-    - tags
-  script:
-    - make test
 
 lint:
   stage: test
@@ -57,7 +48,7 @@ website:
 
 tests_acc:
   <<: *install-deps
-  stage: acceptanceTest
+  stage: test
   except:
     - tags
   script:
