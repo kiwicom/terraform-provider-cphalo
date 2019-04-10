@@ -21,6 +21,15 @@ func dataSourceCPHaloFirewallZone() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
+			"ip_address": {
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+			},
+			"description": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -51,6 +60,8 @@ func dataSourceFirewallZoneRead(d *schema.ResourceData, meta interface{}) error 
 
 	d.SetId(selectedZone.ID)
 	_ = d.Set("name", selectedZone.Name)
+	_ = d.Set("ip_address", selectedZone.IPAddress)
+	_ = d.Set("description", selectedZone.Description)
 
 	return nil
 }

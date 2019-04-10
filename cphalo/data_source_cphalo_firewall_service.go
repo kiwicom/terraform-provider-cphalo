@@ -21,6 +21,14 @@ func dataSourceCPHaloFirewallService() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
+			"protocol": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"port": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -51,6 +59,8 @@ func dataSourceFirewallServiceRead(d *schema.ResourceData, meta interface{}) err
 
 	d.SetId(selectedService.ID)
 	_ = d.Set("name", selectedService.Name)
+	_ = d.Set("protocol", selectedService.Protocol)
+	_ = d.Set("port", selectedService.Port)
 
 	return nil
 }
