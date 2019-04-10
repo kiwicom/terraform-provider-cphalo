@@ -39,7 +39,7 @@ lint:
     - make lint
 
 website:
-  stage: test
+  stage: build
   image: monachus/hugo
   cache: {}
   variables:
