@@ -8,14 +8,14 @@ stages:
   - release
 
 variables:
-  GOPATH: $CI_PROJECT_DIR/.tmp/go
+  GOCACHE: $CI_PROJECT_DIR/.tmp/go-cache
   CPHALO_TEST_ID: ${CI_COMMIT_SHORT_SHA}_${CI_JOB_ID}
   CGO_ENABLED: "0"
 
 cache:
   key: $CI_PROJECT_PATH_SLUG
   paths:
-    - $GOPATH/pkg/mod
+    - $GOCACHE
 
 .install-deps: &install-deps
   before_script:
