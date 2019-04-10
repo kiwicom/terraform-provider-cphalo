@@ -31,7 +31,7 @@ tests:
 
 lint:
   stage: test
-  image: golangci/golangci-lint
+  image: golangci/golangci-lint:v1.15
   except:
     - tags
   script:
