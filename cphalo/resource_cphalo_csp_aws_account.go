@@ -110,9 +110,9 @@ func resourceCPHaloCSPAWSAccountUpdate(d *schema.ResourceData, i interface{}) er
 			AWSRoleArn:         d.Get("role_arn").(string),
 		}
 		if err = client.UpdateCSPAccount(cspAccount); err != nil {
-			return fmt.Errorf("updating csp AWS account of %s failed: %v", d.Id(), err)
+			return fmt.Errorf("updating CSP AWS account of %s failed: %v", d.Id(), err)
 		}
-		logDebug("updated csp AWS account")
+		logDebugf("updated CSP AWS account %s", d.Id())
 	}
 
 	err = updateStateChange(d, func() (result interface{}, state string, err error) {
