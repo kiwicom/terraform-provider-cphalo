@@ -73,7 +73,7 @@ examples_test:
     refs:
       - master
   image:
-    name: hashicorp/terraform:light
+    name: hashicorp/terraform:0.11.14
     entrypoint:
       - ''
   before_script:
