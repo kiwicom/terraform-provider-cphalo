@@ -18,7 +18,7 @@ cache:
 
 .install-deps: &install-deps
   before_script:
-    - apk add --update zip make git
+    - apk add --update zip make git bzr
 
 lint:
   stage: test
