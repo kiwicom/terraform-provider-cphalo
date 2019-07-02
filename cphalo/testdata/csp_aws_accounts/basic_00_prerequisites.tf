@@ -17,7 +17,7 @@ provider "aws" {
 }
 
 variable "cphalo_service_id" {
-  default = "{{.CPHaloServiceId}}"
+  default = "{{.CPHaloServiceID}}"
 }
 variable "cphalo_root_group" {
   default = "{{.CPHaloRootGroup}}"

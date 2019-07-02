@@ -57,13 +57,13 @@ func readTestTemplateData(filePath, uniqueID string) (string, error) {
 		Prefix          string
 		AWSAccessKey    string
 		AWSSecretKey    string
-		CPHaloServiceId string
+		CPHaloServiceID string
 		CPHaloRootGroup string
 	}{
 		Prefix:          uniqueID,
 		AWSAccessKey:    os.Getenv("TF_VAR_aws_access_key"),
 		AWSSecretKey:    os.Getenv("TF_VAR_aws_secret_key"),
-		CPHaloServiceId: os.Getenv("TF_VAR_cphalo_service_id"),
+		CPHaloServiceID: os.Getenv("TF_VAR_cphalo_service_id"),
 		CPHaloRootGroup: os.Getenv("TF_VAR_cphalo_root_group"),
 	})
 	if err != nil {
