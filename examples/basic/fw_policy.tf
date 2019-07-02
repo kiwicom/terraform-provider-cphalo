@@ -35,14 +35,14 @@ resource "cphalo_firewall_policy" "tf_examples_basic_fw_policy" {
 }
 
 resource "cphalo_firewall_zone" "tf_examples_basic_fw_in_zone" {
-  name       = "tf_examples_basic_fw_in_zone"
+  name = "tf_examples_basic_fw_in_zone"
   ip_address = [
     "1.1.1.1",
   ]
 }
 
 resource "cphalo_firewall_zone" "tf_examples_basic_fw_out_zone" {
-  name       = "tf_examples_basic_fw_out_zone"
+  name = "tf_examples_basic_fw_out_zone"
   ip_address = [
     "10.10.10.10",
   ]

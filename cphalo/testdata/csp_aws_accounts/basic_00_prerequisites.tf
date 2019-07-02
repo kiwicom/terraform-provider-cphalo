@@ -11,7 +11,7 @@ variable "aws_region" {
 }
 
 provider "aws" {
-  region = var.aws_region
+  region     = var.aws_region
   access_key = "{{.AWSAccessKey}}"
   secret_key = "{{.AWSSecretKey}}"
 }
@@ -24,12 +24,12 @@ variable "cphalo_root_group" {
 }
 
 variable "cphalo_external_id" {
-  type = "string"
+  type    = "string"
   default = "{{.Prefix}}this-is-some-id-for-tf-cphalo-testacc"
 }
 
 resource "aws_iam_role" "tf_testacc_cloudpassage_role" {
-  name = "{{.Prefix}}tf_testacc_cloudpassage_role"
+  name               = "{{.Prefix}}tf_testacc_cloudpassage_role"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",

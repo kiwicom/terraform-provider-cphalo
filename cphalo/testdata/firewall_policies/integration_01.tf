@@ -36,9 +36,10 @@ resource "cphalo_firewall_policy" "fw_policy" {
 }
 
 resource "cphalo_firewall_zone" "fw_in_zone" {
-  name       = "{{.Prefix}}tf_acc_fw_in_zone"
+  name = "{{.Prefix}}tf_acc_fw_in_zone"
   ip_address = [
-    "1.1.1.1"]
+    "1.1.1.1"
+  ]
 }
 
 resource "cphalo_firewall_service" "fw_service" {
