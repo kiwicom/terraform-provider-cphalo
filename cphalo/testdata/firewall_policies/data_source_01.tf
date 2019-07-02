@@ -7,11 +7,11 @@ resource "cphalo_firewall_policy" "tf_acc_data_source_policy" {
     connection_states = "NEW, ESTABLISHED"
     position = 1
 
-    firewall_interface = "${data.cphalo_firewall_interface.tf_acc_eth0_interface.id}"
-    firewall_service = "${data.cphalo_firewall_service.tf_acc_http_service.id}"
+    firewall_interface = data.cphalo_firewall_interface.tf_acc_eth0_interface.id
+    firewall_service = data.cphalo_firewall_service.tf_acc_http_service.id
 
     firewall_source {
-      id = "${data.cphalo_firewall_zone.tf_acc_any_zone.id}"
+      id = data.cphalo_firewall_zone.tf_acc_any_zone.id
       kind = "FirewallZone"
     }
   }

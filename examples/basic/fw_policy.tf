@@ -9,11 +9,11 @@ resource "cphalo_firewall_policy" "tf_examples_basic_fw_policy" {
     connection_states = "NEW, ESTABLISHED"
     position          = 1
 
-    firewall_interface = "${cphalo_firewall_interface.tf_examples_basic_fw_interface.id}"
-    firewall_service   = "${cphalo_firewall_service.tf_examples_basic_fw_service.id}"
+    firewall_interface = cphalo_firewall_interface.tf_examples_basic_fw_interface.id
+    firewall_service   = cphalo_firewall_service.tf_examples_basic_fw_service.id
 
     firewall_source {
-      id   = "${cphalo_firewall_zone.tf_examples_basic_fw_in_zone.id}"
+      id   = cphalo_firewall_zone.tf_examples_basic_fw_in_zone.id
       kind = "FirewallZone"
     }
   }
@@ -24,11 +24,11 @@ resource "cphalo_firewall_policy" "tf_examples_basic_fw_policy" {
     connection_states = "NEW, ESTABLISHED"
     position          = 1
 
-    firewall_interface = "${cphalo_firewall_interface.tf_examples_basic_fw_interface.id}"
-    firewall_service   = "${cphalo_firewall_service.tf_examples_basic_fw_service.id}"
+    firewall_interface = cphalo_firewall_interface.tf_examples_basic_fw_interface.id
+    firewall_service   = cphalo_firewall_service.tf_examples_basic_fw_service.id
 
     firewall_target {
-      id   = "${cphalo_firewall_zone.tf_examples_basic_fw_out_zone.id}"
+      id   = cphalo_firewall_zone.tf_examples_basic_fw_out_zone.id
       kind = "FirewallZone"
     }
   }
@@ -69,11 +69,11 @@ resource "cphalo_firewall_policy" "tf_examples_basic_fw_subpolicy" {
     connection_states = "NEW, ESTABLISHED"
     position          = 1
 
-    firewall_interface = "${data.cphalo_firewall_interface.tf_examples_basic_fw_sub_interface.id}"
-    firewall_service   = "${data.cphalo_firewall_service.tf_examples_basic_fw_sub_service.id}"
+    firewall_interface = data.cphalo_firewall_interface.tf_examples_basic_fw_sub_interface.id
+    firewall_service   = data.cphalo_firewall_service.tf_examples_basic_fw_sub_service.id
 
     firewall_source {
-      id   = "${data.cphalo_firewall_zone.tf_examples_basic_fw_sub_zone.id}"
+      id   = data.cphalo_firewall_zone.tf_examples_basic_fw_sub_zone.id
       kind = "FirewallZone"
     }
   }

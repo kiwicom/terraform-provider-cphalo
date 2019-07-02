@@ -13,13 +13,13 @@ resource "cphalo_firewall_policy" "firewall_policy" {
     position          = 1
 
     firewall_source {
-      id   = "${cphalo_server_group.root_group.id}"
+      id   = cphalo_server_group.root_group.id
       kind = "Group"
     }
   }
 }
 
 resource "cphalo_server_group_firewall_policy" "server_group_fw_policy" {
-  group_id                 = "${cphalo_server_group.root_group.id}"
-  linux_firewall_policy_id = "${cphalo_firewall_policy.firewall_policy.id}"
+  group_id                 = cphalo_server_group.root_group.id
+  linux_firewall_policy_id = cphalo_firewall_policy.firewall_policy.id
 }
