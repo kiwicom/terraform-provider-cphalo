@@ -1,7 +1,7 @@
 provider "aws" {
-  access_key = "${var.aws_access_key}"
-  secret_key = "${var.aws_secret_key}"
-  region     = "${var.aws_region}"
+  access_key = var.aws_access_key
+  secret_key = var.aws_secret_key
+  region     = var.aws_region
 }
 
 resource "aws_iam_role" "tf_examples_basic_cloudpassage_role" {
@@ -32,14 +32,14 @@ EOF
 }
 
 resource "aws_iam_policy" "tf_examples_basic_cloudpassage_service_policy" {
-  name   = "tf_examples_basic_cloudpassage_service_policy"
-  policy = "${file("aws_cphalo_policy.json")}"
+  name = "tf_examples_basic_cloudpassage_service_policy"
+  policy = file("aws_cphalo_policy.json")
 }
 
 resource "aws_iam_policy_attachment" "tf_examples_basic_cloudpassage_role_attach" {
-  name       = "tf_examples_basic_cloudpassage_role_attach"
-  roles      = [
-    "${aws_iam_role.tf_examples_basic_cloudpassage_role.name}"
+  name = "tf_examples_basic_cloudpassage_role_attach"
+  roles = [
+    aws_iam_role.tf_examples_basic_cloudpassage_role.name
   ]
-  policy_arn = "${aws_iam_policy.tf_examples_basic_cloudpassage_service_policy.arn}"
+  policy_arn = aws_iam_policy.tf_examples_basic_cloudpassage_service_policy.arn
 }

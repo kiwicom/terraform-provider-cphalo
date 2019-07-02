@@ -3,11 +3,11 @@ data "cphalo_server_group" "base_server_group" {
 }
 
 output "name" {
-  value = "${data.cphalo_server_group.base_server_group.name}"
+  value = data.cphalo_server_group.base_server_group.name
 }
 
 output "id" {
-  value = "${data.cphalo_server_group.base_server_group.id}"
+  value = data.cphalo_server_group.base_server_group.id
 }
 
 resource "cphalo_server_group" "tf_examples_basic_root_group" {
@@ -17,21 +17,21 @@ resource "cphalo_server_group" "tf_examples_basic_root_group" {
 }
 
 resource "cphalo_server_group_firewall_policy" "tf_examples_basic_root_group" {
-  group_id                 = "${cphalo_server_group.tf_examples_basic_root_group.id}"
-  linux_firewall_policy_id = "${cphalo_firewall_policy.tf_examples_basic_fw_policy.id}"
+  group_id                 = cphalo_server_group.tf_examples_basic_root_group.id
+  linux_firewall_policy_id = cphalo_firewall_policy.tf_examples_basic_fw_policy.id
 }
 
 resource "cphalo_server_group" "tf_examples_basic_child_group_01" {
   name      = "tf_examples_basic_child_group_01"
-  parent_id = "${cphalo_server_group.tf_examples_basic_root_group.id}"
+  parent_id = cphalo_server_group.tf_examples_basic_root_group.id
 }
 
 resource "cphalo_server_group_firewall_policy" "tf_examples_basic_child_group_01" {
-  group_id                 = "${cphalo_server_group.tf_examples_basic_child_group_01.id}"
-  linux_firewall_policy_id = "${cphalo_firewall_policy.tf_examples_basic_fw_subpolicy.id}"
+  group_id                 = cphalo_server_group.tf_examples_basic_child_group_01.id
+  linux_firewall_policy_id = cphalo_firewall_policy.tf_examples_basic_fw_subpolicy.id
 }
 
 resource "cphalo_server_group" "tf_examples_basic_child_group_02" {
   name      = "tf_examples_basic_child_group_02"
-  parent_id = "${cphalo_server_group.tf_examples_basic_root_group.id}"
+  parent_id = cphalo_server_group.tf_examples_basic_root_group.id
 }

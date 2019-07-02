@@ -54,9 +54,17 @@ func readTestTemplateData(filePath, uniqueID string) (string, error) {
 	}
 
 	err = tmpl.Execute(&b, struct {
-		Prefix string
+		Prefix          string
+		AWSAccessKey    string
+		AWSSecretKey    string
+		CPHaloServiceID string
+		CPHaloRootGroup string
 	}{
-		Prefix: uniqueID,
+		Prefix:          uniqueID,
+		AWSAccessKey:    os.Getenv("TF_VAR_aws_access_key"),
+		AWSSecretKey:    os.Getenv("TF_VAR_aws_secret_key"),
+		CPHaloServiceID: os.Getenv("TF_VAR_cphalo_service_id"),
+		CPHaloRootGroup: os.Getenv("TF_VAR_cphalo_root_group"),
 	})
 	if err != nil {
 		return "", fmt.Errorf("cannot read execute template from file %s: %v", path, err)

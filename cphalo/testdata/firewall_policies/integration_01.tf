@@ -10,11 +10,11 @@ resource "cphalo_firewall_policy" "fw_policy" {
     connection_states = "NEW, ESTABLISHED"
     position          = 1
 
-    firewall_interface = "${cphalo_firewall_interface.fw_interface.id}"
-    firewall_service   = "${cphalo_firewall_service.fw_service.id}"
+    firewall_interface = cphalo_firewall_interface.fw_interface.id
+    firewall_service   = cphalo_firewall_service.fw_service.id
 
     firewall_source {
-      id   = "${cphalo_firewall_zone.fw_in_zone.id}"
+      id   = cphalo_firewall_zone.fw_in_zone.id
       kind = "FirewallZone"
     }
   }
@@ -25,8 +25,8 @@ resource "cphalo_firewall_policy" "fw_policy" {
     connection_states = "NEW, ESTABLISHED"
     position          = 1
 
-    firewall_interface = "${cphalo_firewall_interface.fw_interface.id}"
-    firewall_service   = "${cphalo_firewall_service.fw_service.id}"
+    firewall_interface = cphalo_firewall_interface.fw_interface.id
+    firewall_service   = cphalo_firewall_service.fw_service.id
 
     firewall_target {
       id   = "All Active Servers"
@@ -36,9 +36,10 @@ resource "cphalo_firewall_policy" "fw_policy" {
 }
 
 resource "cphalo_firewall_zone" "fw_in_zone" {
-  name       = "{{.Prefix}}tf_acc_fw_in_zone"
+  name = "{{.Prefix}}tf_acc_fw_in_zone"
   ip_address = [
-    "1.1.1.1"]
+    "1.1.1.1"
+  ]
 }
 
 resource "cphalo_firewall_service" "fw_service" {

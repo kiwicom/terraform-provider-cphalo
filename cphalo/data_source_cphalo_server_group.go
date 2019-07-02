@@ -47,7 +47,7 @@ func dataSourceCPHaloServerGroupRead(d *schema.ResourceData, meta interface{}) e
 	}
 
 	if selectedGroup.Name == "" {
-		return fmt.Errorf("resouce %s does not exists", name)
+		return fmt.Errorf("resource %s does not exists", name)
 	}
 
 	d.SetId(selectedGroup.ID)

@@ -1,9 +1,9 @@
 resource "cphalo_server_group" "root_group" {
-  name = "{{.Prefix}}changed_name"
-  tag = "{{.Prefix}}added_tag"
+  name        = "{{.Prefix}}changed_name"
+  tag         = "{{.Prefix}}added_tag"
   description = "and added some interesting description"
   alert_profile_ids = [
-    "${data.cphalo_alert_profile.test_alert_profile.id}"
+    data.cphalo_alert_profile.test_alert_profile.id
   ]
 }
 
@@ -13,5 +13,5 @@ data "cphalo_alert_profile" "test_alert_profile" {
 }
 
 output "alert_id" {
-  value = "${data.cphalo_alert_profile.test_alert_profile.id}"
+  value = data.cphalo_alert_profile.test_alert_profile.id
 }
