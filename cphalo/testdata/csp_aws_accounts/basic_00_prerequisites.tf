@@ -11,13 +11,17 @@ variable "aws_region" {
 }
 
 provider "aws" {
-  region = "${var.aws_region}"
-  access_key = "${var.aws_access_key}"
-  secret_key = "${var.aws_secret_key}"
+  region = var.aws_region
+  access_key = "{{.AWSAccessKey}}"
+  secret_key = "{{.AWSSecretKey}}"
 }
 
-variable "cphalo_service_id" {}
-variable "cphalo_root_group" {}
+variable "cphalo_service_id" {
+  default = "{{.CPHaloServiceId}}"
+}
+variable "cphalo_root_group" {
+  default = "{{.CPHaloRootGroup}}"
+}
 
 variable "cphalo_external_id" {
   type = "string"
