@@ -20,6 +20,12 @@ cache:
   before_script:
     - apk add --update zip make git bzr
 
+.tf-image: &tf-image
+  image:
+    name: hashicorp/terraform:0.12.3
+    entrypoint:
+      - ''
+
 lint:
   stage: test
   image: golangci/golangci-lint:v1.15
@@ -28,6 +34,14 @@ lint:
   script:
     - go mod download
     - make lint
+
+tf_fmt:
+  <<: *tf-image
+  stage: test
+  cache: {}
+  script:
+    - terraform fmt --recursive -check -diff cphalo/testdata
+    - terraform fmt --recursive -check -diff examples/
 
 website:
   stage: build
@@ -67,15 +81,12 @@ build:
     expire_in: 1 hour
 
 examples_test:
+  <<: *tf-image
   stage: preReleaseTest
   cache: {}
   only:
     refs:
       - master
-  image:
-    name: hashicorp/terraform:0.12.3
-    entrypoint:
-      - ''
   before_script:
     - apk add --update zip
     - terraform version
