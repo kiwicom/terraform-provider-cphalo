@@ -7,14 +7,14 @@ stages:
   - release
 
 variables:
-  GOCACHE: $CI_PROJECT_DIR/.tmp/go-cache
+#  GOCACHE: $CI_PROJECT_DIR/.tmp/go-cache
   CPHALO_TEST_ID: ${CI_COMMIT_SHORT_SHA}_${CI_JOB_ID}
   CGO_ENABLED: "0"
 
-cache:
-  key: $CI_PROJECT_PATH_SLUG
-  paths:
-    - $GOCACHE
+#cache:
+#  key: $CI_PROJECT_PATH_SLUG
+#  paths:
+#    - $GOCACHE
 
 .install-deps: &install-deps
   before_script:
@@ -26,23 +26,23 @@ cache:
     entrypoint:
       - ''
 
-lint:
-  stage: test
-  image: golangci/golangci-lint:v1.15
-  allow_failure: true
-  except:
-    - tags
-  script:
-    - go mod download
-    - make lint
+#lint:
+#  stage: test
+#  image: golangci/golangci-lint:v1.15
+#  allow_failure: true
+#  except:
+#    - tags
+#  script:
+#    - go mod download
+#    - make lint
 
-tf_fmt:
-  <<: *tf-image
-  stage: test
-  cache: {}
-  script:
-    - terraform fmt --recursive -check -diff cphalo/testdata
-    - terraform fmt --recursive -check -diff examples/
+#tf_fmt:
+#  <<: *tf-image
+#  stage: test
+#  cache: {}
+#  script:
+#    - terraform fmt --recursive -check -diff cphalo/testdata
+#    - terraform fmt --recursive -check -diff examples/
 
 website:
   stage: build
