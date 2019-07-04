@@ -40,6 +40,8 @@ tf_fmt:
   <<: *tf-image
   stage: test
   cache: {}
+  except:
+    - tags
   script:
     - terraform fmt --recursive -check -diff cphalo/testdata
     - terraform fmt --recursive -check -diff examples/
