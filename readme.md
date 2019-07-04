@@ -16,8 +16,10 @@ The CloudPassage Halo provider is used to interact with CloudPassage Halo resour
 
 ## Requirements
 
-- [Terraform](https://www.terraform.io/downloads.html) 0.11.x
-- [Go](https://golang.org/doc/install) 1.11 (to build the provider plugin)
+- [Terraform](https://www.terraform.io/downloads.html) 0.12.x
+- [Go](https://golang.org/doc/install) 1.12 (to build the provider plugin)
+
+**Note**: If you need compatibility with older version of Terraform `< v0.12`, use provider version `< v0.2.0`.
 
 ## Building the Provider
 
