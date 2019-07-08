@@ -65,6 +65,11 @@ func resourceCPHaloCSPAWSAccountCreate(d *schema.ResourceData, i interface{}) er
 
 	d.SetId(resp.CSPAccount.ID)
 
+	// hack solution for a CPHalo bug regarding CSP:
+	// - it takes time to propagate new CSP accounts to all servers
+	// - because of that reason we have to wait a while before we can update/delete it
+	time.Sleep(time.Second * 90)
+
 	err = createStateChangeDefault(d, func() (interface{}, error) {
 		return client.GetCSPAccount(d.Id())
 	})

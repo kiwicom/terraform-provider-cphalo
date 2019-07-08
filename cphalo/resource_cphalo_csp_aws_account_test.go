@@ -29,16 +29,7 @@ func TestAccCSPAWSAccount_basic(t *testing.T) {
 			{
 				Config: testAccCPHaloCSPAWSAccountConfig(t, 1),
 				Check: resource.ComposeTestCheckFunc(func(s *terraform.State) error {
-					err := testCSPAWSAccountAttributes("tf_aws_testacc_basic_01")
-					if err != nil {
-						return err
-					}
-
-					if isCI() {
-						time.Sleep(time.Second * 90)
-					}
-
-					return err
+					return testCSPAWSAccountAttributes("tf_aws_testacc_basic_01")
 				}),
 			},
 			{
