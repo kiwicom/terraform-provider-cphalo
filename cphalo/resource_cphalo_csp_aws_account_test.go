@@ -35,7 +35,7 @@ func TestAccCSPAWSAccount_basic(t *testing.T) {
 					}
 
 					if isCI() {
-						time.Sleep(time.Second * 5)
+						time.Sleep(time.Second * 90)
 					}
 
 					return err
