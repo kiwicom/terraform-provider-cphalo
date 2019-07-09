@@ -1,5 +1,5 @@
 run:
-  deadline: 10m
+  deadline: 15m
 
 linters:
   enable:
