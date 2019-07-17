@@ -17,7 +17,7 @@ lint:
 
 #? testacc: run acceptance tests
 testacc:
-	$(vars) TF_ACC=1 go test -cover -v -timeout 15m -failfast ./cphalo
+	$(vars) TF_ACC=1 go test -cover -v -timeout 30m -failfast ./cphalo
 
 #? test: run unit tests
 test:
